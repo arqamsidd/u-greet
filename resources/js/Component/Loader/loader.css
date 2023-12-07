@@ -1,0 +1,15 @@
+ /* body{
+    overflow: hidden;
+ } */
+ .loaderbg{
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   position:fixed;
+   height: 100%;
+   width: 100%;
+   background: black;
+   z-index: 9999999999999999999;
+   opacity: 0.5;
+   overflow: hidden;
+}

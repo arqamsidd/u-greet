@@ -1,0 +1,411 @@
+import React from "react";
+import { useDispatch } from "react-redux";
+import DndUploaderForInvitedUser from "../../Component/dragAndDropUpload/DndUploaderForInvitedUser";
+import DragAndDropUploader from "../../Component/dragAndDropUpload/DragAndDropUploader";
+import SortableMedia from "../../Component/SortableMedia/SortableMedia";
+import "./InvitedToGreet.css";
+import bg from "../../../../public/images/background.17641159.svg";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import actionTypes from "../../State/actions/actionTypes";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useContext } from "react";
+import AuthContext from "../../context/authContext";
+import { nodeName } from "jquery";
+import { useDropzone } from "react-dropzone";
+import dnd from "../../../../public/images/drag-and-drop.5ed4ffa9.svg";
+import Footer from "../../Component/Footer/Footer";
+
+const InvitedToGreet = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { greetData } = useSelector((state) => state);
+    const { token } = useParams();
+
+    const [NextClicked, setNextClicked] = useState(false);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+
+    greetData.id &&
+        sessionStorage.setItem(
+            "greetData_onReloading",
+            JSON.stringify(greetData)
+        );
+    useEffect(() => {
+        if (sessionStorage.greetData_onReloading) {
+            var reloading = JSON.parse(sessionStorage?.greetData_onReloading);
+        }
+       
+        if (reloading?.id) {
+            // sessionStorage.removeItem("greetData_onReloading");
+            dispatch({
+                type: actionTypes.SET_STATE,
+                payload: {
+                    greetData: reloading,
+                },
+            });
+        }
+    }, []);
+
+    // dnduploaader
+    const { state } = useContext(AuthContext);
+    const { acceptedFiles, fileRejections, getRootProps, getInputProps } =
+        useDropzone({
+            accept: {
+                "video/mp4": [],
+                "video/*": [],
+                "image/*": [],
+            },
+        });
+   
+    // const acceptedFileItems = acceptedFiles.map((file) => (
+    //     <li key={file.path}>
+    //         {file.path} - {file.size} bytes
+    //     </li>
+    // ));
+
+    // const fileRejectionItems = fileRejections.map(({ file, errors }) => (
+    //     <li key={file.path}>
+    //         {file.path} - {file.size} bytes
+    //         <ul>
+    //             {errors.map((e) => (
+    //                 <li key={e.code}>{e.message}</li>
+    //             ))}
+    //         </ul>
+    //     </li>
+    // ));
+
+    useEffect(() => {
+        if (acceptedFiles.length > 0) {
+            acceptedFiles.map((file) => uploadAcceptedFile(file));
+        }
+    }, [acceptedFiles]);
+    const uploadAcceptedFile = (file) => {
+        if (token && firstName && lastName && email) {
+            dispatch({
+                type: actionTypes.POST_FILE_INVITED_USER,
+                payload: {
+                    media: file,
+                    greet_token: token,
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: email,
+                },
+            });
+        }
+    };
+    // dnduploaader ended
+    // form start
+
+    // const makeRequest = (e) => {
+    //     e.preventDefault();
+    //     if (greetData?.id) {
+    //         dispatch({
+    //             type: actionTypes.POST_FILE_INVITED_USER,
+    //             payload: {
+    //                 media: file,
+    //                 greet_token: token,
+    //                 first_name: first_name,
+    //                 last_name: last_name,
+    //                 email: email,
+    //             },
+    //         });
+    //     }
+    // };
+    return (
+        <div className="invite-pages">
+            <div>
+                <div>
+                    <div className="page dashboard pt-4">
+                        <div className="media-actions media-section">
+                            <div className="card-round bg-11">
+                                <img
+                                    src={bg}
+                                    className="background mb-0"
+                                    alt="background"
+                                />
+                                {/* <div className="text-text">
+                                    <div className="card-head color-white">
+                                        <div className="font-20 bold">
+                                            {greetData?.occasion_name}
+                                        </div>
+                                        <div>
+                                            Sweet Greets on{" "}
+                                            {greetData?.occasion_date}
+                                        </div>
+                                    </div>
+                                </div> */}
+                                <div className="text-text">
+                                    <div className="card-head color-white">
+                                        <div className="font-20 bold">
+                                            Welcome to U-Greet
+                                        </div>
+                                        <div>Where Stories Matter</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <section className="media-section bg-2">
+                            <div className="section-head">
+                                <div className="font-17 bold">
+                                    Media Gallery
+                                </div>
+                                <div className="font-12">
+                                    Upload pictures and/or personalized videos
+                                </div>
+                            </div>
+                            <div>
+                                {/* <div className="double-container"> */}
+                                {NextClicked ? (
+                                    <div className="upload bg-white">
+                                        {/* <div className="font-17 bold card text-center">
+                            Auto Upload With External Sources
+                        </div> */}
+                                        {/* <DndUploaderForInvitedUser
+                            greetData={greetData}
+                        /> */}
+                                        {/* <section className="container"> */}
+                                        <div
+                                            style={{
+                                                border:
+                                                    fileRejections.length > 0
+                                                        ? "2px solid red"
+                                                        : "",
+                                                height: "100%",
+                                            }}
+                                            className="text-center align-items-center justify-content-center"
+                                        >
+                                            <div
+                                                className="card text-center align-items-center justify-content-center"
+                                                style={{ height: "100%" }}
+                                            >
+                                                <div
+                                                    {...getRootProps({
+                                                        className: "dropzone",
+                                                    })}
+                                                >
+                                                    <div>
+                                                        <input
+                                                            {...getInputProps()}
+                                                        />
+                                                        <img
+                                                            src={dnd}
+                                                            alt="drag and drop"
+                                                            width={200}
+                                                        />
+                                                        <p>
+                                                            Drag n’ Drop or
+                                                            Select Files
+                                                        </p>
+                                                        <em>
+                                                            (Only Image & video
+                                                            files will be
+                                                            accepted)
+                                                        </em>
+                                                    </div>
+                                                    <button
+                                                        // {...getRootProps({ className: "dropzone" })}
+                                                        // onClick={openDialog}
+                                                        style={{
+                                                            width: "fit-content",
+                                                        }}
+                                                        className="bg-10 bold color-white disableOnSubmit"
+                                                    >
+                                                        <div>Select Files</div>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* </section> */}
+                                    </div>
+                                ) : (
+                                    <div className="upload bg-white">
+                                        {/* <div className="font-17 bold card text-center">
+                        Uploaded Media
+                    </div> */}
+                                        {/* <SortableMedia /> */}
+                                        {/* <div className="left">
+                        <div className="container">
+                            <div className="content"> */}
+                                        <div className="card justify-content-center p-4 ">
+                                            <div className="head">
+                                                <div className="font-26 bold head">
+                                                    Your Details
+                                                </div>
+                                                <br />
+                                            </div>
+                                            <form
+                                                method="POST"
+                                                action="#"
+                                                onSubmit={() => {
+                                                    setNextClicked(true);
+                                                    uploadAcceptedFile("");
+                                                }}
+                                            >
+                                                {/* First Name Input Field */}
+                                                <div className="item">
+                                                    <div className="text-input full-input">
+                                                        <div className="label bold">
+                                                            <div>
+                                                                First Name
+                                                            </div>
+                                                            <a
+                                                                className="link"
+                                                                href=""
+                                                            >
+                                                                <div></div>
+                                                            </a>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            name="first_name"
+                                                            id="first_name"
+                                                            required
+                                                            className="bg-2 bg-2-fx"
+                                                            autoComplete="first_name"
+                                                            autoFocus
+                                                            value={firstName}
+                                                            onChange={(e) =>
+                                                                setFirstName(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            placeholder="First Name"
+                                                            tabIndex="1"
+                                                        />
+                                                        <div
+                                                            style={{
+                                                                color: "red",
+                                                            }}
+                                                        ></div>
+                                                        {/* {renderFieldError(
+                                                "first_name"
+                                            )} */}
+                                                    </div>
+                                                </div>
+
+                                                {/* Last Name Input Field */}
+                                                <div className="item">
+                                                    <div className="text-input full-input">
+                                                        <div className="label bold">
+                                                            <div>Last Name</div>
+                                                            <a
+                                                                className="link"
+                                                                href=""
+                                                            >
+                                                                <div></div>
+                                                            </a>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            name="last_name"
+                                                            id="last_name"
+                                                            required
+                                                            className="bg-2 bg-2-fx"
+                                                            autoComplete="last_name"
+                                                            value={lastName}
+                                                            placeholder="Last Name"
+                                                            tabIndex="2"
+                                                            onChange={(e) =>
+                                                                setLastName(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                        />
+                                                        <div
+                                                            style={{
+                                                                color: "red",
+                                                            }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Email Input Field */}
+                                                <div className="item">
+                                                    <div className="text-input full-input">
+                                                        <div className="label bold">
+                                                            <div>
+                                                                Your Email
+                                                            </div>
+                                                            <a
+                                                                className="link"
+                                                                href=""
+                                                            >
+                                                                <div></div>
+                                                            </a>
+                                                        </div>
+                                                        <input
+                                                            type="email"
+                                                            name="email"
+                                                            id="email"
+                                                            required
+                                                            className="bg-2 bg-2-fx"
+                                                            autoComplete="email"
+                                                            placeholder="Email"
+                                                            value={email}
+                                                            onChange={(e) =>
+                                                                setEmail(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            tabIndex="3"
+                                                        />
+                                                        <div
+                                                            style={{
+                                                                color: "red",
+                                                            }}
+                                                        ></div>
+                                                        {/* {renderFieldError(
+                                                "email"
+                                            )} */}
+                                                    </div>
+                                                </div>
+
+                                                {/* Signup Button */}
+                                                <div className="item">
+                                                    <button
+                                                        type="submit"
+                                                        className="bg-3 bold disableOnSubmit button-item w-auto"
+                                                    >
+                                                        {/* <Link to="/dashboard"> */}
+                                                        Next
+                                                        {/* </Link> */}
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        {/* </div>
+                    </div> */}
+                                    </div>
+                                )}
+                                {NextClicked && (
+                                    <div style={{ textAlign: "end" }}>
+                                        <button
+                                            onClick={() => navigate("/")}
+                                            style={{
+                                                width: "fit-content",
+                                            }}
+                                            className="bg-10 bold color-white disableOnSubmit"
+                                        >
+                                            <div>Done</div>
+                                        </button>
+                                    </div>
+                                )}
+                                {/* </div> */}
+                            </div>
+                        </section>
+                    </div>
+                    <Footer />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default InvitedToGreet;

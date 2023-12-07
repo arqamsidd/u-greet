@@ -1,0 +1,99 @@
+import React from "react";
+import { useEffect } from "react";
+import {
+    useStripe,
+    useElements,
+    CardNumberElement,
+} from "@stripe/react-stripe-js";
+import CardSection from "./CardSection";
+import { useDispatch, useSelector } from "react-redux";
+import { useContext } from "react";
+import AuthContext from "../../context/authContext";
+import actionTypes from "../../State/actions/actionTypes";
+import "./CardSection.css";
+import { useState } from "react";
+import { toast } from "react-toastify";
+
+export default function CheckoutForm({amount, plan}) {
+    const stripe = useStripe();
+    const elements = useElements();
+    const dispatch = useDispatch();
+    const { state } = useContext(AuthContext);
+    const { greetData, checkoutDetail } = useSelector((state) => state);
+
+    const [name, setName] = useState("");
+    const [Error, setError] = useState();
+    const handleNameChange = (event) => {
+        setName(event.target.value);
+    };
+
+
+    const handleSubmit = async (event) => {
+        // We don't want to let default form submission happen here,
+        // which would refresh the page.
+        event.preventDefault();
+
+        if (!stripe || !elements) {
+            // Stripe.js has not yet loaded.
+            // Make  sure to disable form submission until Stripe.js has loaded.
+            return;
+        }
+
+        const card = elements.getElement(CardNumberElement);
+        const result = await stripe.createToken(card, { cardHolder: name });
+
+        if (result.error) {
+            // Show error to your customer.
+            setError(result.error.message);
+        } else {
+            // Send the token to your server.
+            // This function does not exist yet; we will define it in the next step.
+            // stripeTokenHandler(result.token);
+            if (checkoutDetail?.price && greetData.id && state.user.id) {
+                dispatch({
+                    type: actionTypes.SEND_PAYMENT_TOKEN,
+                    payload: {
+                        greetId: greetData.id,
+                        userId: state.user.id,
+                        // amount: 10,
+                        amount: amount,
+                        stripeToken: result?.token.id,
+                        plan: plan
+                    },
+                });
+            } else {
+                toast.error("Something Wrong!", {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                });
+            }
+        }
+    };
+
+    return (
+        <form
+            className="col-md-6 col-md-offset-3 card p-6 bg-light"
+            onSubmit={handleSubmit}
+        >
+            <CardSection
+                handleNameChange={handleNameChange}
+                name={name}
+                Error={Error}
+                setError={setError}
+            />
+            <button
+                type="submit"
+                className="btn btn-primary btn-lg btn-block"
+                disabled={!stripe}
+            >
+                Pay Now (<>{amount}</>)
+            </button>
+        </form>
+    );
+}

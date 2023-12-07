@@ -1,0 +1,255 @@
+import React from "react";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import Footer from "../../Component/Footer/Footer";
+import actionTypes from "../../State/actions/actionTypes";
+
+const OccasionCheckout = () => {
+    const element = document.getElementById("ugreetAppHtml");
+    if (element?.classList?.contains("f-style-bundle")) {
+    } else {
+        element?.classList?.add("f-style-bundle");
+    }
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { greetData, checkoutDetail, isLoading } = useSelector(
+        (state) => state
+    );
+
+    useEffect(() => {
+        if (sessionStorage.greetData_onReloading) {
+            var reloading = JSON.parse(sessionStorage?.greetData_onReloading);
+        }
+        if (reloading?.id) {
+           // sessionStorage.removeItem("greetData_onReloading");
+            dispatch({
+                type: actionTypes.SET_STATE,
+                payload: {
+                    greetData: reloading,
+                },
+            });
+        }
+    }, []);
+    useEffect(() => {
+        if (greetData?.id) {
+            dispatch({
+                type: actionTypes.GET_CHECKOUT_DETAIL,
+                payload: {
+                    greet_id: greetData?.id,
+                },
+            });
+        }
+    }, [greetData?.id]);
+
+    return (
+        <div>
+            <div className="Toastify" />
+            <div className="navigation bg-white">
+                <div className="inner inner-occasion inner-action">
+                    <div className="left link" onClick={() => navigate(-1)}>
+                        <img
+                            src="assets/images/arrow-right.418d2ebe.svg"
+                            alt="arrow"
+                            className="arrow"
+                        />
+                        Back
+                    </div>
+                </div>
+            </div>
+            <div className="page dashboard">
+                <section className="checkout-section">
+                    <div className="section-head">
+                        <div className="font-40 bold">Your Cart</div>
+                        {/* <div className="font-20">
+                            Review your cart before continuing your payment
+                        </div> */}
+                    </div>
+                    {checkoutDetail?.video_length == "00:00:00" ? (
+                        <>
+                            <div className="font-20">
+                                Please request to create video and then wait for
+                                video completion mail.
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="description">
+                                {/*<img
+                            src="assets/images/video.c4c4a1b9.svg"
+                            alt="video"
+                            />*/}
+                                {/*<div className="themes-container card-round bg-white">
+                            <video
+                                className="preview"
+                                controls
+                                id="videoWithData"
+                                type="video/mp4"
+                                key={checkoutDetail?.video_link}
+                            >
+                                <source
+                                    // src="/media/sample-mp4-file-small.mp4"
+                                    src={checkoutDetail?.video_link}
+                                    type="video/mp4"
+                                />
+                                Your browser does not support the video tag.
+                            </video>
+                            </div>*/}
+                                <span>
+                                    <span className="font-20 bold">
+                                        {checkoutDetail?.occasion_name
+                                            ? checkoutDetail?.occasion_name
+                                            : ""}
+                                    </span>
+                                    <br />
+                                    <b>Est. Length:</b>{" "}
+                                    {checkoutDetail?.video_length
+                                        ? checkoutDetail?.video_length
+                                        : "00:00"}
+                                </span>
+                            </div>
+                            <div className="input-container d-none">
+                                <div>
+                                    <div className="text-input full-input">
+                                        {/* <div className="label undefined">
+                                    <div />
+                                    <a className="link" href>
+                                        <div />
+                                    </a>
+                                </div> */}
+                                        <input
+                                            type="name"
+                                            name="code"
+                                            className="bg-2 bg-2-fx"
+                                            defaultValue
+                                        />
+                                        <div />
+                                    </div>
+                                </div>
+                                <div>
+                                    <button className="bg-none color-5 bold">
+                                        <div>Apply Code</div>
+                                    </button>
+                                </div>
+                            </div>
+                            {/*<div className="list mt-5">
+                            <div className="item">
+                                <div>
+                                    <input type="checkbox" defaultValue="true" />{" "}
+                                    &nbsp; Quality Check • ${ checkoutDetail?.price ? checkoutDetail?.price : '0.00'} &nbsp;
+                                    <img
+                                        src="assets/images/info.5ba51b75.svg"
+                                        className="info"
+                                        alt="info"
+                                    />
+                                </div>
+                                </div>
+                            </div>*/}
+                            <div className="list">
+                                <div className="item">
+                                    <div>
+                                        Video Gift{" "}
+                                        {checkoutDetail?.greet_for
+                                            ? "for " + checkoutDetail?.greet_for
+                                            : ""}{" "}
+                                        (
+                                        {checkoutDetail?.video_length
+                                            ? checkoutDetail?.video_length
+                                            : "00:00"}
+                                        )
+                                    </div>
+                                    {/*<div>{ checkoutDetail?.price ? '$'+checkoutDetail?.price : (checkoutDetail.occasion_name == 'sweet-greet' ? 'Free' : '$0.00')}</div>*/}
+                                    {checkoutDetail?.occasion_name ==
+                                        "sweet-greet" &&
+                                    !checkoutDetail?.price ? (
+                                        <div>Free</div>
+                                    ) : checkoutDetail?.price != "free" ? (
+                                        <div>
+                                            $
+                                            {checkoutDetail?.price
+                                                ? checkoutDetail?.price
+                                                : "0.00"}
+                                        </div>
+                                    ) : (
+                                        <div>Free</div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="total font-30 bold">
+                                <div>Your Total (CAD):</div>
+                                {!isLoading &&
+                                    (checkoutDetail?.occasion_name ==
+                                        "sweet-greet" &&
+                                    !checkoutDetail?.price ? (
+                                        <div>Free</div>
+                                    ) : checkoutDetail?.price != "free" ? (
+                                        <div>
+                                            $
+                                            {checkoutDetail?.price
+                                                ? checkoutDetail?.price
+                                                : "0.00"}
+                                        </div>
+                                    ) : (
+                                        <div>Free</div>
+                                    ))}
+                            </div>
+                            <div className="button-container">
+                                {checkoutDetail?.payment_status ==
+                                "succeeded" ? (
+                                    <Link to="/occasionInformation">
+                                        <button className="bg-3 bold">
+                                            <div>Continue to Occasion</div>
+                                        </button>
+                                    </Link>
+                                ) : checkoutDetail?.price == "free" ? (
+                                    <Link to="/occasionInformation">
+                                        <button className="bg-3 bold">
+                                            <div>Continue to Occasion</div>
+                                        </button>
+                                    </Link>
+                                ) : (
+                                    <Link to="/occasionCheckout/payment">
+                                        <button className="bg-3 bold">
+                                            <div>Continue to payment</div>
+                                        </button>
+                                    </Link>
+                                )}
+                                {/* {checkoutDetail?.payment_status == "succeeded" ? (
+                            <Link to="/occasionInformation">
+                                <button className="bg-3 bold">
+                                    <div>Continue to Occasion</div>
+                                </button>
+                            </Link>
+                            ) : checkoutDetail?.occasion_name == "sweet-greet" &&
+                            checkoutDetail?.video_length < "00:03:00" ? (
+                                <Link to="/occasionInformation">
+                                    <button className="bg-3 bold">
+                                        <div>Continue to Occasion</div>
+                                    </button>
+                                </Link>
+                            ) : checkoutDetail?.price != "free" ? (
+                                <Link to="/occasionCheckout/payment">
+                                    <button className="bg-3 bold">
+                                        <div>Continue to payment</div>
+                                    </button>
+                                </Link>
+                            ) : (
+                                <Link to="/occasionInformation">
+                                    <button className="bg-3 bold">
+                                        <div>Continue to Occasion</div>
+                                    </button>
+                                </Link>
+                            )} */}
+                            </div>
+                        </>
+                    )}
+                </section>
+            </div>
+            <Footer />
+        </div>
+    );
+};
+
+export default OccasionCheckout;

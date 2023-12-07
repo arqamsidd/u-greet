@@ -1,0 +1,52 @@
+#customStyle > button:first-child {
+    background-color: unset !important;
+    display: unset !important;
+    align-items: unset !important;
+    color: unset !important;
+    box-shadow: unset !important;
+    padding: unset !important;
+    border-radius: unset !important;
+    border: unset !important;
+    font-size: unset !important;
+    font-weight: unset !important;
+    font-family: unset !important;
+  }
+#customStyle > button:first-child + span {
+    padding: unset !important;
+    font-weight: unset !important;
+  }
+  /* #customStyle button {
+    all: initial;
+    all: revert;
+  }
+  
+  #customStyle button * {
+    all: unset
+  } */
+#customStyle > button:first-child > div:first-child {
+    display: none;
+    margin-right: unset !important;
+    background: unset !important;
+    padding: unset !important;
+    border-radius: unset !important;
+  }
+  /* #customStyle .bg-4 {
+    background: #ffe2e5;
+    color: #ce2f2b;
+    transition: all .4s ease-in-out; }
+  #customStyle .bg-4-fx:focus {
+    background: #ce2f2b;
+    color: #fff;
+    transition: all .4s ease-in-out; }
+  #customStyle .bg-4-fx:hover {
+    background: #ce2f2b;
+    color: #fff;
+    transition: all .4s ease-in-out; }
+     #customStyle .bg-4-fx:focus {
+      background: #ce2f2b;
+      color: #fff;
+      transition: all .4s ease-in-out; }
+     #customStyle .bg-4-fx:hover {
+      background: #ce2f2b;
+      color: #fff;
+      transition: all .4s ease-in-out; } */
