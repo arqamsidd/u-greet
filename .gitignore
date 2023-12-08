@@ -25,3 +25,4 @@ package-lock.json
 composer.lock
 public/mix-manifest.json
 storagepublicassets.zip
+public/public>images.zip
