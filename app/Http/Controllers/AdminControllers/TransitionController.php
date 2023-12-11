@@ -93,7 +93,7 @@ class TransitionController extends Controller
         $transition_name = md5(uniqid(rand(), true)).'.'.$transition_file->getClientOriginalExtension();
         $transition_type = $transition_file->getClientOriginalExtension();
         Storage::disk('transitions')->put($transition_name, file_get_contents($request->file('transition_file')->getRealPath()));
-        $transition_path = 'storage/transitions/' . $transition_name;
+        $transition_path = 'storage/app/public/transitions/' . $transition_name;
 
         Transition::create([
             'name' => $input['transition_original_name'],
@@ -156,7 +156,7 @@ class TransitionController extends Controller
             $transition_name = md5(uniqid(rand(), true)).'.'.$transition_file->getClientOriginalExtension();
             $transition_type = $transition_file->getClientOriginalExtension();
             Storage::disk('transitions')->put($transition_name, file_get_contents($request->file('transition_file')->getRealPath()));
-            $transition_path = 'storage/transitions/' . $transition_name;
+            $transition_path = 'storage/app/public/transitions/' . $transition_name;
 
             $transition->update([
                 'transition_name' => $transition_name,
