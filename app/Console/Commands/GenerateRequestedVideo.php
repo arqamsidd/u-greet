@@ -8,6 +8,7 @@ use App\Models\GreetMedia;
 use App\Models\User;
 use Illuminate\Console\Command;
 use App\Mail\SucessMail;
+use FFMpeg\FFMpeg;
 use File;
 use Mail;
 use Carbon\Carbon;
@@ -81,10 +82,11 @@ class GenerateRequestedVideo extends Command
             }
     
             $vidMerCmd = 'ffmpeg';
-            $filterComplex = '-filter_complex "';
+            $filterComplex = '';
             $count = 0;
             $greetMediaCount = sizeof($greetMediaFiles);
             $check_media = array();
+			$ffmpeg = FFMpeg::create();
             foreach($greetMediaFiles as $key=>$greetMediaFile)
             {
                 $check_media[]=$greetMediaFile->media_type;
@@ -113,12 +115,19 @@ class GenerateRequestedVideo extends Command
 
                 exec('mkdir -p ' . $rootPath . $greetId . '&& ffmpeg -loop 1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -c:v libx264 -t 5 -pix_fmt yuv420p -vf scale=2800:1900 ' . $backgroundVideoPath);
 
+				$new_filter = '';
+                $offset = 0;
+                $slide_offset =0;
+                $transionOffset = 0;
+                $arrCount=count($greetMediaFiles);
+
                 foreach ($greetMediaFiles as $greetMediaFile) {
                     $greetMediaType = $greetMediaFile->media_type;
                     $greetMediaName = $greetMediaFile->media_name;
                     $greetMedia = storage_path('app/public/greetMedia/uploads/'.$greetId.'/'.$greetMediaName);
                     $imageVideoPath = $rootPath . $greetId . '/' . 'imageVideos/' . $rdname . $greetMediaName . '.mp4';
                     $mergedVideoPath = $rootPath . $greetId . '/' . 'mergedVideos/' . $rdname . $greetMediaName . '.mp4';
+					$transparentPath = $rootPath . $greetId . '/' . 'transparentVideos/' . $rdname . $greetMediaName . '.mp4';
 
                     // Get the image size
                     $imageInfo = getimagesize($greetMedia);
@@ -146,56 +155,36 @@ class GenerateRequestedVideo extends Command
                         }
                     }
 
-                    exec('echo "file mergedVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/mylist.txt');
+                    exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/mylist.txt');
 
                     if($greetMediaType == 'image') {
                         $command = 'mkdir -p ' . $rootPath . $greetId . '/imageVideos && ffmpeg -loop 1 -i ' . $greetMedia . ' -vf "' . $ratioSetting . 'pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -t 5 -pix_fmt yuv420p ' . $imageVideoPath;
                         exec($command);
 
-                        // if ($isTransition) {
-                        //     $transition = $greetTransition->name;
-                        //     if ($transition == 'zoompan') {
-                        //         if($count>0){
-                        //             $filterComplex.="[".$count."]"."scale=19200:10800,zoompan=z='min(max(zoom,pzoom)+0.002,3)':d=1".":s=1920x1080:fps=24:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'".",fade=t=in:st=0:d=1,setsar=1".$img_index.";";
-                        //         }
-                        //         else{
-                        //             $filterComplex.="[".$count."]"."scale=19200:10800,zoompan=z='min(max(zoom,pzoom)+0.002,3)':d=1".":s=1920x1080:fps=24:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'".",fade=t=out:st=4:d=1,setsar=1".$img_index.";";
-                        //         }
-                        //     } else if ($transition == 'fade' || $transition == 'circleopen' || $transition == 'circleclose' || $transition == 'slideleft' || $transition == 'hrslice' || $transition == 'radial' || $transition == 'dissolve' || $transition == 'rectcrop' || $transition == 'wipetl') {
-                        //         $filterComplex_res.= '['.$count.':v]scale=1920x1080,format=yuv420p[v'.$count.'];';
-                        //         if ($count > 0) {
-                        //             $transionOffset = $count-1;
-                        //             if ($transionOffset < 1 && $arrCount==$count+1){
-                        //                 $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=wipetl:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                        //             }
-                        //             elseif ($transionOffset < 1){
-                        //                 $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=wipetl:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']; ';
-                        //             }elseif ($transionOffset < $greetMediaCount-2) {
-                        //                 $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=wipetl:duration=1:offset='.$slide_offset.'[f'.$transionOffset.'];';
-                        //             }else {
-                        //                 $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=wipetl:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                        //             }
-                        //             $slide_offset = $slide_offset + 4;
-                        //         }
-                        //         else{
-                        //             $slide_offset = $slide_offset + 4;
-                        //         }
-                        //     } else {
-                        //         $filterComplex .= '['.$count.']scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1' . $img_index . ';';
-                        //     }
-    
-                        //     if (($isTransition && $greetTransition->name == 'zoompan') ||(!$isTransition) ) {
-                        //         $index .= $img_index;
-                        //     }
-                        //     else{
-                        //         $index .= $img_index . '[' . $greetMediaCount . ']';
-                        //     }
-                        //     $count++;
-                        // }
+                        if ($isTransition) {
+							$dimension = $ffmpeg -> open($imageVideoPath)
+								->getStreams()
+								->videos()
+								->first()
+								->getDimensions();
+							$imageVideoWidth = $dimension -> getWidth();
+							$imageVideoHeight = $dimension -> getHeight();
+                            $transition = $greetTransition->name;
 
-                        // exec('mkdir -p ' . $rootPath . $greetId . '/mergedVideos && ffmpeg -i '. $backgroundVideoPath . ' -i ' . $imageVideoPath . ' -filter_complex ' . $filterComplex . ' ' . $mergedVideoPath);
-                        
-                        exec('mkdir -p ' . $rootPath . $greetId . '/mergedVideos && ffmpeg -i '. $backgroundVideoPath . ' -i ' . $imageVideoPath . ' -filter_complex "[1:v]fade=in:st=0:d=1:alpha=1,fade=out:st=4:d=1:alpha=1,format=rgba,colorchannelmixer=aa=1[over]; [0:v][over]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2" ' . $mergedVideoPath);
+                            if ($transition == 'zoompan') {
+                                $filterComplex.="scale=19200:10800,zoompan=z='min(max(zoom,pzoom)+0.002,3)':d=1".":s=1920x1080:fps=24:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'".",fade=t=in:st=0:d=1,setsar=1".$img_index.";";
+								exec('mkdir -p ' . $rootPath . $greetId . '/mergedVideos && ffmpeg -i '. $backgroundVideoPath . ' -i ' . $imageVideoPath . ' -filter_complex ' . $filterComplex. ' ' . $mergedVideoPath);
+                            } else if ($transition == 'fade' || $transition == 'circleopen' || $transition == 'circleclose' || $transition == 'slideleft' || $transition == 'hrslice' || $transition == 'radial' || $transition == 'dissolve' || $transition == 'rectcrop' || $transition == 'wipetl') {
+								$command = 'mkdir -p ' . $rootPath . $greetId . '/mergedVideos && ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $imageVideoPath . ' -f lavfi -i color=black@0.0:d=1 -filter_complex "[0:v]scale='.$imageVideoWidth.':'.$imageVideoHeight.',setsar=1,fps=fps=25  [color];[1:v]fps=fps=25 [video];[2:v]scale='.$imageVideoWidth.':'.$imageVideoHeight.',setsar=1,fps=fps=25 [end];[color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=4,format=yuva420p" ' . $mergedVideoPath;
+
+								exec($command);
+                            } else {
+                                $filterComplex .= 'scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1' . $img_index . ';';
+								exec('mkdir -p ' . $rootPath . $greetId . '/mergedVideos && ffmpeg -i '. $backgroundVideoPath . ' -i ' . $imageVideoPath . ' -filter_complex ' . $filterComplex. ' ' . $mergedVideoPath);
+                            }
+
+							exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -i '. $backgroundVideoPath .' -i ' . $mergedVideoPath . ' -filter_complex "[1]fade=t=in:st=0:d=1:alpha=1,fade=t=out:st=4:d=1:alpha=1[ovr];[0][ovr]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,format=yuva420p" ' . $transparentPath);
+                        }
                     }
                     
                 }
@@ -737,7 +726,7 @@ class GenerateRequestedVideo extends Command
                     'comments' => $commandMessage,
                     'status' => isset($commandStatus) && $commandStatus == 200 ? 2 : 3
                 ];
-                $greetMediaRequest = $requestedGreet->update($greetMediaRequestArr);
+                // $greetMediaRequest = $requestedGreet->update($greetMediaRequestArr);
             } 
             else {
     
