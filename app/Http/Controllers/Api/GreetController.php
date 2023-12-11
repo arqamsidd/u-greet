@@ -392,17 +392,17 @@ class GreetController extends Controller
         $video_link_final = null;
         if(!empty($greetmediapreview))
         {
-            $video_link_preview=('storage/app/public/greetMedia/final/'.$id.'/'.$greetmediapreview->media_name);
+            $video_link_preview=('storage/greetMedia/final/'.$id.'/'.$greetmediapreview->media_name);
             
             if(!empty($greetfinal))
             {
                 $duration=$greetmediafinal->media_sec/60;
                 if($greetfinal->occasion_name=='Sweet Greet' && $duration<=3)
                 {
-                    $video_link_preview=('storage/app/public/greetMedia/final/'.$id.'/'.$greetmediafinal->media_name);
+                    $video_link_preview=('storage/greetMedia/final/'.$id.'/'.$greetmediafinal->media_name);
                 } else if($greetfinal->greet_plan == '3')
                 {
-                    $video_link_preview=('storage/app/public/greetMedia/final/'.$id.'/'.$greetmediafinal->media_name);
+                    $video_link_preview=('storage/greetMedia/final/'.$id.'/'.$greetmediafinal->media_name);
                 }
             }
         }
@@ -410,11 +410,11 @@ class GreetController extends Controller
         {
             if(!empty($greetmediapreview))
             {
-                $video_link_preview=('storage/app/public/greetMedia/final/'.$id.'/'.$greetmediapreview->media_name);
+                $video_link_preview=('storage/greetMedia/final/'.$id.'/'.$greetmediapreview->media_name);
             }
             $payment_status=$greeetpayment->payment_status;
             if(!empty($greetmediafinal)){
-                 $video_link_final = ('storage/app/public/greetMedia/final/'.$id.'/'.$greetmediafinal->media_name);
+                 $video_link_final = ('storage/greetMedia/final/'.$id.'/'.$greetmediafinal->media_name);
             }
            
         }

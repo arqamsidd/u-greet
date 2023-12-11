@@ -67,7 +67,7 @@ class StripePaymentController extends Controller
             
         }*/
         /*End*/
-        $dbfinalvideopath = 'storage/app/public/greetMedia/final/' . $request->greetId . '/';
+        $dbfinalvideopath = 'storage/greetMedia/final/' . $request->greetId . '/';
         $paymentData=PaymentTransaction::where('greet_id',$request->greetId)->where('payment_status','succeeded')->latest()->first();
         
         if(isset($paymentData))

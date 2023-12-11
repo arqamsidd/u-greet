@@ -95,7 +95,7 @@ class CreateVideoListener
         }
         $cmd .=' -f lavfi -t 1 -i anullsrc ';
         // $finalvideopath = storage_path('app/public/greetMedia/final/' . $greetId . '/');
-        $finalvideopath = 'storage/app/public/greetMedia/final/' . $greetId . '/';
+        $finalvideopath = 'storage/greetMedia/final/' . $greetId . '/';
 
         if(!File::isDirectory($finalvideopath)){
             File::makeDirectory($finalvideopath, 0775, true, true);
