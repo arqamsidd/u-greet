@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use App\Mail\SucessMail;
 use FFMpeg\FFMpeg;
+use FFMpeg\FFProbe;
 use File;
 use Mail;
 use Carbon\Carbon;
@@ -86,7 +87,8 @@ class GenerateRequestedVideo extends Command
             $count = 0;
             $greetMediaCount = sizeof($greetMediaFiles);
             $check_media = array();
-			$ffmpeg = FFMpeg::create();
+			$ffprobe = FFProbe::create();
+            $ffmpeg = FFMpeg::create();
             foreach($greetMediaFiles as $key=>$greetMediaFile)
             {
                 $check_media[]=$greetMediaFile->media_type;
@@ -127,48 +129,43 @@ class GenerateRequestedVideo extends Command
                     $greetMedia = storage_path('app/public/greetMedia/uploads/'.$greetId.'/'.$greetMediaName);
                     $imageVideoPath = $rootPath . $greetId . '/' . 'imageVideos/' . $rdname . $greetMediaName . '.mp4';
                     $mergedVideoPath = $rootPath . $greetId . '/' . 'mergedVideos/' . $rdname . $greetMediaName . '.mp4';
-					$transparentPath = $rootPath . $greetId . '/' . 'transparentVideos/' . $rdname . $greetMediaName . '.mp4';
-
-                    // Get the image size
-                    $imageInfo = getimagesize($greetMedia);
-                    $imageWidth = $imageInfo[0];
-                    $imageHeight = $imageInfo[1];
-                    $ratioImage = $imageWidth / $imageHeight;
-                    $ratioSetting = '';
-                    if ($imageWidth > 1920) {
-                        if ($imageHeight > 1080 && $ratioImage > 1920 / 1080) {
-                            $ratioSetting = "scale=1920:-1,";
-                        } else {
-                            $ratioSetting = "scale=-1:1080,";
-                        }
-                    } else if ($imageHeight > 1080)  {
-                        if ($imageWidth > 1920 && $ratioImage > 1920 / 1080) {
-                            $ratioSetting = "scale=1920:-1,";
-                        } else {
-                            $ratioSetting = "scale=-1:1080,";
-                        }
-                    } else if ($imageWidth < 1920 && $imageHeight < 1080) {
-                        if ($imageWidth > $imageHeight) {
-                            $ratioSetting = "scale=1920:-1,";
-                        } else {
-                            $ratioSetting = "scale=-1:1080,";
-                        }
-                    }
-
-                    exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/mylist.txt');
+					$transparentVideoPath = $rootPath . $greetId . '/' . 'transparentVideos/' . $rdname . $greetMediaName . '.mp4';
 
                     if($greetMediaType == 'image') {
+                        exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/mylist.txt');
+                        // Get the image size
+                        list($mediaWidth, $mediaHeight) = getimagesize($greetMedia);
+                        $ratioImage = $mediaWidth / $mediaHeight;
+                        $ratioSetting = '';
+                        if ($mediaWidth > 1920) {
+                            if ($mediaHeight > 1080 && $ratioImage > 1920 / 1080) {
+                                $ratioSetting = "scale=1920:-1,";
+                            } else {
+                                $ratioSetting = "scale=-1:1080,";
+                            }
+                        } else if ($mediaHeight > 1080)  {
+                            if ($mediaWidth > 1920 && $ratioImage > 1920 / 1080) {
+                                $ratioSetting = "scale=1920:-1,";
+                            } else {
+                                $ratioSetting = "scale=-1:1080,";
+                            }
+                        } else if ($mediaWidth < 1920 && $mediaHeight < 1080) {
+                            if ($mediaWidth > $mediaHeight) {
+                                $ratioSetting = "scale=1920:-1,";
+                            } else {
+                                $ratioSetting = "scale=-1:1080,";
+                            }
+                        }
                         $command = 'mkdir -p ' . $rootPath . $greetId . '/imageVideos && ffmpeg -loop 1 -i ' . $greetMedia . ' -vf "' . $ratioSetting . 'pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -t 5 -pix_fmt yuv420p ' . $imageVideoPath;
                         exec($command);
 
                         if ($isTransition) {
-							$dimension = $ffmpeg -> open($imageVideoPath)
-								->getStreams()
+							$dimension = $ffprobe -> streams($imageVideoPath)
 								->videos()
-								->first()
-								->getDimensions();
-							$imageVideoWidth = $dimension -> getWidth();
-							$imageVideoHeight = $dimension -> getHeight();
+								->first();
+
+							$imageVideoWidth = $dimension -> get('width');
+							$imageVideoHeight = $dimension -> get('height');
                             $transition = $greetTransition->name;
 
                             if ($transition == 'zoompan') {
@@ -183,10 +180,46 @@ class GenerateRequestedVideo extends Command
 								exec('mkdir -p ' . $rootPath . $greetId . '/mergedVideos && ffmpeg -i '. $backgroundVideoPath . ' -i ' . $imageVideoPath . ' -filter_complex ' . $filterComplex. ' ' . $mergedVideoPath);
                             }
 
-							exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -i '. $backgroundVideoPath .' -i ' . $mergedVideoPath . ' -filter_complex "[1]fade=t=in:st=0:d=1:alpha=1,fade=t=out:st=4:d=1:alpha=1[ovr];[0][ovr]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,format=yuva420p" ' . $transparentPath);
+                            exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -i '. $backgroundVideoPath .' -i ' . $mergedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,format=yuva420p" ' . $transparentVideoPath);
+                        }
+                    } else if ($greetMediaType == 'video') {
+                        exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/mylist.txt');
+                        $videoInfo = $ffprobe -> streams($greetMedia)
+                                        ->videos()
+                                        ->first();
+
+                        $duration = $videoInfo -> get('duration');
+                        $mediaWidth = $videoInfo -> get('width');
+                        $mediaHeight = $videoInfo -> get('height');
+                        $ratioImage = $mediaWidth / $mediaHeight;
+                        $ratioSetting = '';
+                        if ($mediaWidth > 1920) {
+                            if ($mediaHeight > 1080 && $ratioImage > 1920 / 1080) {
+                                $ratioSetting = "scale=1920:-1,";
+                            } else {
+                                $ratioSetting = "scale=-1:1080,";
+                            }
+                        } else if ($mediaHeight > 1080)  {
+                            if ($mediaWidth > 1920 && $ratioImage > 1920 / 1080) {
+                                $ratioSetting = "scale=1920:-1,";
+                            } else {
+                                $ratioSetting = "scale=-1:1080,";
+                            }
+                        } else if ($mediaWidth < 1920 && $mediaHeight < 1080) {
+                            if ($mediaWidth > $mediaHeight) {
+                                $ratioSetting = "scale=1920:-1,";
+                            } else {
+                                $ratioSetting = "scale=-1:1080,";
+                            }
+                        }
+
+                        if ($isTransition) {
+                            $command = 'mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $greetMedia . ' -f lavfi -i color=black@0.0:d=1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[3:v]scale=2800:1900 [bg]; [color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=' . $duration - 1 . ',format=yuva420p[xfade]; [bg][xfade]overlay=(W-w)/2:(H-h)/2" ' . $transparentVideoPath;
+
+                            exec($command);
                         }
                     }
-                    
+
                 }
 
                 exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/mylist.txt -c copy ' . $finalVideoPath, $output, $retval);
@@ -199,7 +232,7 @@ class GenerateRequestedVideo extends Command
                     $commandMessage = 'Video Creation Failed';
                 }
 
-                // $new_filter = '';
+// $new_filter = '';
                 // $offset = 0;
                 // $slide_offset =0;
                 // $transionOffset = 0;
@@ -726,7 +759,7 @@ class GenerateRequestedVideo extends Command
                     'comments' => $commandMessage,
                     'status' => isset($commandStatus) && $commandStatus == 200 ? 2 : 3
                 ];
-                // $greetMediaRequest = $requestedGreet->update($greetMediaRequestArr);
+                $greetMediaRequest = $requestedGreet->update($greetMediaRequestArr);
             } 
             else {
     
