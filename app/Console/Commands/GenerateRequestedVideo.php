@@ -116,6 +116,8 @@ class GenerateRequestedVideo extends Command
                 $imageVideofinalPath = $rootPath . $greetId . '/' . $rdname . 'imageVideofinal.mp4';
                 $videofinalPath = $rootPath . $greetId . '/' . $rdname . 'videofinal.mp4';
                 $finalVideoPath = $rootPath . $greetId . '/' . $rdname . 'final.mp4';
+                $previewVideoPath = $rootPath . $greetId . '/' . $rdname . 'preview.mp4';
+                $trimmedFinalVideoPath = $rootPath . $greetId . '/' . $rdname . 'trimmed_final.mp4';
                 $audioFile = 'storage/app/public/music_audio/';
 
                 exec('mkdir -p ' . $rootPath . $greetId . '&& ffmpeg -loop 1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -c:v libx264 -t 5 -pix_fmt yuv420p -vf scale=2800:1900 ' . $backgroundVideoPath);
@@ -217,7 +219,7 @@ class GenerateRequestedVideo extends Command
                             }
                         }
 
-                        $command = 'mkdir -p ' . $rootPath . $greetId . '/resizedVideos && ffmpeg -i ' . $greetMedia . ' -vf "' . $ratioSetting . 'pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -t 5 -pix_fmt yuv420p ' . $resizedVideoPath;
+                        $command = 'mkdir -p ' . $rootPath . $greetId . '/resizedVideos && ffmpeg -i ' . $greetMedia . ' -vf "' . $ratioSetting . 'pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -pix_fmt yuv420p ' . $resizedVideoPath;
                         exec($command);
 
                         $videoInfo = $ffprobe -> streams($resizedVideoPath)
@@ -253,222 +255,72 @@ class GenerateRequestedVideo extends Command
                     $commandMessage = 'Video Creation Failed';
                 }
 
-                // $dbfinalvideopath = 'storage/app/public/greetMedia/final/' . $greetId . '/';
-                
-                // if(!File::isDirectory($finalvideopath)){
-                //     File::makeDirectory($finalvideopath, 0775, true, true);
-                // }
-                // foreach(glob("{$finalvideopath}/*") as $file)
-                // {
-                //     if(is_dir($file)) { 
-                //         recursiveRemoveDirectory($file);
-                //     } else {
-                //         unlink($file);
-                //     }
-                // }
-                // $rdname = date('YmdHis');
-                // if ($isTheme || $isThemeMusic) {
-                //     $greetmediaType = 'videoMerge';
-                // } else {
-                //     $greetmediaType = 'final';
-                // }
-                // $greetMediaMergeName = $rdname . $greetmediaType . '.mp4';
+                $dbfinalvideopath = $rootPath . $greetId . '/';
+                $greetMediaMergeName = $rdname . 'final.mp4';
     
-                // if ($isTransition && $greetTransition->name == 'fade') {
-                //     $command= $vidMerCmd . ' ' . $filterComplex . '" -map "[f'.$transionOffset.']" -r 26 -pix_fmt yuv420p -vcodec libx264 ' . $finalvideopath . $greetMediaMergeName;
-                // }
-                // else if ($isTransition && $greetTransition->name == 'circleopen') {
-                //     $command= $vidMerCmd . ' ' . $filterComplex . '" -map "[f'.$transionOffset.']" -r 26 -pix_fmt yuv420p -vcodec libx264 ' . $finalvideopath . $greetMediaMergeName;
-                // }
-                // else if ($isTransition && $greetTransition->name == 'circleclose') {
-                //     $command= $vidMerCmd . ' ' . $filterComplex . '" -map "[f'.$transionOffset.']" -r 26 -pix_fmt yuv420p -vcodec libx264 ' . $finalvideopath . $greetMediaMergeName;
-                // }
-                // elseif ($isTransition && $greetTransition->name == 'zoompan') {
-                //     $command= $vidMerCmd . ' ' . $filterComplex . $index . 'concat=n=' . $greetMediaCount . ':v=1:a=0" -pix_fmt yuv420p -vcodec libx264  -an ' . $finalvideopath . $greetMediaMergeName;
-                // }
-                // elseif ($isTransition && $greetTransition->name == 'slideleft') {
-                //     $command= $vidMerCmd . ' ' . $filterComplex . '" -map "[f'.$transionOffset.']" -r 26 -pix_fmt yuv420p -vcodec libx264 ' . $finalvideopath . $greetMediaMergeName;
-                // }
-                // elseif ($isTransition && $greetTransition->name == 'hrslice') {
-                //     $command= $vidMerCmd . ' ' . $filterComplex . '" -map "[f'.$transionOffset.']" -r 25 -pix_fmt yuv420p -vcodec libx264 ' . $finalvideopath . $greetMediaMergeName;
-                // }
-                // elseif ($isTransition && $greetTransition->name == 'radial') {
-                //     $command= $vidMerCmd . ' ' . $filterComplex . '" -map "[f'.$transionOffset.']" -r 26 -pix_fmt yuv420p -vcodec libx264 ' . $finalvideopath . $greetMediaMergeName;
-                // }
-                // elseif ($isTransition && $greetTransition->name == 'dissolve') {
-                //     $command= $vidMerCmd . ' ' . $filterComplex . '" -map "[f'.$transionOffset.']" -r 26 -pix_fmt yuv420p -vcodec libx264 ' . $finalvideopath . $greetMediaMergeName;
-                // }
-                // //additional//
-                // //+1
-                // elseif ($isTransition && $greetTransition->name == 'rectcrop') {
-                //     $command= $vidMerCmd . ' ' . $filterComplex . '" -map "[f'.$transionOffset.']" -r 26 -pix_fmt yuv420p -vcodec libx264 ' . $finalvideopath . $greetMediaMergeName;
-                // }
-                // elseif ($isTransition && $greetTransition->name == 'wipetl') {
-                //     $command= $vidMerCmd . ' ' . $filterComplex . '" -map "[f'.$transionOffset.']" -r 26 -pix_fmt yuv420p -vcodec libx264 ' . $finalvideopath . $greetMediaMergeName;
-                // }
-                // //////////////
-                // else {
-                //     $command= $vidMerCmd . ' ' . $filterComplex . $index . 'concat=n=' . $greetMediaCount . ':v=1:a=0" -pix_fmt yuv420p -vcodec libx264 -an ' . $finalvideopath . $greetMediaMergeName;
-                // }
-                // // exit;
-                // // dd($command);
-                // echo $command;
-                // // return "ajay";
-                // exec($command,$output, $retval);
-                
-                // if($retval==0) {
-                //     $commandStatus = 200;
-                //     $commandMessage = 'Video Created Successfully';
-                // } else {
-                //     $commandStatus = 500;
-                //     $commandMessage = 'Video Creation Failed';
-                // }
-    
-                // //Find duration time 
+                //Find duration time 
 
-                // $timecmd = exec('ffmpeg -i '.$finalvideopath.$greetMediaMergeName.' 2>&1 | grep Duration | cut -d " " -f 4 | sed s/,//');
-                // $time=Carbon::create($timecmd);
-                // $time_sec=$time->minute*60 + $time->second;
-                // $time_min=$timecmd;
+                $timecmd = exec('ffmpeg -i '.$finalVideoPath.' 2>&1 | grep Duration | cut -d " " -f 4 | sed s/,//');
+                $time=Carbon::create($timecmd);
+                $time_sec=$time->minute*60 + $time->second;
+                $time_min=$timecmd;
     
-                // //store video in database /data
+                //store video in database /data
     
-                // $greetMediaObj = GreetMedia::where('greet_id', $greetId)->where('greet_media_type', 'final')->first();
-                // $greetMediaPreObj = GreetMedia::where('greet_id', $greetId)->where('greet_media_type', 'preview')->first();
+                $greetMediaObj = GreetMedia::where('greet_id', $greetId)->where('greet_media_type', 'final')->first();
+                $greetMediaPreObj = GreetMedia::where('greet_id', $greetId)->where('greet_media_type', 'preview')->first();
     
-                // $greetMediaValue = [
-                //     'greet_id' => $greetId,
-                //     'media_type' => 'video',
-                //     'media_path' => $dbfinalvideopath.$greetMediaMergeName,
-                //     'media_name' => $greetMediaMergeName,
-                //     'greet_media_type' => $greetmediaType,
-                //     'user_id' => $greetObj->user_id,
-                //     'media_sec' => $time_sec,
-                //     'media_min' => $time_min,
-                // ];
+                $greetMediaValue = [
+                    'greet_id' => $greetId,
+                    'media_type' => 'video',
+                    'media_path' => $dbfinalvideopath.$greetMediaMergeName,
+                    'media_name' => $greetMediaMergeName,
+                    'greet_media_type' => 'final',
+                    'user_id' => $greetObj->user_id,
+                    'media_sec' => $time_sec,
+                    'media_min' => $time_min,
+                ];
                 
-                // // video audio merge
-                // // start
-                
-                // if($isThemeMusic && $commandStatus == 200)
-                // {
-                //     $musicCmd ="";
-                //     $greetMusicPath = storage_path('app/public/music_audio/'.$greetThemeMusic->file_name);
-    
-                //     $musicCmd .= ' -stream_loop -1 -i ' . $greetMusicPath;
-                //     if ($isTheme) {
-                //         $greetmediaType = 'videoAudioMerge';
-                //     } else {
-                //         $greetmediaType = 'final';
-                //     }
-    
-                //     $greetMediaThemeName = $rdname . $greetmediaType . '.mp4';           //convert to mp4
-                    
-                //     $musicCmd = 'ffmpeg -i '.$finalvideopath.$greetMediaMergeName.$musicCmd.' -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest '.$finalvideopath.$greetMediaThemeName;     //Theme merge
-    
-                //     // print_r($musicCmd);exit;
-    
-                //     exec($musicCmd,$output, $retval);
-    
-                //     if($retval==0) {
-                //         $commandStatus = 200;
-                //         $commandMessage = 'Video Created Successfully';
-                //     } else {
-                //         $commandStatus = 500;
-                //         $commandMessage = 'Video Creation Failed';
-                //     }
-    
-                //     $greetMediaValue = [
-                //         'greet_id' => $greetId,
-                //         'media_type' => 'video',
-                //         'media_path' => $dbfinalvideopath.$greetMediaThemeName,
-                //         'media_name' => $greetMediaThemeName,
-                //         'greet_media_type' => $greetmediaType,
-                //         'user_id' => $greetObj->user_id,
-                //         'media_sec' => $time_sec,
-                //         'media_min' => $time_min,
-                //     ];
-                // }
-                // // end
-                
-                // // backgroung image set on video.
-                // //start 
-                // //image size= ++t
-                // if($isTheme && $commandStatus == 200)
-                // {
-                //     $backimgcmd='ffmpeg ';
-                //     $greetThemePath =  storage_path('app/public/theme_image/'.$greetTheme->file_name);
-    
-                //     if ($isThemeMusic) {
-                //         $themeVideoName = $greetMediaThemeName;
-                //     } else {
-                //         $themeVideoName = $greetMediaMergeName;
-                //     }
-    
-                //     $command = 'ffmpeg -loop 1 -i ' . $greetThemePath . ' -i ' . $finalvideopath . $themeVideoName . ' -filter_complex "[0:v]scale=2800:1900[bg]; [1:v]scale=1920:-1[fg]; [bg][fg]overlay=(W-w)/2:(H-h)/2:shortest=1" -pix_fmt yuv420p ' . $finalvideopath . $rdname . 'final.mp4';
-
-                //     exec($command, $output, $retval);
-                        
-                //     if($retval==0) {
-                //         $commandStatus = 200;
-                //         $commandMessage = 'Video Created Successfully';
-                //     } else {
-                //         $commandStatus = 500;
-                //         $commandMessage = 'Video Creation Failed';
-                //     }
-                //     $greetMediaValue = [
-                //         'greet_id' => $greetId,
-                //         'media_type' => 'video',
-                //         'media_path' => $dbfinalvideopath.$rdname.'final.mp4',
-                //         'media_name' => $rdname.'final.mp4',
-                //         'greet_media_type' => 'final',
-                //         'user_id' => $greetObj->user_id,
-                //         'media_sec' => $time_sec,
-                //         'media_min' => $time_min,
-                //     ];
-                // }
-                // // end
-
                 // $img=public_path('/images/water_mark.png');
 
-                // exec('ffmpeg -i '.$finalvideopath.$rdname.'final.mp4 -i '.$img.' -filter_complex "[1]format=rgba,colorchannelmixer=aa=0.5[logo];[logo]scale=200:200[b];[b][0]scale2ref=oh*mdar:ih[b][video];[video][b]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2" '.$finalvideopath.$rdname.'preview.mp4',$output, $retval);
+                // exec('ffmpeg -i ' . $finalVideoPath. ' -i ' . $img . ' -filter_complex "[1]format=rgba,colorchannelmixer=aa=0.5[logo];[logo]scale=200:200[b];[b][0]scale2ref=oh*mdar:ih[b][video];[video][b]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2" '.$previewVideoPath, $output, $retval);
                 
-                // // 26-6-2023 ============== video trim if duration min>3
-                // // this part is for sweet greet /video trim
-                // $greet = Greet::with('greetMedia', 'greetCelebrant')->where('id',$greetId)->first();
+                // sweet greet video trim if duration > 3 min
+                $greet = Greet::with('greetMedia', 'greetCelebrant')->where('id', $greetId)->first();
                 
-                // $duration = $time_sec / 60;
-                // if ($greet->occasion_name == 'Sweet Greet' && $duration > 3) {
-                //     $trim_cmd='ffmpeg -i '.$finalvideopath.$rdname.'final.mp4 -ss 00:00:00 -t 00:03:00 -c:v copy -c:a copy ' .$finalvideopath.$rdname.'trimed_final.mp4';
+                $duration = $time_sec / 60;
+                if ($greet->occasion_name == 'Sweet Greet' && $duration > 3) {
+                    $trim_cmd='ffmpeg -i '.$finalVideoPath. ' -ss 00:00:00 -t 00:03:00 -c:v copy -c:a copy ' .$trimmedFinalVideoPath;
                     
-                //     exec($trim_cmd,$output,$retval);
-                //     $greetMediaValue = [
-                //         'greet_id' => $greetId,
-                //         'media_type' => 'video',
-                //         'media_path' => $dbfinalvideopath.$rdname.'trimed_final.mp4',
-                //         'media_name' => $rdname.'trimed_final.mp4',
-                //         'greet_media_type' => 'final',
-                //         'user_id' => $greetObj->user_id,
-                //         'media_sec' => $time_sec=180,
-                //         'media_min' => $time_min=3,
-                //     ];
-                // }
-                // if ($duration > 45) {
-                //     $trim_cmd='ffmpeg -i '.$finalvideopath.$rdname.'final.mp4 -ss 00:00:00 -t 00:45:00 -c:v copy -c:a copy ' .$finalvideopath.$rdname.'trimed_final.mp4';
-                    
-                //     exec($trim_cmd,$output,$retval);
+                    exec($trim_cmd, $output, $retval);
+                    $greetMediaValue = [
+                        'greet_id' => $greetId,
+                        'media_type' => 'video',
+                        'media_path' => $dbfinalvideopath.$rdname.'trimmed_final.mp4',
+                        'media_name' => $rdname.'trimmed_final.mp4',
+                        'greet_media_type' => 'final',
+                        'user_id' => $greetObj->user_id,
+                        'media_sec' => $time_sec=180,
+                        'media_min' => $time_min=3,
+                    ];
+                }
 
-                //     $greetMediaValue = [
-                //         'greet_id' => $greetId,
-                //         'media_type' => 'video',
-                //         'media_path' => $dbfinalvideopath.$rdname.'trimed_final.mp4',
-                //         'media_name' => $rdname.'trimed_final.mp4',
-                //         'greet_media_type' => 'final',
-                //         'user_id' => $greetObj->user_id,
-                //         'media_sec' => $time_sec=180,
-                //         'media_min' => $time_min=3,
-                //     ];
-                // }
+                if ($duration > 45) {
+                    $trim_cmd='ffmpeg -i '.$finalVideoPath. ' -ss 00:00:00 -t 00:45:00 -c:v copy -c:a copy ' .$trimmedFinalVideoPath;
+                    
+                    exec($trim_cmd,$output,$retval);
+
+                    $greetMediaValue = [
+                        'greet_id' => $greetId,
+                        'media_type' => 'video',
+                        'media_path' => $dbfinalvideopath.$rdname.'trimmed_final.mp4',
+                        'media_name' => $rdname.'trimmed_final.mp4',
+                        'greet_media_type' => 'final',
+                        'user_id' => $greetObj->user_id,
+                        'media_sec' => $time_sec=180,
+                        'media_min' => $time_min=3,
+                    ];
+                }
 
                 // //     /*User mail functionality*/
                 //     if($retval==0) {
@@ -523,7 +375,7 @@ class GenerateRequestedVideo extends Command
                     'comments' => 'There are no media found in greet. Please upload again or contact support!',
                     'status' => 500
                 ];
-                // $greetMediaRequest = $requestedGreet->update($mediaRequestInsertArr);
+                $greetMediaRequest = $requestedGreet->update($mediaRequestInsertArr);
             }
             return 0;
         }
