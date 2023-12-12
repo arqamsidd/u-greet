@@ -128,6 +128,7 @@ class GenerateRequestedVideo extends Command
                     $greetMediaName = $greetMediaFile->media_name;
                     $greetMedia = storage_path('app/public/greetMedia/uploads/'.$greetId.'/'.$greetMediaName);
                     $imageVideoPath = $rootPath . $greetId . '/' . 'imageVideos/' . $rdname . $greetMediaName . '.mp4';
+                    $resizedVideoPath = $rootPath . $greetId . '/' . 'resizedVideos/' . $rdname . $greetMediaName . '.mp4';
                     $mergedVideoPath = $rootPath . $greetId . '/' . 'mergedVideos/' . $rdname . $greetMediaName . '.mp4';
 					$transparentVideoPath = $rootPath . $greetId . '/' . 'transparentVideos/' . $rdname . $greetMediaName . '.mp4';
 
@@ -213,8 +214,19 @@ class GenerateRequestedVideo extends Command
                             }
                         }
 
+                        $command = 'mkdir -p ' . $rootPath . $greetId . '/resizedVideos && ffmpeg -i ' . $greetMedia . ' -vf "' . $ratioSetting . 'pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -t 5 -pix_fmt yuv420p ' . $resizedVideoPath;
+                        exec($command);
+
+                        $videoInfo = $ffprobe -> streams($resizedVideoPath)
+                                        ->videos()
+                                        ->first();
+
+                        $duration = $videoInfo -> get('duration');
+                        $mediaWidth = $videoInfo -> get('width');
+                        $mediaHeight = $videoInfo -> get('height');
+
                         if ($isTransition) {
-                            $command = 'mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $greetMedia . ' -f lavfi -i color=black@0.0:d=1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[3:v]scale=2800:1900 [bg]; [color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=' . $duration - 1 . ',format=yuva420p[xfade]; [bg][xfade]overlay=(W-w)/2:(H-h)/2" ' . $transparentVideoPath;
+                            $command = 'mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $resizedVideoPath . ' -f lavfi -i color=black@0.0:d=1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[3:v]scale=2800:1900 [bg]; [color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=' . $duration - 1 . ',format=yuva420p[xfade]; [bg][xfade]overlay=(W-w)/2:(H-h)/2" ' . $transparentVideoPath;
 
                             exec($command);
                         }
@@ -759,7 +771,7 @@ class GenerateRequestedVideo extends Command
                     'comments' => $commandMessage,
                     'status' => isset($commandStatus) && $commandStatus == 200 ? 2 : 3
                 ];
-                $greetMediaRequest = $requestedGreet->update($greetMediaRequestArr);
+                // $greetMediaRequest = $requestedGreet->update($greetMediaRequestArr);
             } 
             else {
     
