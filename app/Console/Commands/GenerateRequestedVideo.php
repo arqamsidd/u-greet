@@ -281,10 +281,6 @@ class GenerateRequestedVideo extends Command
                     'media_min' => $time_min,
                 ];
                 
-                // $img=public_path('/images/water_mark.png');
-
-                // exec('ffmpeg -i ' . $finalVideoPath. ' -i ' . $img . ' -filter_complex "[1]format=rgba,colorchannelmixer=aa=0.5[logo];[logo]scale=200:200[b];[b][0]scale2ref=oh*mdar:ih[b][video];[video][b]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2" '.$previewVideoPath, $output, $retval);
-                
                 // sweet greet video trim if duration > 3 min
                 $greet = Greet::with('greetMedia', 'greetCelebrant')->where('id', $greetId)->first();
                 
@@ -322,52 +318,55 @@ class GenerateRequestedVideo extends Command
                     ];
                 }
 
-                // //     /*User mail functionality*/
-                //     if($retval==0) {
-                //         $commandStatus = 200;
-                //         $commandMessage = 'Video Created Successfully';
-                //         $data['message']=$commandMessage;
-                //         $data['link']=$dbfinalvideopath.$rdname.'preview.mp4';
-                //         $greet = Greet::with('greetMedia', 'greetCelebrant')->where('id',$greetId)->first();
-                //         $duration = $time_sec / 60;
-                //         if ($greet->occasion_name == 'Sweet Greet' && $duration <= 3) {
-                //             $data['link']=$dbfinalvideopath.$rdname.'trimed_final.mp4';
-                //         }
-                //         // Mail::to($userEmail)->send(new SucessMail($data));
-                //     } else {
-                //         $commandStatus = 500;
-                //         $commandMessage = 'Video Creation Failed';
-                //     //    Mail::to($userEmail)->send(new SucessMail($commandMessage));
-                //     }
-                //     /*End*/
-                //     //$greetPreMediaValue 
-                //     $greetPreMediaValue = [
-                //         'greet_id' => $greetId,
-                //         'media_type' => 'video',
-                //         'media_path' => $dbfinalvideopath.$rdname.'preview.mp4',
-                //         'media_name' => $rdname.'preview.mp4',
-                //         'greet_media_type' => 'preview',
-                //         'user_id' => $greetObj->user_id,
-                //         'media_sec' => $time_sec,
-                //         'media_min' => $time_min,
-                //     ];
-                // // }
-                // //// $greetMediaPreObj 
-                // if (isset($greetMediaPreObj)) {
-                //     $greetMediaPreObj->update($greetPreMediaValue);
-                // } else {
-                //     $greetMediaCreateObj = GreetMedia::create($greetPreMediaValue);
-                // }
-                // if (isset($greetMediaObj)) {
-                //     $greetMediaObj->update($greetMediaValue);
-                // } else {
-                //     $greetMediaCreateObj = GreetMedia::create($greetMediaValue);
-                // }
+                $img=public_path('/images/water_mark.png');
+
+                exec('ffmpeg -i '. $finalVideoPath .' -i '. $img .' -filter_complex "overlay=W/2-w/2:H/2-h/2" '.$previewVideoPath, $output, $retval);
+
+                //     /*User mail functionality*/
+                if($retval==0) {
+                    $commandStatus = 200;
+                    $commandMessage = 'Video Created Successfully';
+                    $data['message']=$commandMessage;
+                    $data['link']=$dbfinalvideopath.$rdname.'preview.mp4';
+                    $greet = Greet::with('greetMedia', 'greetCelebrant')->where('id',$greetId)->first();
+                    $duration = $time_sec / 60;
+                    if ($greet->occasion_name == 'Sweet Greet' && $duration <= 3) {
+                        $data['link']=$dbfinalvideopath.$rdname.'trimmed_final.mp4';
+                    }
+                    // Mail::to($userEmail)->send(new SucessMail($data));
+                } else {
+                    $commandStatus = 500;
+                    $commandMessage = 'Video Creation Failed';
+                //    Mail::to($userEmail)->send(new SucessMail($commandMessage));
+                }
+                /*End*/
+                //$greetPreMediaValue 
+                $greetPreMediaValue = [
+                    'greet_id' => $greetId,
+                    'media_type' => 'video',
+                    'media_path' => $dbfinalvideopath.$rdname.'preview.mp4',
+                    'media_name' => $rdname.'preview.mp4',
+                    'greet_media_type' => 'preview',
+                    'user_id' => $greetObj->user_id,
+                    'media_sec' => $time_sec,
+                    'media_min' => $time_min,
+                ];
+                //// $greetMediaPreObj 
+                if (isset($greetMediaPreObj)) {
+                    $greetMediaPreObj->update($greetPreMediaValue);
+                } else {
+                    $greetMediaCreateObj = GreetMedia::create($greetPreMediaValue);
+                }
+                if (isset($greetMediaObj)) {
+                    $greetMediaObj->update($greetMediaValue);
+                } else {
+                    $greetMediaCreateObj = GreetMedia::create($greetMediaValue);
+                }
                 $greetMediaRequestArr = [
                     'comments' => $commandMessage,
                     'status' => isset($commandStatus) && $commandStatus == 200 ? 2 : 3
                 ];
-                // $greetMediaRequest = $requestedGreet->update($greetMediaRequestArr);
+                $greetMediaRequest = $requestedGreet->update($greetMediaRequestArr);
             } 
             else {
     
