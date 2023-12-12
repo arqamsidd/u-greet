@@ -113,7 +113,10 @@ class GenerateRequestedVideo extends Command
                 $rootPath = 'storage/app/public/greetMedia/final/';
                 $rdname = date('YmdHis');
                 $backgroundVideoPath = $rootPath . $greetId . '/' . $rdname . 'background.mp4';
+                $imageVideofinalPath = $rootPath . $greetId . '/' . $rdname . 'imageVideofinal.mp4';
+                $videofinalPath = $rootPath . $greetId . '/' . $rdname . 'videofinal.mp4';
                 $finalVideoPath = $rootPath . $greetId . '/' . $rdname . 'final.mp4';
+                $audioFile = 'storage/app/public/music_audio/';
 
                 exec('mkdir -p ' . $rootPath . $greetId . '&& ffmpeg -loop 1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -c:v libx264 -t 5 -pix_fmt yuv420p -vf scale=2800:1900 ' . $backgroundVideoPath);
 
@@ -133,7 +136,7 @@ class GenerateRequestedVideo extends Command
 					$transparentVideoPath = $rootPath . $greetId . '/' . 'transparentVideos/' . $rdname . $greetMediaName . '.mp4';
 
                     if($greetMediaType == 'image') {
-                        exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/mylist.txt');
+                        exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/imageVideolist.txt');
                         // Get the image size
                         list($mediaWidth, $mediaHeight) = getimagesize($greetMedia);
                         $ratioImage = $mediaWidth / $mediaHeight;
@@ -184,7 +187,7 @@ class GenerateRequestedVideo extends Command
                             exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -i '. $backgroundVideoPath .' -i ' . $mergedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,format=yuva420p" ' . $transparentVideoPath);
                         }
                     } else if ($greetMediaType == 'video') {
-                        exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/mylist.txt');
+                        exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/videoList.txt');
                         $videoInfo = $ffprobe -> streams($greetMedia)
                                         ->videos()
                                         ->first();
@@ -231,10 +234,16 @@ class GenerateRequestedVideo extends Command
                             exec($command);
                         }
                     }
-
                 }
 
-                exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/mylist.txt -c copy ' . $finalVideoPath, $output, $retval);
+                if (isset($greetThemeMusic)) {
+                    $audioFile .= $greetThemeMusic->file_name;
+                }
+
+                exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/imageVideolist.txt -stream_loop -1 -i ' . $audioFile . ' -map 0:v -map 1:a -c:v copy -c:a aac -shortest ' . $imageVideofinalPath);
+                exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/videoList.txt -c copy ' . $videofinalPath);
+
+                exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0]concat=n=2:v=1:a=1[outv][outa]" -map "[outv]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
 
                 if($retval==0) {
                     $commandStatus = 200;
@@ -244,271 +253,6 @@ class GenerateRequestedVideo extends Command
                     $commandMessage = 'Video Creation Failed';
                 }
 
-// $new_filter = '';
-                // $offset = 0;
-                // $slide_offset =0;
-                // $transionOffset = 0;
-                // $offset_limit=0;
-                // $arrCount=count($greetMediaFiles);
-                // foreach ($greetMediaFiles as $greetMediaFile) {
-    
-                //     // video transitions are working
-                //     if ($greetMediaType == 'video') {
-                        
-                //         $video='';
-                //         $video_index = '[vid'.$count.']';
-                //         $vidMerCmd .= $c=' -i ' . $greetMedia ;
-                //         //scale changed to 1080p
-                //         if($isTransition && $greetTransition->name == 'zoompan'){
-                //             $filterComplex .= '['.$count.']fps=24,scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=00000000,setsar=1'.$video_index.';';
-                //         }
-                //         else{
-                //             $filterComplex .= '['.$count.']fps=24,scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=00000000,setsar=1'.$video_index.';';
-                //         }
-                //         $audiocheck=exec('ffprobe '.$c.' -show_streams -select_streams a -loglevel error 2>&1',$output);
-                //         //$duration = $videoDuration-1;
-                //         $videoDuration=floor(exec('ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1'.$c,$output));
-                        
-                //         if($audiocheck==null)
-                //         {
-                //             $index .=$video_index;
-                //         }
-                //         else{
-                //             $index .= $video_index;
-                //         }
-                //         //scale changed to 1080p
-                //         if($isTransition && $greetTransition->name == 'fade'){
-                //             $filterComplex_res.= '[vid'.$count.']scale=1920x1080,format=yuv420p[v'.$count.'];';
-                //             if ($count > 0) {
-                //                 $transionOffset = $count-1;
-                //                 if ($transionOffset < 1 && $arrCount==$count+1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=fade:duration=1:offset='.$offset.'[f'.$transionOffset.']';
-                //                 }
-                //                 elseif ($transionOffset < 1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=fade:duration=1:offset='.($offset).'[f'.$transionOffset.']; ';
-                //                 }elseif ($transionOffset < $greetMediaCount-2) {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=fade:duration=1:offset='.$offset.'[f'.$transionOffset.'];';
-                //                 }else {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=fade:duration=1:offset='.$offset.'[f'.$transionOffset.']';
-                //                 }
-                //             }
-                //             $offset = $offset+$videoDuration-1;
-                //         }
-                //         //$greetTransition->name == 'circleopen' /video $duration =1
-                //         //this is for circleopen transition /video...
-                //         //scale changed to 1080p
-                //         elseif ($isTransition && $greetTransition->name == 'circleopen') {
-                //             $filterComplex_res.= '[vid'.$count.']scale=1920x1080,format=yuv420p[v'.$count.'];';
-                //             if ($count > 0) {
-                //                 $transionOffset = $count-1;
-                //                 if ($transionOffset < 1 && $arrCount==$count+1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=circleopen:duration=1:offset='.$offset.'[f'.$transionOffset.']';
-                //                 }
-                //                 elseif ($transionOffset < 1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=circleopen:duration=1:offset='.($offset).'[f'.$transionOffset.']; ';
-                //                 }elseif ($transionOffset < $greetMediaCount-2) {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=circleopen:duration=1:offset='.$offset.'[f'.$transionOffset.'];';
-                //                 }else {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=circleopen:duration=1:offset='.$offset.'[f'.$transionOffset.']';
-                //                 }
-                //             }
-                //             $offset = $offset+$videoDuration-1;
-                //         }
-                //         // new video input get();
-                //         //this is for circleclose transitions /video
-                //         //duration=1
-                //         //scale changed to 1080p
-                //         elseif ($isTransition && $greetTransition->name == 'circleclose') {
-                //             $filterComplex_res.= '[vid'.$count.']scale=1920x1080,format=yuv420p[v'.$count.'];';
-                //             if ($count > 0) {
-                //                 $transionOffset = $count-1;
-                //                 if ($transionOffset < 1 && $arrCount==$count+1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=circleclose:duration=1:offset='.$offset.'[f'.$transionOffset.']';
-                //                 }
-                //                 elseif ($transionOffset < 1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=circleclose:duration=1:offset='.($offset).'[f'.$transionOffset.']; ';
-                //                 }elseif ($transionOffset < $greetMediaCount-2) {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=circleclose:duration=1:offset='.$offset.'[f'.$transionOffset.'];';
-                //                 }else {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=circleclose:duration=1:offset='.$offset.'[f'.$transionOffset.']';
-                //                 }
-                //             }
-                //             $offset = $offset+$videoDuration-1;
-                //         }
-                //         //this is for slideleft transition/video 
-                //         // video offset changed reduced floor();
-                //         //video $greetTransition->name == 'slideleft'
-                //         //duration=1
-                //         //scale changed 1080p
-                //         elseif ($isTransition && $greetTransition->name == 'slideleft') {
-                //             $filterComplex_res.= '[vid'.$count.']scale=1920x1080,format=yuv420p[v'.$count.'];';
-                //             if ($count > 0) {
-                //                 $transionOffset = $count-1;
-                //                 if ($transionOffset < 1 && $arrCount==$count+1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=slideleft:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //                 elseif ($transionOffset < 1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=slideleft:duration=1:offset='.($slide_offset).'[f'.$transionOffset.']; ';
-                //                 }elseif ($transionOffset < $greetMediaCount-2) {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=slideleft:duration=1:offset='.$slide_offset.'[f'.$transionOffset.'];';
-                //                 }else {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=slideleft:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //             }
-                //             $slide_offset = $slide_offset + $videoDuration-1;
-                //         }
-                //         //$greetTransition->name == 'hrslice'/video
-                //         //this is for distance transition /video
-                //         //duration
-                //         //working ok
-                //         //with theme (ok)
-                //         //scale changed 1080p
-                //         elseif ($isTransition && $greetTransition->name == 'hrslice') {
-                //             $filterComplex_res.= '[vid'.$count.']scale=1920x1080,format=yuv420p[v'.$count.'];';
-
-                //             if ($count > 0) {
-                //                 $transionOffset = $count-1;
-                //                 if ($transionOffset < 1 && $arrCount==$count+1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=hrslice:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //                 elseif ($transionOffset < 1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=hrslice:duration=1:offset='.($slide_offset).'[f'.$transionOffset.']; ';
-                //                 }
-                //                 elseif ($transionOffset < $greetMediaCount-2) {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=hrslice:duration=1:offset='.$slide_offset.'[f'.$transionOffset.'];';
-                //                 }
-                //                 else {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=hrslice:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //             }
-                //             $slide_offset = $slide_offset + $videoDuration-1;
-
-                //         }
-                //         //$greetTransition->name='radial' /video
-                //         //this is for radial transition/ video...
-                //         //duration
-                //         //with theme (OK)
-                //         //working fine for  video
-                //         //scale changed 1080p
-                //         elseif ($isTransition && $greetTransition->name == 'radial') {
-                //             $filterComplex_res.= '[vid'.$count.']scale=1920:1080,format=yuv420p[v'.$count.'];';
-
-                //             if ($count > 0) {
-                //                 $transionOffset = $count-1;
-                //                 if ($transionOffset < 1 && $arrCount==$count+1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=radial:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //                 elseif ($transionOffset < 1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=radial:duration=1:offset='.($slide_offset).'[f'.$transionOffset.']; ';
-                //                 }
-                //                 elseif ($transionOffset < $greetMediaCount-2) {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=radial:duration=1:offset='.$slide_offset.'[f'.$transionOffset.'];';
-                //                 }
-                //                 else {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=radial:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //             }
-                //             $slide_offset =$slide_offset + $videoDuration-1;
-                //             // dd($slide_offset);
-                //         }
-                //         //$greetTransition->name = 'dissolve'/video
-                //         //this is for dissolve transition/ video transitions  dissolve
-                //         //duration
-                //         //testing (ok)
-                //         //working fine for video
-                //         //with theme (ok)
-                //         //scale changed 1080p
-                //         elseif ($isTransition && $greetTransition->name == 'dissolve') {
-                //             $filterComplex_res.= '[vid'.$count.']scale=1920x1080,format=yuv420p[v'.$count.'];';
-
-                //             if ($count > 0) {
-                //                 $transionOffset = $count-1;
-                //                 if ($transionOffset < 1 && $arrCount==$count+1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=dissolve:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //                 elseif ($transionOffset < 1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=dissolve:duration=1:offset='.($slide_offset).'[f'.$transionOffset.']; ';
-                //                 }
-                //                 elseif ($transionOffset < $greetMediaCount-2) {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=dissolve:duration=1:offset='.$slide_offset.'[f'.$transionOffset.'];';
-                //                 }
-                //                 else {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=dissolve:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //             }
-                //             $slide_offset = $slide_offset + $videoDuration-1;
-
-                //         }
-                //         // $greetTransition->name = 'rectcrop'/video...rectcrop
-                //         //this is for rectcrop transition/ video transitions
-                //         //duration
-                //         //working fine for video
-                //         //working with theme(ok)
-                //         //scale changed to 1080p
-                //         elseif ($isTransition && $greetTransition->name == 'rectcrop') {
-                //             $filterComplex_res.= '[vid'.$count.']scale=1920x1080,format=yuv420p[v'.$count.'];';
-                //             if ($count > 0) {
-                //                 $transionOffset = $count-1;
-                //                 if ($transionOffset < 1 && $arrCount==$count+1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=rectcrop:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //                 elseif ($transionOffset < 1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=rectcrop:duration=1:offset='.($slide_offset).'[f'.$transionOffset.']; ';
-                //                 }
-                //                 elseif ($transionOffset < $greetMediaCount-2) {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=rectcrop:duration=1:offset='.$slide_offset.'[f'.$transionOffset.'];';
-                //                 }
-                //                 else {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=rectcrop:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //             }
-                //             $slide_offset = $slide_offset + $videoDuration-1;
-
-                //         }
-                //         // $greetTransition->name == 'zoompan'/video  t--
-                //         //wipetl /video transitions /duration=1
-                //         //scale changed to 1080p
-                //         elseif ($isTransition && $greetTransition->name == 'wipetl') {
-                //             $filterComplex_res.= '[vid'.$count.']scale=1920x1080,format=yuv420p[v'.$count.'];';
-
-                //             if ($count > 0) {
-                //                 $transionOffset = $count-1;
-                //                 if ($transionOffset < 1 && $arrCount==$count+1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=wipetl:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //                 elseif ($transionOffset < 1){
-                //                     $new_filter .= '[v'.$transionOffset.'][v'.$count .']xfade=transition=wipetl:duration=1:offset='.($slide_offset).'[f'.$transionOffset.']; ';
-                //                 }
-                //                 elseif ($transionOffset < $greetMediaCount-2) {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=wipetl:duration=1:offset='.$slide_offset.'[f'.$transionOffset.'];';
-                //                 }
-                //                 else {
-                //                     $new_filter .= '[f'.$transionOffset-1 .'][v'.$count.']xfade=transition=wipetl:duration=1:offset='.$slide_offset.'[f'.$transionOffset.']';
-                //                 }
-                //             }
-                //             $slide_offset = $slide_offset + $videoDuration-1;
-                //         }
-                //         ///Transition zoompan duration=1 
-                //         //$isTransition && $greetTransition->name=='zoompan'
-                //         //scale changed to 1080p
-                //         elseif ($isTransition && $greetTransition->name == 'zoompan') {
-
-                //             $duration=2;
-                //             $videoDuration=exec('ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1'.$c,$output);
-                //             if($count>0){
-                //                 $new_filter.="[vid".$count."]"."zoompan=z='min(max(zoom,pzoom)+0.002,3)':d=1".":s=1920x1080:fps=24:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'".",fade=t=in:st=0:d=".($duration-1).$video_index.";";
-                //             }
-                //             else{
-                //                 $new_filter.="[vid".$count."]"."zoompan=z='min(max(zoom,pzoom)+0.002,3)':d=1".":s=1920x1080:fps=24:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'".",fade=t=out:st=".($videoDuration-$duration).":d=".($duration-1).$video_index.";";
-                //             }
-                //         }
-                //         $count++;
-                //     }
-                // }
-                // $filterComplex .= $filterComplex_res.$new_filter;
-                
-                // $finalvideopath = storage_path('app/public/greetMedia/final/'.$greetId.'/');
-                // // $finalvideopaadadafianadnl final final.=$new th =  $finalvideopath.'/'; $finalvideopath=finalvideopath.'/'
                 // $dbfinalvideopath = 'storage/app/public/greetMedia/final/' . $greetId . '/';
                 
                 // if(!File::isDirectory($finalvideopath)){
