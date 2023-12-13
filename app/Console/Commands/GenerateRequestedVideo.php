@@ -120,7 +120,7 @@ class GenerateRequestedVideo extends Command
                 $trimmedFinalVideoPath = $rootPath . $greetId . '/' . $rdname . 'trimmed_final.mp4';
                 $audioFile = 'storage/app/public/music_audio/';
 
-                exec('mkdir -p ' . $rootPath . $greetId . '&& ffmpeg -loop 1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -c:v libx264 -t 5 -pix_fmt yuv420p -vf scale=2800:1900 ' . $backgroundVideoPath);
+                exec('mkdir -p ' . $rootPath . $greetId . '&& ffmpeg -loop 1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -c:v libx264 -t 5 -pix_fmt yuv420p -vf scale=2400:1600,setsar=1 ' . $backgroundVideoPath);
 
 				$new_filter = '';
                 $offset = 0;
@@ -187,7 +187,7 @@ class GenerateRequestedVideo extends Command
 								exec('ffmpeg -i '. $backgroundVideoPath . ' -i ' . $imageVideoPath . ' -filter_complex ' . $filterComplex. ' ' . $mergedVideoPath);
                             }
 
-                            exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -i '. $backgroundVideoPath .' -i ' . $mergedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,format=yuva420p" ' . $transparentVideoPath);
+                            exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -i '. $backgroundVideoPath .' -i ' . $mergedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,setsar=1,format=yuva420p" ' . $transparentVideoPath);
                         }
                     } else if ($greetMediaType == 'video') {
                         exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/videoList.txt');
@@ -232,7 +232,7 @@ class GenerateRequestedVideo extends Command
                         $mediaHeight = $videoInfo -> get('height');
 
                         if ($isTransition) {
-                            $command = 'mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $resizedVideoPath . ' -f lavfi -i color=black@0.0:d=1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[3:v]scale=2800:1900 [bg]; [color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=' . $duration - 1 . ',format=yuva420p[xfade]; [bg][xfade]overlay=(W-w)/2:(H-h)/2" ' . $transparentVideoPath;
+                            $command = 'mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $resizedVideoPath . ' -f lavfi -i color=black@0.0:d=1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[3:v]scale=2400:1600,setsar=1 [bg]; [color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=' . $duration - 1 . ',format=yuva420p[xfade]; [bg][xfade]overlay=(W-w)/2:(H-h)/2" ' . $transparentVideoPath;
 
                             exec($command);
                         }
