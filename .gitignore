@@ -4,7 +4,6 @@
 /storage/*.key
 /vendor
 /storage
-/public/storage
 /public/assets
 /assets
 /public/images
@@ -22,7 +21,8 @@ public/css/app.css
 public/js/app.js
 composer.lock
 package-lock.json
-composer.lock
 public/mix-manifest.json
 storagepublicassets.zip
 public/public>images.zip
+/env
+/ffmpeg*
