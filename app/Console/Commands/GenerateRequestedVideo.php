@@ -48,9 +48,18 @@ class GenerateRequestedVideo extends Command
      */
     public function handle()
     {
+        $inProgressGreet = GenerateVideoRequest::where('status', 1)->first();
+        if (!empty($inProgressGreet)) {
+            exit;
+        }
+
         $requestedGreet = GenerateVideoRequest::where('status', 0)->first();
         
         if(!empty($requestedGreet)) {
+            $requestedGreet->update([
+                'comments' => "Video generation in progress",
+                'status' => 1
+            ]);
             $greetId = $requestedGreet->greet_id;
             $userId = $requestedGreet->user_id;
             // Get User data
@@ -183,8 +192,7 @@ class GenerateRequestedVideo extends Command
                         exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos');
 
                         if ($transition == 'zoompan') {
-                            $filterComplex = "scale=19200:10800,zoompan=z='min(max(zoom,pzoom)+0.002,3)':d=1".":s=1920x1080:fps=24:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'".",fade=t=in:st=0:d=1,setsar=1".$img_index.";";
-                            exec('ffmpeg -i '. $backgroundVideoPath . ' -i ' . $imageVideoPath . ' -filter_complex ' . $filterComplex. ' ' . $mergedVideoPath);
+                            exec("ffmpeg -i ". $greetMedia ." -vf \"scale=-1:10*ih,zoompan=z='min(zoom+0.0015,1.5)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=". $imageVideoWidth ."x". $imageVideoHeight ."\" -y -shortest -c:v libx264 -pix_fmt yuv420p " . $mergedVideoPath);
                         } else if ($transition == 'fade' || $transition == 'circleopen' || $transition == 'circleclose' || $transition == 'slideleft' || $transition == 'hrslice' || $transition == 'radial' || $transition == 'dissolve' || $transition == 'rectcrop' || $transition == 'wipetl') {
                             exec('ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $imageVideoPath . ' -f lavfi -i color=black@0.0:d=1 -filter_complex "[0:v]scale='.$imageVideoWidth.':'.$imageVideoHeight.',setsar=1,fps=fps=25  [color];[1:v]fps=fps=25 [video];[2:v]scale='.$imageVideoWidth.':'.$imageVideoHeight.',setsar=1,fps=fps=25 [end];[color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=4,format=yuva420p" ' . $mergedVideoPath);
                         } else {
@@ -245,11 +253,18 @@ class GenerateRequestedVideo extends Command
                         $mediaHeight = $videoInfo -> get('height');
 
                         if ($isTransition) {
+                            $transition = $greetTransition->name;
                             if ($isTheme) {
-                                exec('ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $resizedVideoPath . ' -f lavfi -i color=black@0.0:d=1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[3:v]scale=2400:1600,setsar=1 [bg]; [color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=' . $duration - 1 . ',format=yuva420p[xfade]; [bg][xfade]overlay=(W-w)/2:(H-h)/2" ' . $transparentVideoPath);
+                                if ($transition == 'zoompan') {
+                                } else {
+                                    exec('ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $resizedVideoPath . ' -f lavfi -i color=black@0.0:d=1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[3:v]scale=2400:1600,setsar=1 [bg]; [color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=' . $duration - 1 . ',format=yuva420p[xfade]; [bg][xfade]overlay=(W-w)/2:(H-h)/2" ' . $transparentVideoPath);
+                                }
                             } else {
-                                exec('ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $resizedVideoPath . ' -f lavfi -i color=black@0.0:d=1 -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25  [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=4,format=yuva420p" ' . $transparentVideoPath);
-                            }                            
+                                if ($transition == 'zoompan') {
+                                } else {
+                                    exec('ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $resizedVideoPath . ' -f lavfi -i color=black@0.0:d=1 -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25  [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=4,format=yuva420p" ' . $transparentVideoPath);
+                                }
+                            }
                         } else {
                             if ($isTheme) {
                                 exec('ffmpeg -i '. $backgroundVideoPath .' -i ' . $resizedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,setsar=1,format=yuva420p" ' . $transparentVideoPath);
