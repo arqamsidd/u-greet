@@ -271,7 +271,12 @@ class GenerateRequestedVideo extends Command
                 if ($isThemeMusic) {
                     exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0]concat=n=2:v=1:a=1[outv][outa]" -map "[outv]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
                 } else {
-                    exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v:0][1:v:0]concat=n=2:v=1:a=0[outv]" -map "[outv]" ' . $finalVideoPath, $output, $retval);
+                    $videoInfo = $ffprobe -> streams($imageVideofinalPath)
+                                        ->videos()
+                                        ->first();
+
+                    $duration = $videoInfo -> get('duration');
+                    exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v][1:v]concat=n=2:v=1:a=0[v];[1:a]adelay=delays='.($duration * 1000).'|'.($duration * 1000).'[outa]" -map "[v]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
                 }
 
                 if($retval==0) {
