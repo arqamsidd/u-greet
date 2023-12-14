@@ -48,9 +48,18 @@ class GenerateRequestedVideo extends Command
      */
     public function handle()
     {
+        $inProgressGreet = GenerateVideoRequest::where('status', 1)->first();
+        if (!empty($inProgressGreet)) {
+            exit;
+        }
+
         $requestedGreet = GenerateVideoRequest::where('status', 0)->first();
         
         if(!empty($requestedGreet)) {
+            $requestedGreet->update([
+                'comments' => "Video generation in progress",
+                'status' => 1
+            ]);
             $greetId = $requestedGreet->greet_id;
             $userId = $requestedGreet->user_id;
             // Get User data
