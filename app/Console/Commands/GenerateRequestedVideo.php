@@ -120,7 +120,11 @@ class GenerateRequestedVideo extends Command
                 $trimmedFinalVideoPath = $rootPath . $greetId . '/' . $rdname . 'trimmed_final.mp4';
                 $audioFile = 'storage/app/public/music_audio/';
 
-                exec('mkdir -p ' . $rootPath . $greetId . '&& ffmpeg -loop 1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -c:v libx264 -t 5 -pix_fmt yuv420p -vf scale=2400:1600,setsar=1 ' . $backgroundVideoPath);
+                exec('mkdir -p ' . $rootPath . $greetId);
+
+                if ($isTheme) {
+                    exec('ffmpeg -loop 1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -c:v libx264 -t 5 -pix_fmt yuv420p -vf scale=2400:1600,setsar=1 ' . $backgroundVideoPath);
+                }
 
 				$new_filter = '';
                 $offset = 0;
@@ -165,30 +169,35 @@ class GenerateRequestedVideo extends Command
                         $command = 'mkdir -p ' . $rootPath . $greetId . '/imageVideos && ffmpeg -loop 1 -i ' . $greetMedia . ' -vf "' . $ratioSetting . 'pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -t 5 -pix_fmt yuv420p ' . $imageVideoPath;
                         exec($command);
 
+                        $dimension = $ffprobe -> streams($imageVideoPath)
+                            ->videos()
+                            ->first();
+
+                        $imageVideoWidth = $dimension -> get('width');
+                        $imageVideoHeight = $dimension -> get('height');
+                        $transition = 'none';
                         if ($isTransition) {
-							$dimension = $ffprobe -> streams($imageVideoPath)
-								->videos()
-								->first();
-
-							$imageVideoWidth = $dimension -> get('width');
-							$imageVideoHeight = $dimension -> get('height');
                             $transition = $greetTransition->name;
-                            exec('mkdir -p ' . $rootPath . $greetId . '/mergedVideos');
-
-                            if ($transition == 'zoompan') {
-                                $filterComplex.="scale=19200:10800,zoompan=z='min(max(zoom,pzoom)+0.002,3)':d=1".":s=1920x1080:fps=24:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'".",fade=t=in:st=0:d=1,setsar=1".$img_index.";";
-								exec('ffmpeg -i '. $backgroundVideoPath . ' -i ' . $imageVideoPath . ' -filter_complex ' . $filterComplex. ' ' . $mergedVideoPath);
-                            } else if ($transition == 'fade' || $transition == 'circleopen' || $transition == 'circleclose' || $transition == 'slideleft' || $transition == 'hrslice' || $transition == 'radial' || $transition == 'dissolve' || $transition == 'rectcrop' || $transition == 'wipetl') {
-								$command = 'ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $imageVideoPath . ' -f lavfi -i color=black@0.0:d=1 -filter_complex "[0:v]scale='.$imageVideoWidth.':'.$imageVideoHeight.',setsar=1,fps=fps=25  [color];[1:v]fps=fps=25 [video];[2:v]scale='.$imageVideoWidth.':'.$imageVideoHeight.',setsar=1,fps=fps=25 [end];[color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=4,format=yuva420p" ' . $mergedVideoPath;
-
-								exec($command);
-                            } else {
-                                $filterComplex .= 'scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1;';
-								exec('ffmpeg -i '. $backgroundVideoPath . ' -i ' . $imageVideoPath . ' -filter_complex ' . $filterComplex. ' ' . $mergedVideoPath);
-                            }
-
-                            exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -i '. $backgroundVideoPath .' -i ' . $mergedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,setsar=1,format=yuva420p" ' . $transparentVideoPath);
                         }
+                        exec('mkdir -p ' . $rootPath . $greetId . '/mergedVideos');
+                        exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos');
+
+                        if ($transition == 'zoompan') {
+                            $filterComplex = "scale=19200:10800,zoompan=z='min(max(zoom,pzoom)+0.002,3)':d=1".":s=1920x1080:fps=24:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'".",fade=t=in:st=0:d=1,setsar=1".$img_index.";";
+                            exec('ffmpeg -i '. $backgroundVideoPath . ' -i ' . $imageVideoPath . ' -filter_complex ' . $filterComplex. ' ' . $mergedVideoPath);
+                        } else if ($transition == 'fade' || $transition == 'circleopen' || $transition == 'circleclose' || $transition == 'slideleft' || $transition == 'hrslice' || $transition == 'radial' || $transition == 'dissolve' || $transition == 'rectcrop' || $transition == 'wipetl') {
+                            exec('ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $imageVideoPath . ' -f lavfi -i color=black@0.0:d=1 -filter_complex "[0:v]scale='.$imageVideoWidth.':'.$imageVideoHeight.',setsar=1,fps=fps=25  [color];[1:v]fps=fps=25 [video];[2:v]scale='.$imageVideoWidth.':'.$imageVideoHeight.',setsar=1,fps=fps=25 [end];[color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=4,format=yuva420p" ' . $mergedVideoPath);
+                        } else {
+                            if ($isTheme) {
+                                exec('ffmpeg -i ' . $imageVideoPath . ' ' . $mergedVideoPath);
+                            }
+                        }
+                        if ($isTheme) {
+                            exec('ffmpeg -i '. $backgroundVideoPath .' -i ' . $mergedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,setsar=1,format=yuva420p" ' . $transparentVideoPath);
+                        } else {
+                            exec('ffmpeg -i '. $mergedVideoPath .' -vf "pad=1920:1080:(1920-iw)/2:(1080-ih)/2" ' . $transparentVideoPath);
+                        }
+                        
                     } else if ($greetMediaType == 'video') {
                         exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/videoList.txt');
                         $videoInfo = $ffprobe -> streams($greetMedia)
@@ -220,8 +229,14 @@ class GenerateRequestedVideo extends Command
                             }
                         }
 
-                        $command = 'mkdir -p ' . $rootPath . $greetId . '/resizedVideos && ffmpeg -i ' . $greetMedia . ' -vf "' . $ratioSetting . 'pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -pix_fmt yuv420p ' . $resizedVideoPath;
-                        exec($command);
+                        exec('mkdir -p ' . $rootPath . $greetId . '/resizedVideos');
+                        exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos');
+
+                        if ($isTheme) {
+                            exec('ffmpeg -i ' . $greetMedia . ' -vf "' . $ratioSetting . 'pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -pix_fmt yuv420p ' . $resizedVideoPath);
+                        } else {
+                            exec('ffmpeg -i '. $greetMedia .' -vf "scale=1920:1080:force_original_aspect_ratio=decrease,setsar=1,pad=1920:1080:(ow-iw)/2:(oh-ih)/2" ' . $resizedVideoPath);
+                        }
 
                         $videoInfo = $ffprobe -> streams($resizedVideoPath)
                                         ->videos()
@@ -232,21 +247,42 @@ class GenerateRequestedVideo extends Command
                         $mediaHeight = $videoInfo -> get('height');
 
                         if ($isTransition) {
-                            $command = 'mkdir -p ' . $rootPath . $greetId . '/transparentVideos && ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $resizedVideoPath . ' -f lavfi -i color=black@0.0:d=1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[3:v]scale=2400:1600,setsar=1 [bg]; [color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=' . $duration - 1 . ',format=yuva420p[xfade]; [bg][xfade]overlay=(W-w)/2:(H-h)/2" ' . $transparentVideoPath;
-
-                            exec($command);
+                            if ($isTheme) {
+                                exec('ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $resizedVideoPath . ' -f lavfi -i color=black@0.0:d=1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[3:v]scale=2400:1600,setsar=1 [bg]; [color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=' . $duration - 1 . ',format=yuva420p[xfade]; [bg][xfade]overlay=(W-w)/2:(H-h)/2" ' . $transparentVideoPath);
+                            } else {
+                                exec('ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $resizedVideoPath . ' -f lavfi -i color=black@0.0:d=1 -filter_complex "[0:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25  [color];[1:v]fps=fps=25 [video];[2:v]scale='.$mediaWidth.':'.$mediaHeight.',setsar=1,fps=fps=25 [end];[color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=4,format=yuva420p" ' . $transparentVideoPath);
+                            }                            
+                        } else {
+                            if ($isTheme) {
+                                exec('ffmpeg -i '. $backgroundVideoPath .' -i ' . $resizedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,setsar=1,format=yuva420p" ' . $transparentVideoPath);
+                            } else {
+                                exec('ffmpeg -i '. $resizedVideoPath .' -vf "pad=1920:1080:(1920-iw)/2:(1080-ih)/2" ' . $transparentVideoPath);
+                            }
                         }
                     }
                 }
 
-                if (isset($greetThemeMusic)) {
+                if ($isThemeMusic) {
                     $audioFile .= $greetThemeMusic->file_name;
+                    exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/imageVideolist.txt -stream_loop -1 -i ' . $audioFile . ' -map 0:v -map 1:a -c:v copy -c:a aac -shortest ' . $imageVideofinalPath);
+                } else {
+                    exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/imageVideolist.txt -c copy ' . $imageVideofinalPath);
                 }
 
-                exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/imageVideolist.txt -stream_loop -1 -i ' . $audioFile . ' -map 0:v -map 1:a -c:v copy -c:a aac -shortest ' . $imageVideofinalPath);
                 exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/videoList.txt -c copy ' . $videofinalPath);
 
-                exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0]concat=n=2:v=1:a=1[outv][outa]" -map "[outv]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
+                $retval = '';
+
+                if ($isThemeMusic) {
+                    exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0]concat=n=2:v=1:a=1[outv][outa]" -map "[outv]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
+                } else {
+                    $videoInfo = $ffprobe -> streams($imageVideofinalPath)
+                                        ->videos()
+                                        ->first();
+
+                    $duration = $videoInfo -> get('duration');
+                    exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v][1:v]concat=n=2:v=1:a=0[v];[1:a]adelay=delays='.($duration * 1000).'|'.($duration * 1000).'[outa]" -map "[v]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
+                }
 
                 if($retval==0) {
                     $commandStatus = 200;
