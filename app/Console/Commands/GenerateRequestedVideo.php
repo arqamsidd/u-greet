@@ -294,7 +294,28 @@ class GenerateRequestedVideo extends Command
 
                 if ($isThemeMusic) {
                     if (file_exists($imageVideofinalPath) && file_exists($videofinalPath)) {
-                        exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0]concat=n=2:v=1:a=1[outv][outa]" -map "[outv]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
+                        $video = $ffmpeg->open($videofinalPath);
+
+                        $streams = $video->getStreams();
+                        $hasAudio = false;
+
+                        foreach ($streams as $stream) {
+                            if ($stream->has('codec_type') && $stream->get('codec_type') == 'audio') {
+                                $hasAudio = true;
+                                break;
+                            }
+                        }
+
+                        if ($hasAudio) {
+                            exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0]concat=n=2:v=1:a=1[outv][outa]" -map "[outv]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
+                        } else {
+                            $videoInfo = $ffprobe -> streams($videofinalPath)
+                                            -> videos()
+                                            -> first();
+
+                            $duration = $videoInfo -> get('duration');
+                            exec('ffmpeg -i ' . $imageVideofinalPath . ' -f lavfi -t ' . $duration . ' -i anullsrc -i ' . $videofinalPath . ' -filter_complex "[0:v][2:v]concat=n=2:v=1:a=0[v];[0:a][1:a]concat=n=2:v=0:a=1[a]" -map "[v]" -map "[a]" ' . $finalVideoPath, $output, $retval);
+                        }
                     } else if (file_exists($imageVideofinalPath)) {
                         exec('ffmpeg -i ' . $imageVideofinalPath . ' ' . $finalVideoPath, $output, $retval);
                     } else {
