@@ -292,15 +292,19 @@ class GenerateRequestedVideo extends Command
                 $retval = 1;
 
                 if (file_exists($rootPath . $greetId . '/list.txt')) {
-                    exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c copy ' . $preFinalPath);
+                    exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c:v libx264 -c:a aac ' . $preFinalPath);
                     if ($isThemeMusic) {
-                        substr($muteFilter, 0, -2);
-                        $audioFile .= $greetThemeMusic->file_name;
-                        exec('ffmpeg -stream_loop -1 -i '. $audioFile .' -t '. $currentLength .' -c:a aac '. $longAudioPath);
-                        exec('ffmpeg -i '. $longAudioPath .' -af "'. $muteFilter .'" '. $finalAudioPath);
+						$audioFile .= $greetThemeMusic->file_name;
+						exec('ffmpeg -stream_loop -1 -i '. $audioFile .' -t '. $currentLength .' -c:a aac '. $longAudioPath);
+						if (empty($muteFilter)) {
+							exec('ffmpeg -i '. $longAudioPath .' '. $finalAudioPath);
+						} else {
+							$muteFilter = substr($muteFilter, 0, -2);
+							exec('ffmpeg -i '. $longAudioPath .' -af "'. $muteFilter .'" '. $finalAudioPath);
+						}
                         exec('ffmpeg -i '. $preFinalPath .' -stream_loop -1 -i '. $finalAudioPath .' -filter_complex "[0:a][1:a]amix=duration=first:dropout_transition=3,volume=1[aout]" -map 0:v -map "[aout]" -c:v copy -c:a aac -shortest '. $finalVideoPath, $output, $retval);
-                    } else {
-                        exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c copy ' . $finalVideoPath, $output, $retval);
+					} else {
+                        exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c:v libx264 -c:a aac ' . $finalVideoPath, $output, $retval);
                     }
                 }
 
