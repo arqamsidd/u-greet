@@ -288,37 +288,20 @@ class GenerateRequestedVideo extends Command
                     }
                 }
 
-                substr($muteFilter, 0, -2);
-                $audioFile .= $greetThemeMusic->file_name;
-                exec('ffmpeg -stream_loop -1 -i '. $audioFile .' -t '. $currentLength .' -c:a aac '. $longAudioPath);
-                exec('ffmpeg -i '. $longAudioPath .' -af "'. $muteFilter .'" '. $finalAudioPath);
+                $retval = '';
 
                 if (file_exists($rootPath . $greetId . '/list.txt')) {
                     exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c copy ' . $preFinalPath);
                     if ($isThemeMusic) {
-                        exec('ffmpeg -i '. $preFinalPath .' -stream_loop -1 -i '. $finalAudioPath .' -filter_complex "[0:a][1:a]amix=duration=first:dropout_transition=3,volume=1[aout]" -map 0:v -map "[aout]" -c:v copy -c:a aac -shortest '. $finalVideoPath);
+                        substr($muteFilter, 0, -2);
+                        $audioFile .= $greetThemeMusic->file_name;
+                        exec('ffmpeg -stream_loop -1 -i '. $audioFile .' -t '. $currentLength .' -c:a aac '. $longAudioPath);
+                        exec('ffmpeg -i '. $longAudioPath .' -af "'. $muteFilter .'" '. $finalAudioPath);
+                        exec('ffmpeg -i '. $preFinalPath .' -stream_loop -1 -i '. $finalAudioPath .' -filter_complex "[0:a][1:a]amix=duration=first:dropout_transition=3,volume=1[aout]" -map 0:v -map "[aout]" -c:v copy -c:a aac -shortest '. $finalVideoPath, $output, $retval);
                     } else {
-                        // exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c copy ' . $imageVideofinalPath);
+                        exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c copy ' . $finalVideoPath, $output, $retval);
                     }
                 }
-
-                $retval = '';
-
-                // else {
-                //     if (file_exists($imageVideofinalPath) && file_exists($videofinalPath)) {
-                //         $videoInfo = $ffprobe -> streams($imageVideofinalPath)
-                //                             -> videos()
-                //                             -> first();
-
-                //         $duration = $videoInfo -> get('duration');
-                //         exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v][1:v]concat=n=2:v=1:a=0[v];[1:a]adelay=delays='.($duration * 1000).'|'.($duration * 1000).'[outa]" -map "[v]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
-
-                //     } else if (file_exists($imageVideofinalPath)) {
-                //         exec('ffmpeg -i ' . $imageVideofinalPath . ' ' . $finalVideoPath, $output, $retval);
-                //     } else {
-                //         exec('ffmpeg -i ' . $videofinalPath . ' ' . $finalVideoPath, $output, $retval);
-                //     }
-                // }
 
                 if($retval==0) {
                     $commandStatus = 200;
