@@ -125,9 +125,12 @@ class GenerateRequestedVideo extends Command
                 $backgroundVideoPath = $rootPath . $greetId . '/' . $rdname . 'background.mp4';
                 $imageVideofinalPath = $rootPath . $greetId . '/' . $rdname . 'imageVideofinal.mp4';
                 $videofinalPath = $rootPath . $greetId . '/' . $rdname . 'videofinal.mp4';
+                $preFinalPath = $rootPath . $greetId . '/' . $rdname . 'preFinal.mp4';
                 $finalVideoPath = $rootPath . $greetId . '/' . $rdname . 'final.mp4';
                 $previewVideoPath = $rootPath . $greetId . '/' . $rdname . 'preview.mp4';
                 $trimmedFinalVideoPath = $rootPath . $greetId . '/' . $rdname . 'trimmed_final.mp4';
+                $longAudioPath = $rootPath . $greetId . '/' . $rdname . 'longAudio.m4a';
+                $finalAudioPath = $rootPath . $greetId . '/' . $rdname . 'finalAudio.m4a';
                 $audioFile = 'storage/app/public/music_audio/';
 
                 exec('mkdir -p ' . $rootPath . $greetId);
@@ -138,11 +141,8 @@ class GenerateRequestedVideo extends Command
                     exec('ffmpeg -loop 1 -i ' . storage_path('app/public/theme_image/'.$greetTheme->file_name) . ' -c:v libx264 -t 5 -pix_fmt yuv420p -vf scale=2400:1600,setsar=1 ' . $backgroundVideoPath);
                 }
 
-				$new_filter = '';
-                $offset = 0;
-                $slide_offset =0;
-                $transionOffset = 0;
-                $arrCount=count($greetMediaFiles);
+                $currentLength = 0;
+                $muteFilter = "";
 
                 foreach ($greetMediaFiles as $greetMediaFile) {
                     $greetMediaType = $greetMediaFile->media_type;
@@ -154,7 +154,8 @@ class GenerateRequestedVideo extends Command
 					$transparentVideoPath = $rootPath . $greetId . '/' . 'transparentVideos/' . $rdname . $greetMediaName . '.mp4';
 
                     if($greetMediaType == 'image') {
-                        exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/imageVideolist.txt');
+                        $currentLength += 5;
+                        exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/list.txt');
                         // Get the image size
                         list($mediaWidth, $mediaHeight) = getimagesize($greetMedia);
                         $ratioImage = $mediaWidth / $mediaHeight;
@@ -178,7 +179,7 @@ class GenerateRequestedVideo extends Command
                                 $ratioSetting = "scale=-1:1080,";
                             }
                         }
-                        $command = 'mkdir -p ' . $rootPath . $greetId . '/imageVideos && ffmpeg -loop 1 -i ' . $greetMedia . ' -vf "' . $ratioSetting . 'pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -t 5 -pix_fmt yuv420p ' . $imageVideoPath;
+                        $command = 'mkdir -p ' . $rootPath . $greetId . '/imageVideos && ffmpeg -loop 1 -i ' . $greetMedia . ' -f lavfi -i anullsrc -c:v libx264 -c:a aac -vf "' . $ratioSetting . 'pad=ceil(iw/2)*2:ceil(ih/2)*2" -t 5 -pix_fmt yuv420p -shortest ' . $imageVideoPath;
                         exec($command);
 
                         $dimension = $ffprobe -> streams($imageVideoPath)
@@ -208,7 +209,7 @@ class GenerateRequestedVideo extends Command
                         }
                         
                     } else if ($greetMediaType == 'video') {
-                        exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/videoList.txt');
+                        exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/list.txt');
                         $videoInfo = $ffprobe -> streams($greetMedia)
                                         ->videos()
                                         ->first();
@@ -258,6 +259,9 @@ class GenerateRequestedVideo extends Command
                         $duration = $videoInfo -> get('duration');
                         $mediaWidth = $videoInfo -> get('width');
                         $mediaHeight = $videoInfo -> get('height');
+                        
+                        $muteFilter = $muteFilter . "volume=enable='between(t,". $currentLength .",". $currentLength + $duration .")':volume=0, ";
+                        $currentLength += $duration;
 
                         if ($isTransition) {
                             $transition = $greetTransition->name;
@@ -284,65 +288,37 @@ class GenerateRequestedVideo extends Command
                     }
                 }
 
-                if (file_exists($rootPath . $greetId . '/imageVideolist.txt')) {
-                    if ($isThemeMusic) {
-                        $audioFile .= $greetThemeMusic->file_name;
-                        exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/imageVideolist.txt -stream_loop -1 -i ' . $audioFile . ' -map 0:v -map 1:a -c:v copy -c:a aac -shortest ' . $imageVideofinalPath);
-                    } else {
-                        exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/imageVideolist.txt -c copy ' . $imageVideofinalPath);
-                    }
-                }
+                substr($muteFilter, 0, -2);
+                $audioFile .= $greetThemeMusic->file_name;
+                exec('ffmpeg -stream_loop -1 -i '. $audioFile .' -t '. $currentLength .' -c:a aac '. $longAudioPath);
+                exec('ffmpeg -i '. $longAudioPath .' -af "'. $muteFilter .'" '. $finalAudioPath);
 
-                if (file_exists($rootPath . $greetId . '/videoList.txt')) {
-                    exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/videoList.txt -c copy ' . $videofinalPath);
+                if (file_exists($rootPath . $greetId . '/list.txt')) {
+                    exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c copy ' . $preFinalPath);
+                    if ($isThemeMusic) {
+                        exec('ffmpeg -i '. $preFinalPath .' -stream_loop -1 -i '. $finalAudioPath .' -filter_complex "[0:a][1:a]amix=duration=first:dropout_transition=3,volume=1[aout]" -map 0:v -map "[aout]" -c:v copy -c:a aac -shortest '. $finalVideoPath);
+                    } else {
+                        // exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c copy ' . $imageVideofinalPath);
+                    }
                 }
 
                 $retval = '';
 
-                if ($isThemeMusic) {
-                    if (file_exists($imageVideofinalPath) && file_exists($videofinalPath)) {
-                        $video = $ffmpeg->open($videofinalPath);
+                // else {
+                //     if (file_exists($imageVideofinalPath) && file_exists($videofinalPath)) {
+                //         $videoInfo = $ffprobe -> streams($imageVideofinalPath)
+                //                             -> videos()
+                //                             -> first();
 
-                        $streams = $video->getStreams();
-                        $hasAudio = false;
+                //         $duration = $videoInfo -> get('duration');
+                //         exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v][1:v]concat=n=2:v=1:a=0[v];[1:a]adelay=delays='.($duration * 1000).'|'.($duration * 1000).'[outa]" -map "[v]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
 
-                        foreach ($streams as $stream) {
-                            if ($stream->has('codec_type') && $stream->get('codec_type') == 'audio') {
-                                $hasAudio = true;
-                                break;
-                            }
-                        }
-
-                        if ($hasAudio) {
-                            exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0]concat=n=2:v=1:a=1[outv][outa]" -map "[outv]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
-                        } else {
-                            $videoInfo = $ffprobe -> streams($videofinalPath)
-                                            -> videos()
-                                            -> first();
-
-                            $duration = $videoInfo -> get('duration');
-                            exec('ffmpeg -i ' . $imageVideofinalPath . ' -f lavfi -t ' . $duration . ' -i anullsrc -i ' . $videofinalPath . ' -filter_complex "[0:v][2:v]concat=n=2:v=1:a=0[v];[0:a][1:a]concat=n=2:v=0:a=1[a]" -map "[v]" -map "[a]" ' . $finalVideoPath, $output, $retval);
-                        }
-                    } else if (file_exists($imageVideofinalPath)) {
-                        exec('ffmpeg -i ' . $imageVideofinalPath . ' ' . $finalVideoPath, $output, $retval);
-                    } else {
-                        exec('ffmpeg -i ' . $videofinalPath . ' ' . $finalVideoPath, $output, $retval);
-                    }
-                } else {
-                    if (file_exists($imageVideofinalPath) && file_exists($videofinalPath)) {
-                        $videoInfo = $ffprobe -> streams($imageVideofinalPath)
-                                            -> videos()
-                                            -> first();
-
-                        $duration = $videoInfo -> get('duration');
-                        exec('ffmpeg -i ' . $imageVideofinalPath . ' -i ' . $videofinalPath . ' -filter_complex "[0:v][1:v]concat=n=2:v=1:a=0[v];[1:a]adelay=delays='.($duration * 1000).'|'.($duration * 1000).'[outa]" -map "[v]" -map "[outa]" ' . $finalVideoPath, $output, $retval);
-
-                    } else if (file_exists($imageVideofinalPath)) {
-                        exec('ffmpeg -i ' . $imageVideofinalPath . ' ' . $finalVideoPath, $output, $retval);
-                    } else {
-                        exec('ffmpeg -i ' . $videofinalPath . ' ' . $finalVideoPath, $output, $retval);
-                    }
-                }
+                //     } else if (file_exists($imageVideofinalPath)) {
+                //         exec('ffmpeg -i ' . $imageVideofinalPath . ' ' . $finalVideoPath, $output, $retval);
+                //     } else {
+                //         exec('ffmpeg -i ' . $videofinalPath . ' ' . $finalVideoPath, $output, $retval);
+                //     }
+                // }
 
                 if($retval==0) {
                     $commandStatus = 200;
