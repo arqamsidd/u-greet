@@ -197,7 +197,7 @@ class GenerateRequestedVideo extends Command
                         exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos');
 
                         if ($transition == 'zoompan') {
-                            exec("ffmpeg -i ". $greetMedia ." -vf \"scale=-1:10*ih,zoompan=z='min(zoom+0.0015,1.5)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=". $imageVideoWidth ."x". $imageVideoHeight ."\" -y -shortest -c:v libx264 -pix_fmt yuv420p " . $mergedVideoPath);
+                            exec("ffmpeg -loop 1 -i ". $greetMedia ." -f lavfi -i anullsrc -vf \"scale=-1:10*ih,zoompan=z='min(zoom+0.0015,1.5)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=". $imageVideoWidth ."x". $imageVideoHeight ."\" -c:v libx264 -c:a aac -t 5 -pix_fmt yuv420p -shortest -y " . $mergedVideoPath);
                         } else if ($transition == 'fade' || $transition == 'circleopen' || $transition == 'circleclose' || $transition == 'slideleft' || $transition == 'hrslice' || $transition == 'radial' || $transition == 'dissolve' || $transition == 'rectcrop' || $transition == 'wipetl') {
                             exec('ffmpeg -f lavfi -i color=black@0.0:d=1 -i ' . $imageVideoPath . ' -f lavfi -i color=black@0.0:d=1 -filter_complex "[0:v]scale='.$imageVideoWidth.':'.$imageVideoHeight.',setsar=1,fps=fps=25  [color];[1:v]fps=fps=25 [video];[2:v]scale='.$imageVideoWidth.':'.$imageVideoHeight.',setsar=1,fps=fps=25 [end];[color][video]xfade=transition='.$transition.':duration=1:offset=0,format=yuva420p [begin];[begin][end]xfade=transition='.$transition.':duration=1:offset=4,format=yuva420p" ' . $mergedVideoPath);
                         } else {
@@ -281,7 +281,7 @@ class GenerateRequestedVideo extends Command
                             }
                         } else {
                             if ($isTheme) {
-                                exec('ffmpeg -i '. $backgroundVideoPath .' -i ' . $resizedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,setsar=1,format=yuva420p" ' . $transparentVideoPath);
+                                exec('ffmpeg -stream_loop -1 -i '. $backgroundVideoPath .' -i ' . $resizedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,setsar=1,format=yuva420p" ' . $transparentVideoPath);
                             } else {
                                 exec('ffmpeg -i '. $resizedVideoPath .' -vf "pad=1920:1080:(1920-iw)/2:(1080-ih)/2" ' . $transparentVideoPath);
                             }
