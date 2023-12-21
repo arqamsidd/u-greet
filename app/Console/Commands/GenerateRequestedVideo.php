@@ -8,6 +8,7 @@ use App\Models\GreetMedia;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Storage;
 use App\Mail\SucessMail;
 use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
@@ -288,7 +289,7 @@ class GenerateRequestedVideo extends Command
                     }
                 }
 
-                $retval = '';
+                $retval = 1;
 
                 if (file_exists($rootPath . $greetId . '/list.txt')) {
                     exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c copy ' . $preFinalPath);
