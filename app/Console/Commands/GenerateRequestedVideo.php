@@ -211,9 +211,7 @@ class GenerateRequestedVideo extends Command
                         
                     } else if ($greetMediaType == 'video') {
                         exec('echo "file transparentVideos/' . $rdname . $greetMediaName . '.mp4" >> ' . $rootPath . $greetId . '/list.txt');
-                        $videoInfo = $ffprobe -> streams($greetMedia)
-                                        ->videos()
-                                        ->first();
+                        $videoInfo = $ffprobe -> streams($greetMedia) -> videos() -> first();
 
                         $duration = $videoInfo -> get('duration');
                         $mediaWidth = $videoInfo -> get('width');
@@ -240,17 +238,36 @@ class GenerateRequestedVideo extends Command
                             }
                         }
 
+                        exec('ffprobe -v error -select_streams v:0 -show_entries stream_tags=rotate -of default=nw=1:nk=1 ' . $greetMedia, $rotation);
+						$rotateFilter = '';
+
+                        if ($rotation) {
+                            switch ($rotation) {
+                                case 90:
+                                    $rotateFilter = ' -metadata:s:v:0 rotate=0 -vf "transpose=2"';
+                                    break;
+                                case 180:
+                                    $rotateFilter = ' -metadata:s:v:0 rotate=0 -vf "transpose=3"';
+                                    break;
+                                case 270:
+                                    $rotateFilter = ' -metadata:s:v:0 rotate=0 -vf "transpose=1"';
+                                    break;
+                                default:
+                                    $rotateFilter = ' -metadata:s:v:0 rotate=0 -vf "transpose=0"';
+                              }
+                        }
+
                         exec('mkdir -p ' . $rootPath . $greetId . '/resizedVideos');
                         exec('mkdir -p ' . $rootPath . $greetId . '/transparentVideos');
 
                         if ($isTheme) {
                            if ($ratioSetting == '') {
-                                exec('ffmpeg -noautorotate -i ' . $greetMedia . ' -c:v libx264 -pix_fmt yuv420p ' . $resizedVideoPath);
+                                exec('ffmpeg -i ' . $greetMedia . $rotateFilter . ' -c:v libx264 -pix_fmt yuv420p ' . $resizedVideoPath);
                             } else {
-                                exec('ffmpeg -noautorotate -i ' . $greetMedia . ' -vf "' . $ratioSetting . '" -c:v libx264 -pix_fmt yuv420p ' . $resizedVideoPath);
+                                exec('ffmpeg -i ' . $greetMedia . $rotateFilter . ' -vf "' . $ratioSetting . '" -c:v libx264 -pix_fmt yuv420p ' . $resizedVideoPath);
                             }
                         } else {
-                            exec('ffmpeg -noautorotate -i '. $greetMedia .' -vf "scale=1920:1080:force_original_aspect_ratio=decrease,setsar=1,pad=1920:1080:(ow-iw)/2:(oh-ih)/2" ' . $resizedVideoPath);
+                            exec('ffmpeg -i '. $greetMedia . $rotateFilter . ' -vf "scale=1920:1080:force_original_aspect_ratio=decrease,setsar=1,pad=1920:1080:(ow-iw)/2:(oh-ih)/2" ' . $resizedVideoPath);
                         }
 
                         $videoInfo = $ffprobe -> streams($resizedVideoPath)
