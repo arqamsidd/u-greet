@@ -312,7 +312,7 @@ class GenerateRequestedVideo extends Command
                 if (file_exists($rootPath . $greetId . '/list.txt')) {
                     exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c:v libx264 -c:a aac ' . $prePath);
                     $output = shell_exec("ffprobe -hide_banner -loglevel info -show_streams -select_streams a $prePath 2>&1");
-                    if (strpos($output, 'Stream #') == false) {
+                    if (strpos($output, 'Audio:') == false) {
                         exec('ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -i '. $prePath .' -c:v copy -c:a aac -shortest ' . $preFinalPath);
                     } else {
                         Storage::move('public/greetMedia/final/'. $greetId . '/' . $rdname . 'pre.mp4', 'public/greetMedia/final/'. $greetId . '/' . $rdname . 'preFinal.mp4');
