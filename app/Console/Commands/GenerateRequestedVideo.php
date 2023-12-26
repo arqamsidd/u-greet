@@ -299,9 +299,9 @@ class GenerateRequestedVideo extends Command
                             }
                         } else {
                             if ($isTheme) {
-                                exec('ffmpeg -stream_loop -1 -i '. $backgroundVideoPath .' -i ' . $resizedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,setsar=1,format=yuva420p" ' . $transparentVideoPath);
+                                exec('ffmpeg -stream_loop -1 -i '. $backgroundVideoPath .' -i ' . $resizedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,setsar=1,format=yuva420p" -r 25 ' . $transparentVideoPath);
                             } else {
-                                exec('ffmpeg -i '. $resizedVideoPath .' -vf "pad=1920:1080:(1920-iw)/2:(1080-ih)/2" ' . $transparentVideoPath);
+                                exec('ffmpeg -i '. $resizedVideoPath .' -vf "pad=1920:1080:(1920-iw)/2:(1080-ih)/2" -r 25 ' . $transparentVideoPath);
                             }
                         }
                     }
@@ -310,13 +310,12 @@ class GenerateRequestedVideo extends Command
                 $retval = 1;
 
                 if (file_exists($rootPath . $greetId . '/list.txt')) {
-                    
-                    $output = shell_exec("ffprobe -hide_banner -loglevel error -show_streams -select_streams a $prePath 2>&1");
+                    exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c:v libx264 -c:a aac ' . $prePath);
+                    $output = shell_exec("ffprobe -hide_banner -loglevel info -show_streams -select_streams a $prePath 2>&1");
                     if (strpos($output, 'Stream #') == false) {
-                        exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c:v libx264 -c:a aac ' . $prePath);
                         exec('ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -i '. $prePath .' -c:v copy -c:a aac -shortest ' . $preFinalPath);
                     } else {
-                        exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c:v libx264 -c:a aac ' . $preFinalPath);
+                        Storage::move('public/greetMedia/final/'. $greetId . '/' . $rdname . 'pre.mp4', 'public/greetMedia/final/'. $greetId . '/' . $rdname . 'preFinal.mp4');
                     }
                     if ($isThemeMusic) {
 						$audioFile .= $greetThemeMusic->file_name;
