@@ -127,6 +127,7 @@ class GenerateRequestedVideo extends Command
                 $imageVideofinalPath = $rootPath . $greetId . '/' . $rdname . 'imageVideofinal.mp4';
                 $videofinalPath = $rootPath . $greetId . '/' . $rdname . 'videofinal.mp4';
                 $preFinalPath = $rootPath . $greetId . '/' . $rdname . 'preFinal.mp4';
+                $prePath = $rootPath . $greetId . '/' . $rdname . 'pre.mp4';
                 $finalVideoPath = $rootPath . $greetId . '/' . $rdname . 'final.mp4';
                 $previewVideoPath = $rootPath . $greetId . '/' . $rdname . 'preview.mp4';
                 $trimmedFinalVideoPath = $rootPath . $greetId . '/' . $rdname . 'trimmed_final.mp4';
@@ -163,21 +164,21 @@ class GenerateRequestedVideo extends Command
                         $ratioSetting = '';
                         if ($mediaWidth > 1920) {
                             if ($mediaHeight > 1080 && $ratioImage > 1920 / 1080) {
-                                $ratioSetting = "scale=1920:-1,";
+                                $ratioSetting = "scale=1920:-2,";
                             } else {
-                                $ratioSetting = "scale=-1:1080,";
+                                $ratioSetting = "scale=-2:1080,";
                             }
                         } else if ($mediaHeight > 1080)  {
                             if ($mediaWidth > 1920 && $ratioImage > 1920 / 1080) {
-                                $ratioSetting = "scale=1920:-1,";
+                                $ratioSetting = "scale=1920:-2,";
                             } else {
-                                $ratioSetting = "scale=-1:1080,";
+                                $ratioSetting = "scale=-2:1080,";
                             }
                         } else if ($mediaWidth < 1920 && $mediaHeight < 1080) {
                             if ($mediaWidth > $mediaHeight) {
-                                $ratioSetting = "scale=1920:-1,";
+                                $ratioSetting = "scale=1920:-2,";
                             } else {
-                                $ratioSetting = "scale=-1:1080,";
+                                $ratioSetting = "scale=-2:1080,";
                             }
                         }
                         $command = 'mkdir -p ' . $rootPath . $greetId . '/imageVideos && ffmpeg -loop 1 -i ' . $greetMedia . ' -f lavfi -i anullsrc -c:v libx264 -c:a aac -vf "' . $ratioSetting . 'pad=ceil(iw/2)*2:ceil(ih/2)*2" -t 5 -pix_fmt yuv420p -shortest ' . $imageVideoPath;
@@ -220,21 +221,21 @@ class GenerateRequestedVideo extends Command
                         $ratioSetting = '';
                         if ($mediaWidth > 1920) {
                             if ($mediaHeight > 1080 && $ratioImage > 1920 / 1080) {
-                                $ratioSetting = "scale=1920:-1";
+                                $ratioSetting = "scale=1920:-2";
                             } else {
-                                $ratioSetting = "scale=-1:1080";
+                                $ratioSetting = "scale=-2:1080";
                             }
                         } else if ($mediaHeight > 1080)  {
                             if ($mediaWidth > 1920 && $ratioImage > 1920 / 1080) {
-                                $ratioSetting = "scale=1920:-1";
+                                $ratioSetting = "scale=1920:-2";
                             } else {
-                                $ratioSetting = "scale=-1:1080";
+                                $ratioSetting = "scale=-2:1080";
                             }
                         } else if ($mediaWidth < 1920 && $mediaHeight < 1080) {
                             if ($mediaWidth > $mediaHeight) {
-                                $ratioSetting = "scale=1920:-1";
+                                $ratioSetting = "scale=1920:-2";
                             } else {
-                                $ratioSetting = "scale=-1:1080";
+                                $ratioSetting = "scale=-2:1080";
                             }
                         }
 
@@ -309,7 +310,14 @@ class GenerateRequestedVideo extends Command
                 $retval = 1;
 
                 if (file_exists($rootPath . $greetId . '/list.txt')) {
-                    exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c:v libx264 -c:a aac ' . $preFinalPath);
+                    
+                    $output = shell_exec("ffprobe -hide_banner -loglevel error -show_streams -select_streams a $prePath 2>&1");
+                    if (strpos($output, 'Stream #') == false) {
+                        exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c:v libx264 -c:a aac ' . $prePath);
+                        exec('ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -i '. $prePath .' -c:v copy -c:a aac -shortest ' . $preFinalPath);
+                    } else {
+                        exec('ffmpeg -f concat -safe 0 -i ' . $rootPath . $greetId . '/list.txt -c:v libx264 -c:a aac ' . $preFinalPath);
+                    }
                     if ($isThemeMusic) {
 						$audioFile .= $greetThemeMusic->file_name;
 						exec('ffmpeg -stream_loop -1 -i '. $audioFile .' -t '. $currentLength .' -c:a aac '. $longAudioPath);
