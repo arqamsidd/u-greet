@@ -19,7 +19,7 @@ const GreetCard = () => {
 
     return allGreet.length > 0 ? (
         allGreet.map((greet) => (
-            <div className="col-xl-4" key={greet.id}>
+            <div className={`col-xl-4 g-${greet.id}`} key={greet.id}>
                 <div
                     className="card card-custom bgi-no-repeat bgi-size-cover gutter-b card-stretch img-gradient"
                     style={{
