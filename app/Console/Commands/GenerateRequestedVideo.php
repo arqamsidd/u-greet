@@ -418,11 +418,11 @@ class GenerateRequestedVideo extends Command
                     if ($greet->occasion_name == 'Sweet Greet' && $duration <= 3) {
                         $data['link']=$dbfinalvideopath.$rdname.'trimmed_final.mp4';
                     }
-                    // Mail::to($userEmail)->send(new SucessMail($data));
+                    Mail::to($userEmail)->send(new SucessMail($data));
                 } else {
                     $commandStatus = 500;
                     $commandMessage = 'Video Creation Failed';
-                //    Mail::to($userEmail)->send(new SucessMail($commandMessage));
+                    Mail::to($userEmail)->send(new SucessMail($commandMessage));
                 }
                 /*End*/
                 //$greetPreMediaValue 
