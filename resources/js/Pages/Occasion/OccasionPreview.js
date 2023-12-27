@@ -89,6 +89,9 @@ const OccasionPreview = () => {
                     />
                     Your browser does not support the video tag.
                 </video>}
+             {(finalVideo?.Video_link_final ) &&
+                <a class="rounded bg-3 p-5 d-inline-block bold mr-10" target="_blank" href={finalVideo.Video_link_final} download="">Download</a>
+            }
             <br />
             {  (finalVideo.Payment_status  != "succeeded") && <div className="font-20 color-grey m-2 ">
                 {(finalVideo.video_request_status != "" || isButtonDisabled) ? "Your preview request is in progress. If you wish to do more preview requests then please click on the below button." : 'Please click on "Create Video Request" to start the process. You will be notified by email once the preview is generated.'}
