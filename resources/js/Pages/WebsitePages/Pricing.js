@@ -232,9 +232,9 @@ const Pricing = () => {
                                 <div className="pricing pricing-1 boxed boxed--lg boxed--border">
                                     <span className="h3">
                                         <br />
-                                        <strong>Sweet Greet</strong>
+                                        <strong>Per Minute</strong>
                                     </span>
-                                    <span className="h3">Free Forever</span>
+                                    <span className="h3">$0.98 per minute</span>
                                     <span
                                         className="label"
                                         style={{
@@ -248,21 +248,22 @@ const Pricing = () => {
                                     </span>
                                     <hr />
                                     <ul>
+                                        
                                         <li>
                                             <span className="checkmark bg--primary" />
-                                            <span>Free</span>
+                                            <span>0 to 3 minutes: Free Sweet Greet </span>
                                         </li>
                                         <li>
                                             <span className="checkmark bg--primary" />
-                                            <span>Up to 3 minutes </span>
-                                        </li>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>Unlimited Usage</span>
+                                            <span>3 minutes to 59 minutes:  $0.98 per minute</span>
                                         </li>
                                         <li>
                                             <span className="checkmark bg--primary" />
                                             <span>All features included </span>
+                                        </li>
+                                        <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>Tax excluded</span>
                                         </li>
                                     </ul>
                                     <Link
@@ -284,9 +285,9 @@ const Pricing = () => {
                                 <div className="pricing pricing-1 boxed boxed--lg boxed--border boxed--emphasis">
                                     <span className="h3">
                                         <br />
-                                        <strong>U-greet</strong>
+                                        <strong>Per Story</strong>
                                     </span>
-                                    <span className="h3">$19.99 + HST</span>
+                                    <span className="h3">$44.00 + HST</span>
                                     <span
                                         className="label"
                                         style={{
@@ -302,11 +303,11 @@ const Pricing = () => {
                                     <ul>
                                         <li>
                                             <span className="checkmark bg--primary" />
-                                            <span>Affordable</span>
+                                            <span>Set price (No Surprises)</span>
                                         </li>
                                         <li>
                                             <span className="checkmark bg--primary" />
-                                            <span>30 minutes</span>
+                                            <span>Up to 60 minutes</span>
                                         </li>
                                         <li>
                                             <span className="checkmark bg--primary" />
@@ -314,7 +315,7 @@ const Pricing = () => {
                                         </li>
                                         <li>
                                             <span className="checkmark bg--primary" />
-                                            <span>6 months storage</span>
+                                            <span>Tax excluded</span>
                                         </li>
                                     </ul>
                                     <Link
@@ -336,9 +337,9 @@ const Pricing = () => {
                                 <div className="pricing pricing-1 boxed boxed--lg boxed--border">
                                     <span className="h3">
                                         <br />
-                                        <strong>U-Greet Collection</strong>
+                                        <strong>Per Month</strong>
                                     </span>
-                                    <span className="h3">$49.99 + HST</span>
+                                    <span className="h3">$28.00 + HST</span>
                                     <span
                                         className="label"
                                         style={{
@@ -348,25 +349,25 @@ const Pricing = () => {
                                             color: "white",
                                         }}
                                     >
-                                        TRILOGY (3 OCCASION)
+                                        Unlimited
                                     </span>
                                     <hr />
                                     <ul>
                                         <li>
                                             <span className="checkmark bg--primary" />
-                                            <span>Best Value</span>
+                                            <span>$28 per month + HST </span>
                                         </li>
                                         <li>
                                             <span className="checkmark bg--primary" />
-                                            <span>Three 30 minute videos</span>
+                                            <span>12 videos per year (up to 60 minutes)</span>
+                                        </li>
+                                        <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>Monthly billing</span>
                                         </li>
                                         <li>
                                             <span className="checkmark bg--primary" />
                                             <span>All features included</span>
-                                        </li>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>6 months storage</span>
                                         </li>
                                     </ul>
                                     <Link

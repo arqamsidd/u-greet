@@ -245,7 +245,9 @@ const OccasionPreview = () => {
                                         : "Preview Video"}
                                 </div>
                                 <div className="font-12">
-                                    Check out your montage...
+                                    Preview your video, check out your montage.
+                                    <br/>
+                                    Edit, arrange, and create new previews until you are satisfied by clicking the button below!
                                 </div>
                             </div>
                             <div className="themes-container card-round bg-white">

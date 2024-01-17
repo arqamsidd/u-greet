@@ -98,7 +98,7 @@ const Ucelebrate = () => {
                                 <h2>Remember the reason for the season.</h2>
                                 <p className="lead">
                                     Merry Christmas, Happy Hanukkah, Eid
-                                    Mubarak, Happy New Year. However you observe
+                                    Mubarak, Happy Diwali. However you observe
                                     the holidays, commemorate with a U-Celebrate
                                     and share holiday greetings with your family
                                     and friends.

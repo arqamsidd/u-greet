@@ -153,7 +153,7 @@ export const Welcome = () => {
                                                 </a>
                                                 <p className="color--white">
                                                     Short, sweet and to the
-                                                    point with a Sweet greet
+                                                    point with a Sweet Greet
                                                     FREE video. We want you to
                                                     spread as much love and hope
                                                     as you can. The world needs
@@ -218,7 +218,7 @@ export const Welcome = () => {
                                                     special, that they are loved
                                                     and that they are missed.
                                                     Tell them today with
-                                                    U-Missand be the reason
+                                                    U-Miss and be the reason
                                                     someone smiles today!
                                                 </p>
                                             </div>
@@ -255,8 +255,7 @@ export const Welcome = () => {
                                                 <p className="color--white">
                                                     Just another Birthday? Think
                                                     again. Sending a U-Age
-                                                    personalized video and photo
-                                                    gift is the best anyone can
+                                                    personalized video and photo is the best gift anyone can
                                                     receive. Celebrate your
                                                     person like never before
                                                     with contributions from
@@ -277,7 +276,7 @@ export const Welcome = () => {
                                                 <p className="color--white">
                                                     No matter the Holiday, we
                                                     have you covered in true
-                                                    U-Greet Style! Celebrations
+                                                    U-Greet style! Celebrations
                                                     are what we do. Collaborate
                                                     with your loved ones to
                                                     produce the ultimate holiday
@@ -301,8 +300,7 @@ export const Welcome = () => {
                                                     welcome your new baby and
                                                     then share it with the
                                                     world! Babies have so many
-                                                    firsts and milestones,
-                                                    U-Baby ensures that you
+                                                    firsts and milestones; U-Baby ensures that you
                                                     never forget any of them and
                                                     gives you and your loved
                                                     ones a beautiful video time

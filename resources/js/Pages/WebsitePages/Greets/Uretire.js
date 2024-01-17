@@ -97,9 +97,8 @@ const Uretire = () => {
                         <div className="row justify-content-center">
                             <div className="col-md-10 col-lg-8">
                                 <h2>
-                                    Retirement is a time for reflection, a time
-                                    to look forward and to spend time with the
-                                    people you care about doing the things you
+                                    Retirement is a time for reflection, to look forward and to spend time with the
+                                    people you care about, doing the things you
                                     love.
                                 </h2>
                                 <p className="lead">

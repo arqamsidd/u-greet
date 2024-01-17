@@ -245,7 +245,7 @@ const Ulove = () => {
                                     feel. You can collaborate with an intimate
                                     group or create it all on your own. The
                                     telling of a love story captivates the
-                                    audience. Tell it anyway you like, as long
+                                    audience. Tell it any way you like, as long
                                     as you tell it.
                                     <br />
                                     <br />

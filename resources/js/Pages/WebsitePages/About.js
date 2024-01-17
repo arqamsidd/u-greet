@@ -271,7 +271,7 @@ const About = () => {
                             <div className="col-md-4">
                                 <div className="feature">
                                     <h1 className="bold">
-                                        uplift
+                                        uplift{" "}
                                         <span
                                             style={{
                                                 fontSize: 16,

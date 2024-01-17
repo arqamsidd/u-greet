@@ -98,7 +98,7 @@ const SweetGreet = () => {
                                     Share a quick,{" "}
                                     <i>
                                         "I love you, I'm sorry, You've got this,
-                                        Congratulations, I am proud of you."
+                                        Congratulations or I am proud of you."
                                     </i>{" "}
                                     Whatever the reason, send a message that
                                     they matter.

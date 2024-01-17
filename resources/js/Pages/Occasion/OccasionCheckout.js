@@ -88,11 +88,11 @@ const OccasionCheckout = () => {
                                     <br />
                                     <br />
                                     <strong className="h3 font-weight-bold">
-                                        Sweet Greet
+                                    Per Minute
                                     </strong>
                                 </span>
                                 <span className="h3 pb-4 font-weight-normal">
-                                    Free Forever
+                                $0.98 per minute
                                 </span>
                                 <span
                                     className="label"
@@ -108,21 +108,21 @@ const OccasionCheckout = () => {
                                 <hr />
                                 <ul>
                                     <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>Free</span>
-                                    </li>
-                                    <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>Up to 3 minutes </span>
-                                    </li>
-                                    <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>Unlimited Usage</span>
-                                    </li>
-                                    <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>All features included </span>
-                                    </li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>0 to 3 minutes: Free Sweet Greet </span>
+                                        </li>
+                                        <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>3 minutes to 59 minutes:  $0.98 per minute</span>
+                                        </li>
+                                        <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>All features included </span>
+                                        </li>
+                                        <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>Tax excluded</span>
+                                        </li>
                                 </ul>
                                 <button
                                     className="btn btn--primary"
@@ -144,11 +144,11 @@ const OccasionCheckout = () => {
                                     <br />
                                     <br />
                                     <strong className="h3 font-weight-bold">
-                                        U-greet
+                                    Per Story
                                     </strong>
                                 </span>
                                 <span className="h3 pb-4 font-weight-normal">
-                                    $19.99 + HST
+                                $44.00 + HST
                                 </span>
                                 <span
                                     className="label"
@@ -163,22 +163,22 @@ const OccasionCheckout = () => {
                                 </span>
                                 <hr />
                                 <ul>
-                                    <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>Affordable</span>
-                                    </li>
-                                    <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>30 minutes</span>
-                                    </li>
-                                    <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>All features included</span>
-                                    </li>
-                                    <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>6 months storage</span>
-                                    </li>
+                                     <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>Set price (No Surprises)</span>
+                                        </li>
+                                        <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>Up to 60 minutes</span>
+                                        </li>
+                                        <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>All features included</span>
+                                        </li>
+                                        <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>Tax excluded</span>
+                                        </li>
                                 </ul>
                                 <button
                                     className="btn btn--primary"
@@ -211,11 +211,11 @@ const OccasionCheckout = () => {
                                     <br />
                                     <br />
                                     <strong className="h3 font-weight-bold">
-                                        U-Greet Collection
+                                    Per Month
                                     </strong>
                                 </span>
                                 <span className="h3 pb-4 font-weight-normal">
-                                    $49.99 + HST
+                                $28.00 + HST
                                 </span>
                                 <span
                                     className="label"
@@ -226,26 +226,26 @@ const OccasionCheckout = () => {
                                         color: "white",
                                     }}
                                 >
-                                    TRILOGY (3 OCCASION)
+                                    Unlimited
                                 </span>
                                 <hr />
                                 <ul>
-                                    <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>Best Value</span>
-                                    </li>
-                                    <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>Three 30 minute videos</span>
-                                    </li>
-                                    <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>All features included</span>
-                                    </li>
-                                    <li>
-                                        <span className="checkmark bg--primary" />
-                                        <span>6 months storage</span>
-                                    </li>
+                                <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>$28 per month + HST </span>
+                                        </li>
+                                        <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>12 videos per year (up to 60 minutes)</span>
+                                        </li>
+                                        <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>Monthly billing</span>
+                                        </li>
+                                        <li>
+                                            <span className="checkmark bg--primary" />
+                                            <span>All features included</span>
+                                        </li>
                                 </ul>
                                 <button
                                     className="btn btn--primary"
