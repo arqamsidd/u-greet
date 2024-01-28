@@ -62,173 +62,22 @@ const Pricing = () => {
                 </section>
                 <section>
                     <div className="container">
-                        <div className="row">
-                            {/* <div className="col-md-4">
-                                <div className="pricing pricing-1 boxed boxed--lg boxed--border">
-                                    <span className="h3">
-                                        <br />
-                                        <strong>PER MINUTE</strong>
-                                    </span>
-                                    <span className="h3">$1 per minute</span>
-                                    <span
-                                        className="label"
-                                        style={{
-                                            borderRadius: "50px",
-                                            width: "auto",
-                                            // padding: "12px",
-                                            color: "white",
-                                        }}
-                                    >
-                                        Pay as you Go
-                                    </span>
-                                    <hr />
-                                    <ul>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>
-                                                0 to 3 minutes: Free Sweet Greet
-                                            </span>
-                                        </li>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>
-                                                3 minutes to 59 minutes: $1 per
-                                                minute
-                                            </span>
-                                        </li>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>All features included</span>
-                                        </li>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>Tax excluded</span>
-                                        </li>
-                                    </ul>
-                                    <Link
-                                        className="btn btn--primary"
-                                        to={
-                                            state.isLoggedIn
-                                                ? "/startOccasion"
-                                                : "/signup"
-                                        }
-                                        style={{ background: "#CE1C1C" }}
-                                    >
-                                        <span className="btn__text">
-                                            Get Greeting
-                                        </span>
-                                    </Link>
-                                </div>
+                        <div className="row posRelative">
+                          <div className="pricingAbsolute">
+                          <Link                                
+                                to={
+                                    state.isLoggedIn
+                                        ? "/startOccasion"
+                                        : "/signup"
+                                }
+                                
+                            >
+                                
+                                Introductory Pricing - $17 All Greets
+                                
+                            </Link>
                             </div>
-                            <div className="col-md-4">
-                                <div className="pricing pricing-1 boxed boxed--lg boxed--border boxed--emphasis">
-                                    <span className="h3">
-                                        <br />
-                                        <strong>PER STORY</strong>
-                                    </span>
-                                    <span className="h3">$19.99</span>
-                                    <span
-                                        className="label"
-                                        style={{
-                                            borderRadius: "50px",
-                                            width: "auto",
-                                            // padding: "12px",
-                                            color: "white",
-                                        }}
-                                    >
-                                        Best Value
-                                    </span>
-                                    <hr />
-                                    <ul>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>
-                                                Set price (No surprises)
-                                            </span>
-                                        </li>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>30 minutes</span>
-                                        </li>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>All features included </span>
-                                        </li>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>Tax excluded</span>
-                                        </li>
-                                    </ul>
-                                    <Link
-                                        className="btn btn--primary"
-                                        to={
-                                            state.isLoggedIn
-                                                ? "/startOccasion"
-                                                : "/signup"
-                                        }
-                                        style={{ background: "#CE1C1C" }}
-                                    >
-                                        <span className="btn__text">
-                                            Get Greeting
-                                        </span>
-                                    </Link>
-                                </div>
-                            </div>
-                            <div className="col-md-4">
-                                <div className="pricing pricing-1 boxed boxed--lg boxed--border">
-                                    <span className="h3">
-                                        <br />
-                                        <strong>PER MONTH</strong>
-                                    </span>
-                                    <span className="h3">$29</span>
-                                    <span
-                                        className="label"
-                                        style={{
-                                            borderRadius: "50px",
-                                            width: "auto",
-                                            // padding: "12px",
-                                            color: "white",
-                                        }}
-                                    >
-                                        Subscribe & Save
-                                    </span>
-                                    <hr />
-                                    <ul>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>$29 per month + HST</span>
-                                        </li>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>
-                                                12 videos per year (45 minutes)
-                                            </span>
-                                        </li>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>Monthly billing </span>
-                                        </li>
-                                        <li>
-                                            <span className="checkmark bg--primary" />
-                                            <span>All features included </span>
-                                        </li>
-                                    </ul>
-                                    <Link
-                                        className="btn btn--primary"
-                                        to={
-                                            state.isLoggedIn
-                                                ? "/startOccasion"
-                                                : "/signup"
-                                        }
-                                        style={{ background: "#CE1C1C" }}
-                                    >
-                                        <span className="btn__text">
-                                            Get Greeting
-                                        </span>
-                                    </Link>
-                                </div>
-                            </div> */}
-                            <div className="col-md-4">
+                            <div className="col-md-4 pointerEventNone">
                                 <div className="pricing pricing-1 boxed boxed--lg boxed--border">
                                     <span className="h3">
                                         <br />
@@ -281,7 +130,7 @@ const Pricing = () => {
                                     </Link>
                                 </div>
                             </div>
-                            <div className="col-md-4">
+                            <div className="col-md-4 pointerEventNone">
                                 <div className="pricing pricing-1 boxed boxed--lg boxed--border boxed--emphasis">
                                     <span className="h3">
                                         <br />
@@ -333,7 +182,7 @@ const Pricing = () => {
                                     </Link>
                                 </div>
                             </div>
-                            <div className="col-md-4">
+                            <div className="col-md-4 pointerEventNone">
                                 <div className="pricing pricing-1 boxed boxed--lg boxed--border">
                                     <span className="h3">
                                         <br />

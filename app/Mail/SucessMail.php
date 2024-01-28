@@ -29,6 +29,6 @@ class SucessMail extends Mailable
      */
     public function build()
     {   
-        $this->subject("Video Generate Sucessfully")->view("email.sucess_mail");
+        $this->subject("Your U-Greet Preview is Ready")->view("email.sucess_mail");
     }
 }

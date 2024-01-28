@@ -65,35 +65,24 @@ const OccasionPreview = () => {
                 <video
                     className="preview"
                     controls
-                   controlsList= {finalVideo.Payment_status  != "succeeded" && "nodownload"}
+                    controlsList={finalVideo.Payment_status != "succeeded" && "nodownload"}
                     id="videoWithData"
                     type="video/mp4"
                     key={
-                        finalVideo?.Payment_status == "succeeded"
-                            ? finalVideo?.Video_link_final
-                            : finalVideo?.Video_link_preview
+                        finalVideo?.Video_link_preview
                     }
                 >
                     <source
                         src={
-                            finalVideo?.Payment_status == "succeeded"
-                                ? finalVideo?.Video_link_final
-                                : finalVideo?.Video_link_preview
+                            finalVideo?.Video_link_preview
                         }
-                        // src={
-                        //     finalVideo?.Payment_status == "succeeded"
-                        //         ? finalVideo?.Video_link_final
-                        //         : finalVideo?.Video_link_final
-                        // }
+                       
                         type="video/mp4"
                     />
                     Your browser does not support the video tag.
                 </video>}
-             {(finalVideo?.Video_link_final ) &&
-                <a class="rounded bg-3 p-5 d-inline-block bold mr-10" target="_blank" href={finalVideo.Video_link_final} download="">Download</a>
-            }
-            <br />
-            {  (finalVideo.Payment_status  != "succeeded") && <div className="font-20 color-grey m-2 ">
+          
+            {(finalVideo.Payment_status != "succeeded") && <div className="font-20 color-grey m-2 ">
                 {(finalVideo.video_request_status != "" || isButtonDisabled) ? "Your preview request is in progress. If you wish to do more preview requests then please click on the below button." : 'Please click on "Create Video Request" to start the process. You will be notified by email once the preview is generated.'}
                 <div className="w-100 mt-8">
                     <button
@@ -103,112 +92,9 @@ const OccasionPreview = () => {
                         Create Video Request
                     </button>
                 </div>
-            </div> }
+            </div>}
         </>
 
-
-        // if (
-        //     // finalVideo?.greetmedia == "" ||
-        //     // finalVideo.Payment_status == "" || 
-        //     finalVideo.Payment_status  != "succeeded"
-        // ) {
-        //     return (
-        //         <div className="font-20 color-grey m-2 ">
-        //             Please click on "Create Video Request" to start the process.
-        //             You will be notified by email once the preview is generated.
-        //             <div className="w-100 mt-8">
-        //                 <button
-        //                     onClick={() => handleCreateClick()}
-        //                     className="bg-3 bold mr-10"
-        //                 >
-        //                     Create Video Request
-        //                 </button>
-        //             </div>
-        //         </div>
-        //     );
-        // } 
-        // else if (finalVideo.video_request_status == "Failed") {
-        //     return (
-        //         <div className="font-20 color-grey m-2 ">
-        //             Your video creation failed please send a request again.
-        //             <div className="w-100 mt-8">
-        //                 <button
-        //                     onClick={() => handleCreateClick()}
-        //                     className="bg-3 bold mr-10"
-        //                 >
-        //                     Create Video Request
-        //                 </button>
-        //             </div>
-        //         </div>
-        //     );
-        // } else if (
-        //     finalVideo.video_request_status == "Pending" ||
-        //     isButtonDisabled
-        // ) {
-        //     return (
-        //         <div className="font-20 color-grey m-2 ">
-        //             Your preview is in process. You will be notified by email
-        //             once the preview is generated.
-        //         </div>
-        //     );
-        // } else if (finalVideo.video_request_status == "In Progress") {
-        //     return (
-        //         <div className="font-20 color-grey m-2 ">
-        //             Your video generation in progress, Please wait we will
-        //             update you by mail.
-        //         </div>
-        //     );
-        // } 
-        // else if (finalVideo.video_request_status == "Done") {
-        //     return (
-        //         <video
-        //             className="preview"
-        //             controls
-        //             id="videoWithData"
-        //             type="video/mp4"
-        //             key={
-        //                 finalVideo?.Payment_status == "succeeded"
-        //                     ? finalVideo?.Video_link_final
-        //                     : finalVideo?.Video_link_preview
-        //             }
-        //         >
-        //             <source
-        //                 src={
-        //                     finalVideo?.Payment_status == "succeeded"
-        //                         ? finalVideo?.Video_link_final
-        //                         : finalVideo?.Video_link_preview
-        //                 }
-        //                 // src={
-        //                 //     finalVideo?.Payment_status == "succeeded"
-        //                 //         ? finalVideo?.Video_link_final
-        //                 //         : finalVideo?.Video_link_final
-        //                 // }
-        //                 type="video/mp4"
-        //             />
-        //             Your browser does not support the video tag.
-        //         </video>
-        //     );
-        // }
-        // else {
-        //     return (
-        //         <>
-        //             <div className="font-20 color-grey m-2 ">
-        //                 Please click on "Create Video Request" to start the
-        //                 process. You will be notified by email once the
-        //                 preview is generated.
-        //                 <div className="w-100 mt-8">
-        //                     <button
-        //                         onClick={() => handleCreateClick()}
-        //                         className="bg-3 bold mr-10"
-        //                         disabled="true"
-        //                     >
-        //                         Create Video Request
-        //                     </button>
-        //                 </div>
-        //             </div>
-        //         </>
-        //     );
-        // }
     };
 
     return (
@@ -240,13 +126,11 @@ const OccasionPreview = () => {
                         <section className="media-section media-section2 bg-2">
                             <div className="section-head">
                                 <div className="font-17 bold">
-                                    {finalVideo?.Payment_status == "succeeded"
-                                        ? "Final Video"
-                                        : "Preview Video"}
+                                    Preview Video
                                 </div>
                                 <div className="font-12">
                                     Preview your video, check out your montage.
-                                    <br/>
+                                    <br />
                                     Edit, arrange, and create new previews until you are satisfied by clicking the button below!
                                 </div>
                             </div>
@@ -262,33 +146,7 @@ const OccasionPreview = () => {
                                 )}
                             </div>
                             <div className="empty text-center">
-                                {/* <img
-                            src="assets/images/empty.da9f33de.svg"
-                            alt="empty"
-                            width={100}
-                        /> */}
-                                {/* <div className="font-25 color-grey mt-2 ">
-                            No files uploaded at them moment...
-                        </div> */}
-                                {/* {finalVideo.video_request_status == "Done" &&
-                                finalVideo?.Payment_status != "succeeded" ? (
-                                    <>
-                                        <div className="font-20 color-grey mt-2 ">
-                                            Please complete payment to watch
-                                            final created video
-                                        </div>
-                                        <button
-                                            className="bg-3 bold m-4"
-                                            onClick={() =>
-                                                navigate("/occasionCheckout")
-                                            }
-                                        >
-                                            <div>Finalize U-Greet</div>
-                                        </button>
-                                    </>
-                                ) : (
-                                    <></>
-                                )} */}
+
                             </div>
                         </section>
                     )}

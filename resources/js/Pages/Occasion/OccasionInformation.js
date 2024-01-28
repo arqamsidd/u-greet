@@ -176,10 +176,10 @@ const OccasionInformation = () => {
                                         </div>
                                     </div> */}
                                     <SortableMedia />
-                                    <div className="font-17 card text-center">
-                                        Edit and arrange pictures and videos to
-                                        your liking and customize with music and
-                                        background.
+                                    <div className="font-12 card text-center">
+                                    File Requirements: Video must be .MP4 or .MOV &
+                            Image must be .JPG, .JPEG, .PNG or .HEIC format. Both
+                            require dimensions above 500px
                                     </div>
                                 </div>
                             </div>

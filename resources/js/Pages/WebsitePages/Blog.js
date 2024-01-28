@@ -15,7 +15,7 @@ const Blog = () => {
                             <div className="row">
                                 <div className="col-md-12">
                                     <div className="masonry">
-                                        <div className="masonry-filter-container d-flex align-items-center">
+                                        {/* <div className="masonry-filter-container d-flex align-items-center">
                                             <span>Category:</span>
                                             <div className="masonry-filter-holder">
                                                 <div
@@ -23,7 +23,7 @@ const Blog = () => {
                                                     data-filter-all-text="All Categories"
                                                 />
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <hr />
                                         <div className="masonry__container row">
                                             <div className="masonry__item col-lg-4 col-md-6" />
@@ -43,7 +43,7 @@ const Blog = () => {
                                                     </a>
                                                     <div className="feature__body boxed boxed--border">
                                                         <span className="gnb">
-                                                            May 25th 2020
+                                                            January 20th 2024
                                                         </span>
                                                         <h5>
                                                             The Purpose of

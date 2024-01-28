@@ -14,8 +14,24 @@ const Signup = (props) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
+    const [agreementChecked, setAgreementChecked] = useState(false); // New state for checkbox
+    const [showCheckboxError, setShowCheckboxError] = useState(false); // New state for checkbox error
+
+
 
     const { setErrors, renderFieldError, navigate } = useForm();
+
+   
+    const handleCheckboxChange = (e) => {
+        const isChecked = e.target.checked;
+        setAgreementChecked(isChecked);
+    
+        // If the checkbox is checked, reset the error message display
+        if (isChecked) {
+            setShowCheckboxError(false);
+        }
+    };
+
 
     useEffect(() => {
         document.title = "Sign Up | ❣️ U-Greet";
@@ -23,6 +39,12 @@ const Signup = (props) => {
 
     const makeRequest = (e) => {
         e.preventDefault();
+
+        if (!agreementChecked) {
+            setShowCheckboxError(true); // Show error if checkbox is not checked
+            return; // Stop the form submission
+        }
+        setShowCheckboxError(false); 
 
         setErrors(null);
         console.info("Here Come");
@@ -77,7 +99,7 @@ const Signup = (props) => {
                                 <div className="font-18 color-2 bold">
                                     Already have an account?
                                     <Link className="link" to="/signin">
-                                          {" "}Sign In
+                                        {" "}Sign In
                                     </Link>
                                 </div>
                             </div>
@@ -226,19 +248,40 @@ const Signup = (props) => {
                                     </div>
                                 </div>
 
+                                {/* Agreement Checkbox */}
+                                <div className="item">
+                                    <div className="text-input full-input">
+                                        <input id="agreement-checkbox" name="agreement-checkbox" type="checkbox" required="" style={{
+                                            display: 'inline-block',
+                                            width: 'unset',
+                                            marginRight: '10px'
+                                        }}
+                                            onChange={handleCheckboxChange}
+                                        ></input>
+                                        <label for="agreement-checkbox" >I have read and accept the <a target="_blank" href="https://app.u-greet.com/PrivacyPolicy">Privacy Policy</a>.</label>
+
+                                        {showCheckboxError && (
+                                            <span class="invalid-feedback" role="alert"><strong>Please agree to the Privacy Policy to sign up.</strong></span>
+                                            )}
+                                    </div>
+                                </div>
+                               
+
+
                                 {/* Signup Button */}
                                 <div className="item">
                                     <button
                                         type="submit"
                                         className="bg-3 bold disableOnSubmit button-item w-auto"
+                                       
                                     >
                                         {/* <Link to="/dashboard"> */}
                                         Sign Up
                                         {/* </Link> */}
                                     </button>
-                                    
+
                                 </div>
-                                
+
                             </form>
                         </div>
                     </div>

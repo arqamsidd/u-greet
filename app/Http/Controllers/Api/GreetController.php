@@ -812,6 +812,7 @@ class GreetController extends Controller
                         if ($media->greet_media_type == 'final') {
                             $video_path = asset($media->media_path);
                             $videosec = $media->media_sec;
+                            $video_path = ('storage/greetMedia/final/'.$id.'/'.$media->media_name);
                            
                         } else if($media->greet_media_type == 'preview') {
                             $video_path = asset($media->media_path);
@@ -827,7 +828,8 @@ class GreetController extends Controller
                     $greet['video_link'] = $video_path;
                     $greet['greet_for'] = $greet->greetCelebrant[0]->first_name;
                     $greet['plan2'] = 19.99 + 2.60;
-                    $greet['plan3'] = 49.99 +6.50;
+                    //$greet['plan3'] = 49.99 +6.50;
+                    $greet['plan3'] = 17.0;
 
                     if ($greet->occasion_name == 'Sweet Greet' && $duration <= 3) {
                         $greet['price'] = 'free';

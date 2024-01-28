@@ -82,45 +82,34 @@ const OccasionInvite2 = ({ setEditInvite2, setEditInvite1 }) => {
                                         greetData?.occasion_name === 'U-Remember'
                                         ? // Your href for the U-REMEMBER condition
                                           `fb-messenger://share/?link=${encodeURIComponent(
-                                            `${greetData?.occasion_name}
-                                            ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}
-                                            ${greetData?.contribution_deadline_date}
-                                            ${inviteLink}
-        
-        
-                                            During this difficult time, ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have requested your participation in honoring ${greetData?.greet_celebrant[0]?.first_name}'s legacy by contributing to a video time capsule. Being a part of this memorial tribute will ensure ${greetData?.greet_celebrant[0]?.first_name}'s story is recorded for all of time. 
-                                            The U-Remember will honor, cherish, and preserve ${greetData?.greet_celebrant[0]?.first_name}'s memory.
-                                            We also hope it will bring comfort, healing, and solace to ${greetData?.greet_celebrant[0]?.first_name}'s friends and family. Thank you for your video and image contributions.
+                                            `During this difficult time, ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have requested your participation in honoring ${greetData?.greet_celebrant[0]?.first_name}'s legacy by contributing to a video time capsule. Being a part of this memorial tribute will ensure ${greetData?.greet_celebrant[0]?.first_name}'s story is recorded for all of time. 
+The U-Remember will honor, cherish, and preserve ${greetData?.greet_celebrant[0]?.first_name}'s memory.
+We also hope it will bring comfort, healing, and solace to ${greetData?.greet_celebrant[0]?.first_name}'s friends and family. Thank you for your video and image contributions.
+
+Use this link to contribute: ${inviteLink}
+Last date to contribute: ${greetData?.contribution_deadline_date}
                                   
-                                            In loving memory.
-                                  
-                                            U-Greet xo
-                                  
-                                            If you’re uncertain of what, or how to contribute, please visit us at app.u-greet.com/U-Remember`
+In loving memory.
+
+U-Greet`
                                           )}`
                                         :
                                         `fb-messenger://share/?link=${encodeURIComponent(
-                                        `${greetData?.occasion_name}
-                                        ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}
-                                        ${greetData?.contribution_deadline_date}
-                                        ${inviteLink}
+                                        `Greetings fellow U-Greeter,
                                         
-                                        Greetings fellow U-Greeter,
+We are beyond excited to share that you have been personally selected to join a video tribute for ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}.                                                                               
                                         
-                                        We are beyond excited to share that you have been personally selected to join a video tribute for ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}.
+Could you please help these extraordinary people tell the story they wish to share?
                                         
-                                        ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have personally invited you to be a part of this forever story that they want to tell. Being included in someone's video time capsule is a huge honor; it says that U-Matter, U are important and U should be recorded for all time. So, congratulations on being an awesome human!
-                                       
-                                        We at U-Greet believe strongly in love, life, moments, stories and legacies. So much so that we built this site to ensure that no story goes untold and that no one gets left behind.
-                                        
-                                        Could you please help these extraordinary people tell the story they wish to share?
-                                        
-                                        Upload your favorite pictures and videos and be the reason someone smiles today!
+Upload your favorite pictures and videos and be the reason someone smiles today!
+
+Use this link to contribute: ${inviteLink}
+Last date to contribute: ${greetData?.contribution_deadline_date}
         
-                                        Love, U-Greet
-                                        XO
+Love, U-Greet
+XO
                                         
-                                        P.S. for tips on what to upload or creative ideas, check us out at www.u-greet.com`
+P.S. for tips on what to upload or creative ideas, check us out at www.u-greet.com`
                                     )}`
                                 );
                             }}
@@ -146,45 +135,34 @@ const OccasionInvite2 = ({ setEditInvite2, setEditInvite1 }) => {
                                     greetData?.occasion_name === 'U-Remember'
                                     ? // Your href for the U-REMEMBER condition
                                       `whatsapp://send?text=${encodeURIComponent(
-                                        `${greetData?.occasion_name}
-                                        ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}
-                                        ${greetData?.contribution_deadline_date}
-                                        ${inviteLink}
-    
-    
-                                        During this difficult time, ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have requested your participation in honoring ${greetData?.greet_celebrant[0]?.first_name}'s legacy by contributing to a video time capsule. Being a part of this memorial tribute will ensure ${greetData?.greet_celebrant[0]?.first_name}'s story is recorded for all of time. 
-                                        The U-Remember will honor, cherish, and preserve ${greetData?.greet_celebrant[0]?.first_name}'s memory.
-                                        We also hope it will bring comfort, healing, and solace to ${greetData?.greet_celebrant[0]?.first_name}'s friends and family. Thank you for your video and image contributions.
-                              
-                                        In loving memory.
-                              
-                                        U-Greet xo
-                              
-                                        If you’re uncertain of what, or how to contribute, please visit us at app.u-greet.com/U-Remember`
+                                        `During this difficult time, ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have requested your participation in honoring ${greetData?.greet_celebrant[0]?.first_name}'s legacy by contributing to a video time capsule. Being a part of this memorial tribute will ensure ${greetData?.greet_celebrant[0]?.first_name}'s story is recorded for all of time. 
+The U-Remember will honor, cherish, and preserve ${greetData?.greet_celebrant[0]?.first_name}'s memory.
+We also hope it will bring comfort, healing, and solace to ${greetData?.greet_celebrant[0]?.first_name}'s friends and family. Thank you for your video and image contributions.
+
+Use this link to contribute: ${inviteLink}
+Last date to contribute: ${greetData?.contribution_deadline_date}
+
+In loving memory.
+
+U-Greet`
                                       )}`
                                     :
                                     `whatsapp://send?text=${encodeURIComponent(
-                                    `${greetData?.occasion_name}
-                                    ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}
-                                    ${greetData?.contribution_deadline_date}
-                                    ${inviteLink}
-                                    
-                                    Greetings fellow U-Greeter,
-                                    
-                                    We are beyond excited to share that you have been personally selected to join a video tribute for ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}.
-                                    
-                                    ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have personally invited you to be a part of this forever story that they want to tell. Being included in someone's video time capsule is a huge honor; it says that U-Matter, U are important and U should be recorded for all time. So, congratulations on being an awesome human!
-                                   
-                                    We at U-Greet believe strongly in love, life, moments, stories and legacies. So much so that we built this site to ensure that no story goes untold and that no one gets left behind.
-                                    
-                                    Could you please help these extraordinary people tell the story they wish to share?
-                                    
-                                    Upload your favorite pictures and videos and be the reason someone smiles today!
-    
-                                    Love, U-Greet
-                                    XO
-                                    
-                                    P.S. for tips on what to upload or creative ideas, check us out at www.u-greet.com`
+                                    `Greetings fellow U-Greeter,
+                                        
+We are beyond excited to share that you have been personally selected to join a video tribute for ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}.                                                                               
+                                        
+Could you please help these extraordinary people tell the story they wish to share?
+                                        
+Upload your favorite pictures and videos and be the reason someone smiles today!
+
+Use this link to contribute: ${inviteLink}
+Last date to contribute: ${greetData?.contribution_deadline_date}
+        
+Love, U-Greet
+XO
+                                        
+P.S. for tips on what to upload or creative ideas, check us out at www.u-greet.com`
                                 )}`}
                                 data-action="share/whatsapp/share"
                                 target="_blank"
@@ -207,45 +185,34 @@ const OccasionInvite2 = ({ setEditInvite2, setEditInvite1 }) => {
                                 greetData?.occasion_name === 'U-Remember'
                                 ? // Your href for the U-REMEMBER condition
                                   `mailto:?subject=${encodeURIComponent(`${greetData?.occasion_name} occasion Invitation on ${greetData?.occasion_date}`)}&body=${encodeURIComponent(
-                                    `${greetData?.occasion_name}
-                                    ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}
-                                    ${greetData?.contribution_deadline_date}
-                                    ${inviteLink}
+                                    `During this difficult time, ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have requested your participation in honoring ${greetData?.greet_celebrant[0]?.first_name}'s legacy by contributing to a video time capsule. Being a part of this memorial tribute will ensure ${greetData?.greet_celebrant[0]?.first_name}'s story is recorded for all of time. 
+The U-Remember will honor, cherish, and preserve ${greetData?.greet_celebrant[0]?.first_name}'s memory.
+We also hope it will bring comfort, healing, and solace to ${greetData?.greet_celebrant[0]?.first_name}'s friends and family. Thank you for your video and image contributions.
 
+Use this link to contribute: ${inviteLink}
+Last date to contribute: ${greetData?.contribution_deadline_date}
 
-                                    During this difficult time, ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have requested your participation in honoring ${greetData?.greet_celebrant[0]?.first_name}'s legacy by contributing to a video time capsule. Being a part of this memorial tribute will ensure ${greetData?.greet_celebrant[0]?.first_name}'s story is recorded for all of time. 
-                                    The U-Remember will honor, cherish, and preserve ${greetData?.greet_celebrant[0]?.first_name}'s memory.
-                                    We also hope it will bring comfort, healing, and solace to ${greetData?.greet_celebrant[0]?.first_name}'s friends and family. Thank you for your video and image contributions.
-                          
-                                    In loving memory.
-                          
-                                    U-Greet xo
-                          
-                                    If you’re uncertain of what, or how to contribute, please visit us at app.u-greet.com/U-Remember`
+In loving memory.
+
+U-Greet`
                                   )}`
                                 :
                                 `mailto:?subject=${encodeURIComponent(`${greetData?.occasion_name} occasion Invitation on ${greetData?.occasion_date}`)}&body=${encodeURIComponent(
-                                `${greetData?.occasion_name}
-                                ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}
-                                ${greetData?.contribution_deadline_date}
-                                ${inviteLink}
-                                
-                                Greetings fellow U-Greeter,
-                                
-                                We are beyond excited to share that you have been personally selected to join a video tribute for ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}.
-                                
-                                ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have personally invited you to be a part of this forever story that they want to tell. Being included in someone's video time capsule is a huge honor; it says that U-Matter, U are important and U should be recorded for all time. So, congratulations on being an awesome human!
-                               
-                                We at U-Greet believe strongly in love, life, moments, stories and legacies. So much so that we built this site to ensure that no story goes untold and that no one gets left behind.
-                                
-                                Could you please help these extraordinary people tell the story they wish to share?
-                                
-                                Upload your favorite pictures and videos and be the reason someone smiles today!
+                                `Greetings fellow U-Greeter,
+                                        
+We are beyond excited to share that you have been personally selected to join a video tribute for ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}.                                                                               
+                                        
+Could you please help these extraordinary people tell the story they wish to share?
+                                        
+Upload your favorite pictures and videos and be the reason someone smiles today!
 
-                                Love, U-Greet
-                                XO
-                                
-                                P.S. for tips on what to upload or creative ideas, check us out at www.u-greet.com`
+Use this link to contribute: ${inviteLink}
+Last date to contribute: ${greetData?.contribution_deadline_date}
+        
+Love, U-Greet
+XO
+                                        
+P.S. for tips on what to upload or creative ideas, check us out at www.u-greet.com`
                             )}`}
                             style={{ color: "black" }}
                         >
@@ -321,45 +288,34 @@ const OccasionInvite2 = ({ setEditInvite2, setEditInvite1 }) => {
                                     greetData?.occasion_name === 'U-Remember'
                                     ? // Your href for the U-REMEMBER condition
                                       `sms:?body=${encodeURIComponent(
-                                        `${greetData?.occasion_name}
-                                        ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}
-                                        ${greetData?.contribution_deadline_date}
-                                        ${inviteLink}
-    
-    
-                                        During this difficult time, ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have requested your participation in honoring ${greetData?.greet_celebrant[0]?.first_name}'s legacy by contributing to a video time capsule. Being a part of this memorial tribute will ensure ${greetData?.greet_celebrant[0]?.first_name}'s story is recorded for all of time. 
-                                        The U-Remember will honor, cherish, and preserve ${greetData?.greet_celebrant[0]?.first_name}'s memory.
-                                        We also hope it will bring comfort, healing, and solace to ${greetData?.greet_celebrant[0]?.first_name}'s friends and family. Thank you for your video and image contributions.
-                              
-                                        In loving memory.
-                              
-                                        U-Greet xo
-                              
-                                        If you’re uncertain of what, or how to contribute, please visit us at app.u-greet.com/U-Remember`
+                                        `During this difficult time, ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have requested your participation in honoring ${greetData?.greet_celebrant[0]?.first_name}'s legacy by contributing to a video time capsule. Being a part of this memorial tribute will ensure ${greetData?.greet_celebrant[0]?.first_name}'s story is recorded for all of time. 
+The U-Remember will honor, cherish, and preserve ${greetData?.greet_celebrant[0]?.first_name}'s memory.
+We also hope it will bring comfort, healing, and solace to ${greetData?.greet_celebrant[0]?.first_name}'s friends and family. Thank you for your video and image contributions.
+
+Use this link to contribute: ${inviteLink}
+Last date to contribute: ${greetData?.contribution_deadline_date}
+
+In loving memory.
+
+U-Greet`
                                       )}`
                                     :
                                     `sms:?body=${encodeURIComponent(
-                                    `${greetData?.occasion_name}
-                                    ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}
-                                    ${greetData?.contribution_deadline_date}
-                                    ${inviteLink}
-                                    
-                                    Greetings fellow U-Greeter,
-                                    
-                                    We are beyond excited to share that you have been personally selected to join a video tribute for ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}.
-                                    
-                                    ${greetData?.greet_celebrant[0]?.first_name}'s loved ones have personally invited you to be a part of this forever story that they want to tell. Being included in someone's video time capsule is a huge honor; it says that U-Matter, U are important and U should be recorded for all time. So, congratulations on being an awesome human!
-                                   
-                                    We at U-Greet believe strongly in love, life, moments, stories and legacies. So much so that we built this site to ensure that no story goes untold and that no one gets left behind.
-                                    
-                                    Could you please help these extraordinary people tell the story they wish to share?
-                                    
-                                    Upload your favorite pictures and videos and be the reason someone smiles today!
-    
-                                    Love, U-Greet
-                                    XO
-                                    
-                                    P.S. for tips on what to upload or creative ideas, check us out at www.u-greet.com`
+                                    `Greetings fellow U-Greeter,
+                                        
+We are beyond excited to share that you have been personally selected to join a video tribute for ${greetData?.greet_celebrant[0]?.first_name} ${greetData?.greet_celebrant[0]?.last_name}.                                                                               
+                                        
+Could you please help these extraordinary people tell the story they wish to share?
+                                        
+Upload your favorite pictures and videos and be the reason someone smiles today!
+
+Use this link to contribute: ${inviteLink}
+Last date to contribute: ${greetData?.contribution_deadline_date}
+        
+Love, U-Greet
+XO
+                                        
+P.S. for tips on what to upload or creative ideas, check us out at www.u-greet.com`
                                 )}`}
                                 style={{ color: "black" }}
                             >

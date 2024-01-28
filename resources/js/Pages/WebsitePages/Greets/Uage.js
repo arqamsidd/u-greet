@@ -266,7 +266,7 @@ const Uage = () => {
                         </div>
                     </div>
                 </section>
-                <section className="text-center bg--secondary">
+                <section className="text-center bg--secondary hideIt">
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-md-10 col-lg-8">
@@ -276,7 +276,7 @@ const Uage = () => {
                     </div>
                 </section>
                 <section
-                    className="cover cover-fullscreen height-100 imagebg slider text-center"
+                    className="cover cover-fullscreen height-100 imagebg slider text-center hideIt"
                     data-sutoplay="true"
                     data-paging="true"
                     data-arrows="true"

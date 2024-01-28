@@ -87,6 +87,28 @@ const OccasionThemes = () => {
                         </div>
                     </div>
                     <div className="themes-container card-round bg-white">
+                        {themes?.length > 0
+                            ? themes.map(
+                                (theme) =>
+                                    theme.id == selectedThemeId && (
+                                        <div
+                                            className="preview"
+                                            style={{
+                                                backgroundImage: `url("${theme.file_url}")`,
+                                                backgroundSize: "contain",
+                                                //   height: "50vh",
+                                                //   width: "100%",
+                                                backgroundRepeat: "no-repeat",
+                                                backgroundPosition: "center",
+                                            }}
+                                        >
+                                            <div>
+                                            </div>
+
+                                        </div>
+                                    )
+                            )
+                            : ""}
                         <div className="tab-container">
                             {themes?.length > 0 ? (
                                 themes.map((theme) => (
@@ -95,13 +117,7 @@ const OccasionThemes = () => {
                                         key={theme.id}
                                         onClick={() =>
                                             handleThemeClick(theme.id)
-                                        }
-                                        //   style={
-                                        //       //   theme.id == selectedThemeId &&
-                                        //       {
-                                        //           ,
-                                        //       }
-                                        //   }
+                                        }                             
                                     >
                                         <div
                                             className="tab"
@@ -121,51 +137,9 @@ const OccasionThemes = () => {
                                 <p>No theme Available for Now</p>
                             )}
                         </div>
-                        {/* <video
-                            className="preview"
-                            controls
-                            id="videoWithoutData"
-                        >
-                            <source
-                                src="assets/images/YXBwL21lZGlhL3RoZW1lLzYwZDE5NjJhMGZkNGIubXA0.mp4"
-                                type="video/mp4"
-                            />
-                            Your browser does not support the video tag.
-                        </video> */}
+                        
 
-                        {themes?.length > 0
-                            ? themes.map(
-                                  (theme) =>
-                                      theme.id == selectedThemeId && (
-                                          <div
-                                              className="preview"
-                                              style={{
-                                                  backgroundImage: `url("${theme.file_url}")`,
-                                                  backgroundSize: "contain",
-                                                  //   height: "50vh",
-                                                  //   width: "100%",
-                                                backgroundRepeat: "no-repeat",
-                                                backgroundPosition: "center",
-                                              }}
-                                          >
-                                            <div>
-                                                </div>
-                                              {/* selected theme id: {selectedThemeId} */}
-                                              {/* <img
-                                                  src={theme.file_url}
-                                                  alt={theme.id}
-                                                  key={theme.id}
-                                                  style={{
-                                                      // height: "35vh"
-                                                      width: "100%",
-                                                      height: "100%",
-                                                      objectFit: "cover",
-                                                  }}
-                                              /> */}
-                                          </div>
-                                      )
-                              )
-                            : ""}
+
                     </div>
                 </section>
             </div>

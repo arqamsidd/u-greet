@@ -402,7 +402,7 @@ const OccasionEdit = () => {
                                                     className="bg-2 bg-2-fx txt-input2"
                                                     value={Mess || ""}
                                                     // defaultValue={""}
-                                                    onChange={(e) =>
+                              z                      onChange={(e) =>
                                                         setMess(e.target.value)
                                                     }
                                                 />

@@ -273,7 +273,8 @@ const DragAndDropUploader = ({ greetData }) => {
                         <input {...getInputProps()} />
                         <img src={dnd} alt="drag and drop" width={200} />
                         <p>Drag n’ Drop or Select Files</p>
-                        <span
+                        <span>Edit and arrange pictures and videos to your liking and customize with music and background.</span>
+                        {/* <span
                             style={{
                                 color: fileRejections.length > 0 ? "red" : "",
                             }}
@@ -292,8 +293,8 @@ const DragAndDropUploader = ({ greetData }) => {
                                 ".heic" formate)
                             </em>
                             <br />
-                            <em>(video must be in ".mp4" or ".mov" formate)</em> */}
-                        </span>
+                            <em>(video must be in ".mp4" or ".mov" formate)</em> }
+                        </span> */}
                     </div>
                     {/* <aside>
                             <h4>Accepted files</h4>

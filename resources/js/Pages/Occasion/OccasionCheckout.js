@@ -81,8 +81,19 @@ const OccasionCheckout = () => {
                 </div>
 
                 <div className="container">
-                    <div className="row">
-                        <div className="col-md-4">
+                    <div className="row posRelative">
+                    <div className="pricingAbsolute">                        
+                          <button       
+                          className="color-white"                         
+                                onClick={() => handlePlanSelect("plan3")}
+                                
+                            >
+                                
+                                Introductory Pricing - $17 All Greets
+                                
+                            </button>
+                        </div>
+                        <div className="col-md-4 pointerEventNone">
                             <div className="pricing pricing-1 boxed boxed--lg boxed--border">
                                 <span className="h3 pb-4">
                                     <br />
@@ -138,7 +149,7 @@ const OccasionCheckout = () => {
                                 </button>
                             </div>
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-4 pointerEventNone">
                             <div className="pricing pricing-1 boxed boxed--lg boxed--border boxed--emphasis">
                                 <span className="h3 pb-4">
                                     <br />
@@ -205,7 +216,7 @@ const OccasionCheckout = () => {
                                 </button>
                             </div>
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-4 pointerEventNone">
                             <div className="pricing pricing-1 boxed boxed--lg boxed--border">
                                 <span className="h3 pb-4">
                                     <br />
@@ -290,7 +301,13 @@ const OccasionCheckout = () => {
                                     />
                                     Your browser does not support the video tag.
                                 </video>
+
+                                {(checkoutDetail?.video_link ) &&
+                                    <a className="rounded bg-3 p-5 d-inline-block bold mr-10" target="_blank" href={checkoutDetail.video_link} download="">Download</a>
+                                }
                             </div>
+                           
+                           
                         </section>
                     </section>
                 </div>

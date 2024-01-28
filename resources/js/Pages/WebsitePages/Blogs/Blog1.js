@@ -27,7 +27,7 @@ const Blog1 = () => {
                                             <div className="article__title">
                                                 <h1>The Purpose of U-Greet</h1>
                                                 <span className="gnb">
-                                                    May 25th 2020
+                                                January 20th 2024
                                                 </span>
                                                 {/* <span>
                                                     <a href="#">
@@ -194,7 +194,7 @@ const Blog1 = () => {
                                             />
                                         </a>
                                         <div className="feature__body boxed boxed--border">
-                                            <span>May 25th 2020</span>
+                                            <span>January 20th 2024</span>
                                             <h5>The Purpose of U-Greet</h5>
                                             <a href="/blog1"> Read More </a>
                                         </div>

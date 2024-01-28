@@ -17,7 +17,7 @@
 	@endif
 	<div class="footer">
 		<div style="margin-top: 5px;">
-			<span class=""><?php echo date("Y"); ?>©</span>
+			<span class=""><?php echo date("Y"); ?> ©</span>
 			<a class="" href="https://app.u-greet.com" target="_blank" style="text-decoration: none;">U-Greet</a>
 		</div>
 	</div>

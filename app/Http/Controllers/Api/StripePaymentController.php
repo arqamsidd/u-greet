@@ -20,22 +20,22 @@ class StripePaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-     public function stripe(Request $request)
+    public function stripe(Request $request)
     {
 
         Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
         $chargeArr = [
             "amount" => $request->amount * 100,
             "currency" => "usd",
-        //    "source" => $token->id,
+            //    "source" => $token->id,
             "source" => $request->stripeToken,
-         ];
+        ];
 
         $chargeObj = Stripe\Charge::create($chargeArr);
         $paymentArr = [
             'user_id' => $request->userId,
             'greet_id' => $request->greetId,
-            'payment_amount' => ($chargeObj->amount/100),
+            'payment_amount' => ($chargeObj->amount / 100),
             'payment_status' => $chargeObj->status,
             'transaction_id' => $chargeObj->id,
             'description' => $chargeObj->description,
@@ -44,13 +44,13 @@ class StripePaymentController extends Controller
 
         ];
         /*Plan Wise condtion check */
-        if(!empty($request->plan)){
-            if($request->plan == 'plan3'){
+        if (!empty($request->plan)) {
+            if ($request->plan == 'plan3') {
                 $plan = 3;
-            } else if($request->plan == 'plan2'){
+            } else if ($request->plan == 'plan2') {
                 $plan = 2;
             } else {
-                 $plan = 1;
+                $plan = 1;
             }
             $planupdate = Greet::find($request->greetId);
             $planupdate->greet_plan = $plan;
@@ -68,29 +68,27 @@ class StripePaymentController extends Controller
         }*/
         /*End*/
         $dbfinalvideopath = 'storage/greetMedia/final/' . $request->greetId . '/';
-        $paymentData=PaymentTransaction::where('greet_id',$request->greetId)->where('payment_status','succeeded')->latest()->first();
-        
-        if(isset($paymentData))
-        {
+        $paymentData = PaymentTransaction::where('greet_id', $request->greetId)->where('payment_status', 'succeeded')->latest()->first();
+
+        if (isset($paymentData)) {
             $greetMediaObj = GreetMedia::where('greet_id', $request->greetId)->where('greet_media_type', 'final')->first();
-            if(sizeof($greetMediaObj) > 0) {
-                $data['link']=$dbfinalvideopath.$greetMediaObj->media_name.'final.mp4';
-                $userdata=User::where('id',$request->userId)->first();
-                $userEmail=$userdata->email;
+            if (sizeof($greetMediaObj) > 0) {
+                $data['link'] = $dbfinalvideopath . $greetMediaObj->media_name . 'final.mp4';
+                $userdata = User::where('id', $request->userId)->first();
+                $userEmail = $userdata->email;
                 Mail::send('email.payment', $data, function ($message) use ($userEmail) {
-                $message->to($userEmail, 'Your U-Greet is Complete')->subject('Your U-Greet is Complete');
-            });
-                //Mail::to($userEmail)->send(new SucessMail($data));
+                    $message->to($userEmail, 'Your U-Greet is Complete')->subject('Your U-Greet is Complete');
+                });
+                Mail::to($userEmail)->send(new SucessMail($data));
             }
         }
-         
+
         //$id = $request->get('id');
-        $videorequest = GenerateVideoRequest::where('greet_id',$request->greetId)->first();
-       
+        $videorequest = GenerateVideoRequest::where('greet_id', $request->greetId)->first();
+
         $paymentObj = PaymentTransaction::create($paymentArr);
         $videorequest->payment_status = 1;
         $videorequest->save();
         return $chargeObj;
     }
-
 }

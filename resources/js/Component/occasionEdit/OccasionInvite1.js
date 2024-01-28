@@ -375,7 +375,7 @@ const OccasionInvite1 = ({ setEditInvite2, setEditInvite1 }) => {
                                         setEditInvite2(true);
                                 }}
                             >
-                                <div>Next</div>
+                                <div>Save</div>
                             </button>
                         </div>
                     </div>

@@ -272,7 +272,7 @@ const Ucelebrate = () => {
                         </div>
                     </div>
                 </section>
-                <section className="text-center bg--secondary">
+                <section className="text-center bg--secondary hideIt">
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-md-10 col-lg-8">

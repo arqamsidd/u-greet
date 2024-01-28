@@ -1,0 +1,302 @@
+import React from "react";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Footer from "../../Component/Footer/Footer";
+import actionTypes from "../../State/actions/actionTypes";
+import { useState } from "react";
+
+const OccasionPreview = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { greetData, finalVideo, isLoading } = useSelector((state) => state);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+    if (sessionStorage.sortedMediaForMerge) {
+        var arr = JSON.parse(sessionStorage?.sortedMediaForMerge);
+    }
+    // if (arr) {
+    //     sessionStorage.removeItem("sortedMediaForMerge");
+    // }
+    console.log("finalVideo", finalVideo);
+    useEffect(() => {
+        if (sessionStorage.greetData_onReloading) {
+            var reloading = JSON.parse(sessionStorage?.greetData_onReloading);
+        }
+        console.log("reloading", reloading);
+        if (reloading?.id) {
+            console.log("reloading setiing state", reloading);
+            // sessionStorage.removeItem("greetData_onReloading");
+            dispatch({
+                type: actionTypes.SET_STATE,
+                payload: {
+                    greetData: reloading,
+                },
+            });
+        }
+    }, []);
+
+    useEffect(() => {
+        if (greetData?.id) {
+            dispatch({
+                type: actionTypes.PREVIEW_MEDIA,
+                payload: {
+                    greet_id: greetData?.id,
+                },
+            });
+        }
+    }, [greetData?.id]);
+
+    const handleCreateClick = () => {
+        dispatch({
+            type: actionTypes.CREATE_VIDEO,
+            payload: {
+                greet_id: greetData?.id,
+                setIsButtonDisabled: setIsButtonDisabled,
+            },
+        });
+        // setIsButtonDisabled(true);
+    };
+
+    const renderVideoContent = () => {
+        return <>
+            {(finalVideo?.Video_link_final || finalVideo?.Video_link_preview) &&
+                <video
+                    className="preview"
+                    controls
+                   controlsList= {finalVideo.Payment_status  != "succeeded" && "nodownload"}
+                    id="videoWithData"
+                    type="video/mp4"
+                    key={
+                        finalVideo?.Payment_status == "succeeded"
+                            ? finalVideo?.Video_link_final
+                            : finalVideo?.Video_link_preview
+                    }
+                >
+                    <source
+                        src={
+                            finalVideo?.Payment_status == "succeeded"
+                                ? finalVideo?.Video_link_final
+                                : finalVideo?.Video_link_preview
+                        }
+                        // src={
+                        //     finalVideo?.Payment_status == "succeeded"
+                        //         ? finalVideo?.Video_link_final
+                        //         : finalVideo?.Video_link_final
+                        // }
+                        type="video/mp4"
+                    />
+                    Your browser does not support the video tag.
+                </video>}
+             {(finalVideo?.Video_link_final ) &&
+                <a class="rounded bg-3 p-5 d-inline-block bold mr-10" target="_blank" href={finalVideo.Video_link_final} download="">Download</a>
+            }
+            <br />
+            {  (finalVideo.Payment_status  != "succeeded") && <div className="font-20 color-grey m-2 ">
+                {(finalVideo.video_request_status != "" || isButtonDisabled) ? "Your preview request is in progress. If you wish to do more preview requests then please click on the below button." : 'Please click on "Create Video Request" to start the process. You will be notified by email once the preview is generated.'}
+                <div className="w-100 mt-8">
+                    <button
+                        onClick={() => handleCreateClick()}
+                        className="bg-3 bold mr-10"
+                    >
+                        Create Video Request
+                    </button>
+                </div>
+            </div> }
+        </>
+
+
+        // if (
+        //     // finalVideo?.greetmedia == "" ||
+        //     // finalVideo.Payment_status == "" || 
+        //     finalVideo.Payment_status  != "succeeded"
+        // ) {
+        //     return (
+        //         <div className="font-20 color-grey m-2 ">
+        //             Please click on "Create Video Request" to start the process.
+        //             You will be notified by email once the preview is generated.
+        //             <div className="w-100 mt-8">
+        //                 <button
+        //                     onClick={() => handleCreateClick()}
+        //                     className="bg-3 bold mr-10"
+        //                 >
+        //                     Create Video Request
+        //                 </button>
+        //             </div>
+        //         </div>
+        //     );
+        // } 
+        // else if (finalVideo.video_request_status == "Failed") {
+        //     return (
+        //         <div className="font-20 color-grey m-2 ">
+        //             Your video creation failed please send a request again.
+        //             <div className="w-100 mt-8">
+        //                 <button
+        //                     onClick={() => handleCreateClick()}
+        //                     className="bg-3 bold mr-10"
+        //                 >
+        //                     Create Video Request
+        //                 </button>
+        //             </div>
+        //         </div>
+        //     );
+        // } else if (
+        //     finalVideo.video_request_status == "Pending" ||
+        //     isButtonDisabled
+        // ) {
+        //     return (
+        //         <div className="font-20 color-grey m-2 ">
+        //             Your preview is in process. You will be notified by email
+        //             once the preview is generated.
+        //         </div>
+        //     );
+        // } else if (finalVideo.video_request_status == "In Progress") {
+        //     return (
+        //         <div className="font-20 color-grey m-2 ">
+        //             Your video generation in progress, Please wait we will
+        //             update you by mail.
+        //         </div>
+        //     );
+        // } 
+        // else if (finalVideo.video_request_status == "Done") {
+        //     return (
+        //         <video
+        //             className="preview"
+        //             controls
+        //             id="videoWithData"
+        //             type="video/mp4"
+        //             key={
+        //                 finalVideo?.Payment_status == "succeeded"
+        //                     ? finalVideo?.Video_link_final
+        //                     : finalVideo?.Video_link_preview
+        //             }
+        //         >
+        //             <source
+        //                 src={
+        //                     finalVideo?.Payment_status == "succeeded"
+        //                         ? finalVideo?.Video_link_final
+        //                         : finalVideo?.Video_link_preview
+        //                 }
+        //                 // src={
+        //                 //     finalVideo?.Payment_status == "succeeded"
+        //                 //         ? finalVideo?.Video_link_final
+        //                 //         : finalVideo?.Video_link_final
+        //                 // }
+        //                 type="video/mp4"
+        //             />
+        //             Your browser does not support the video tag.
+        //         </video>
+        //     );
+        // }
+        // else {
+        //     return (
+        //         <>
+        //             <div className="font-20 color-grey m-2 ">
+        //                 Please click on "Create Video Request" to start the
+        //                 process. You will be notified by email once the
+        //                 preview is generated.
+        //                 <div className="w-100 mt-8">
+        //                     <button
+        //                         onClick={() => handleCreateClick()}
+        //                         className="bg-3 bold mr-10"
+        //                         disabled="true"
+        //                     >
+        //                         Create Video Request
+        //                     </button>
+        //                 </div>
+        //             </div>
+        //         </>
+        //     );
+        // }
+    };
+
+    return (
+        <div>
+            <div className="Toastify" />
+            <div className="navigation bg-white">
+                <div className="inner inner-occasion inner-action">
+                    <div
+                        className="left link"
+                        onClick={() => navigate("/occasionInformation")}
+                    >
+                        <img
+                            src="assets/images/arrow-right.418d2ebe.svg"
+                            alt="arrow"
+                            className="arrow"
+                        />
+                        Back
+                    </div>
+                </div>
+            </div>
+            {!isLoading && (
+                <div className="page dashboard">
+                    {finalVideo?.uploads == "False" ? (
+                        <section className="media-section media-section2 bg-2">
+                            Please Upload Media and then create video request to
+                            preview video
+                        </section>
+                    ) : (
+                        <section className="media-section media-section2 bg-2">
+                            <div className="section-head">
+                                <div className="font-17 bold">
+                                    {finalVideo?.Payment_status == "succeeded"
+                                        ? "Final Video"
+                                        : "Preview Video"}
+                                </div>
+                                <div className="font-12">
+                                    Preview your video, check out your montage.
+                                    <br/>
+                                    Edit, arrange, and create new previews until you are satisfied by clicking the button below!
+                                </div>
+                            </div>
+                            <div className="themes-container card-round bg-white">
+                                {finalVideo ? (
+                                    renderVideoContent()
+                                ) : (
+                                    <div className="font-20 color-grey m-2 ">
+                                        Your preview video making is in process.
+                                        You will be notified by email once the
+                                        preview is generated.
+                                    </div>
+                                )}
+                            </div>
+                            <div className="empty text-center">
+                                {/* <img
+                            src="assets/images/empty.da9f33de.svg"
+                            alt="empty"
+                            width={100}
+                        /> */}
+                                {/* <div className="font-25 color-grey mt-2 ">
+                            No files uploaded at them moment...
+                        </div> */}
+                                {/* {finalVideo.video_request_status == "Done" &&
+                                finalVideo?.Payment_status != "succeeded" ? (
+                                    <>
+                                        <div className="font-20 color-grey mt-2 ">
+                                            Please complete payment to watch
+                                            final created video
+                                        </div>
+                                        <button
+                                            className="bg-3 bold m-4"
+                                            onClick={() =>
+                                                navigate("/occasionCheckout")
+                                            }
+                                        >
+                                            <div>Finalize U-Greet</div>
+                                        </button>
+                                    </>
+                                ) : (
+                                    <></>
+                                )} */}
+                            </div>
+                        </section>
+                    )}
+                </div>
+            )}
+            <Footer />
+        </div>
+    );
+};
+
+export default OccasionPreview;
