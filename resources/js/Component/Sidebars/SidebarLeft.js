@@ -383,7 +383,7 @@ const SidebarLeft = () => {
                         aria-haspopup="true"
                         data-menu-toggle="hover"
                     >
-                        <a href="/privacypolicy" className="menu-link">
+                        <a href="/TermsConditions" className="menu-link">
                             <span className="svg-icon menu-icon">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"

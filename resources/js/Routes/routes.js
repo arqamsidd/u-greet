@@ -36,6 +36,7 @@ import WorkWithUGreet from "../Pages/WebsitePages/WorkWithUGreet";
 import Faq from "../Pages/WebsitePages/Faq";
 import Helpdesk from "../Pages/WebsitePages/Helpdesk";
 import PrivacyPolicy from "../Pages/WebsitePages/PrivacyPolicy";
+import TermsConditions from "../Pages/WebsitePages/TermsConditions";
 import Reviews from "../Pages/WebsitePages/Reviews";
 import Loader from "../Component/Loader/Loader";
 import SweetGreet from "../Pages/WebsitePages/Greets/SweetGreet";
@@ -200,6 +201,14 @@ function AppRoutes(props) {
                     element={
                         <StyledRoute>
                             <PrivacyPolicy />
+                        </StyledRoute>
+                    }
+                />
+                <Route
+                    path="/TermsConditions"
+                    element={
+                        <StyledRoute>
+                            <TermsConditions />
                         </StyledRoute>
                     }
                 />

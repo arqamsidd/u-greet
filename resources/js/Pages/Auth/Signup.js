@@ -258,7 +258,7 @@ const Signup = (props) => {
                                         }}
                                             onChange={handleCheckboxChange}
                                         ></input>
-                                        <label for="agreement-checkbox" >I have read and accept the <a target="_blank" href="https://app.u-greet.com/PrivacyPolicy">Privacy Policy</a>.</label>
+                                        <label for="agreement-checkbox" >I have read and accept the <a target="_blank" href="https://app.u-greet.com/PrivacyPolicy">Privacy Policy</a> and <a target="_blank" href="https://app.u-greet.com/TermsConditions">Terms and Conditions</a>.</label>
 
                                         {showCheckboxError && (
                                             <span class="invalid-feedback" role="alert"><strong>Please agree to the Privacy Policy to sign up.</strong></span>

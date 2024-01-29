@@ -26,7 +26,7 @@ class StripePaymentController extends Controller
         Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
         $chargeArr = [
             "amount" => $request->amount * 100,
-            "currency" => "usd",
+            "currency" => "cad",
             //    "source" => $token->id,
             "source" => $request->stripeToken,
         ];

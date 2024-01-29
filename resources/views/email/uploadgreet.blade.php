@@ -25,12 +25,17 @@
 				Love, U-Greet XO
 			</td>
 		</tr>
+		<tr style="margin-top: 5px;">
+			<td style="display: block;margin:0px auto; padding:0px 15px">
+				<div>
+					<span class=""><?php echo date("Y");  ?> ©</span>
+					| Follow us on Facebook and Instagram as well for upcoming promotions, contests, blogs and new occasions <a class="" href="https://u-greet.com/" target="_blank" style="text-decoration: none;">U-Greet</a>
+				</div>
+			</td>
+		</tr>
 	</table>
 	<div class="footer">
-		<div style="margin-top: 5px;">
-			<span class=""><?php echo date("Y");  ?>©</span>
-			<a class="" href="#" target="_blank" style="text-decoration: none;">U-Greet</a>
-		</div>
+		
 	</div>
 </body>
 </html>

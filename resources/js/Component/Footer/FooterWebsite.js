@@ -156,10 +156,10 @@ const FooterWebsite = () => {
                             <span className="update-year"></span> U-Greet Inc.
                         </span>
                         <a className="type--fine-print" href="/PrivacyPolicy">
-                            Privacy Policy
+                            Privacy & Cookie Policy
                         </a>
-                        <a className="type--fine-print" href="/PrivacyPolicy">
-                            Legal
+                        <a className="type--fine-print" href="/TermsConditions">
+                            Terms & Conditions
                         </a>
                     </div>
                 </div>

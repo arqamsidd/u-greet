@@ -37,6 +37,9 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        Mail::send('email.register', array(),function ($message) use ($request) {
+            $message->to($request->email, 'Sucessfuly Account Create')->subject('Account Created');
+        });
         return response()->json(['status' => true, 'user' => $user]);
     }
     /**
@@ -62,9 +65,9 @@ class RegisterController extends Controller
         ]);
         
         /*Mail send*/
-            Mail::send('email.register', array(),function ($message) use ($request) {
-                $message->to($request->email, 'Sucessfuly Account Create')->subject('Account Create Email');
-            });
+        Mail::send('email.register', array(),function ($message) use ($request) {
+            $message->to($request->email, 'Sucessfuly Account Create')->subject('Account Create Email');
+        });
         /*End*/
         return response()->json(['status' => true, 'user' => $user]);
     }

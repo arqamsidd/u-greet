@@ -76,7 +76,7 @@
                 autoWidth:false,
                 pageLength: 50,
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                order: [[0, 'ASC']],
+                order: [[0, 'DESC']],
                 ajax: "{{ url('admin/dashboard') }}",
                 columns: [
                     /*{data: 'DT_RowIndex', name: 'DT_RowIndex'},*/

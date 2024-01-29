@@ -10,7 +10,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import CheckoutForm from "../../Component/paymentcomponent/CheckoutForm";
 
 const stripePromise = loadStripe(
-    "pk_test_51MD0ulEyfMOJijwDQRn40EHYi6y2CLrlOwUB5SlUTFzgPUNEAyTjThnsOKI3ZxKp7boqljMrUdL0EalRt3OblGSn00x4ZtmXJA"
+    "pk_test_51M4qHZGZ01nKTVKhtwarTKR3XLHZ4DT9ZnicVdLnciRtdiCYBwv1zOpo0GBl7pYuc1M9NRJQ6xICQNYK3Ok4wUNI00JgbmX6Px"
 );
 
 const OccasionCheckout = () => {
