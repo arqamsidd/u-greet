@@ -27,7 +27,7 @@ const Blog5 = () => {
                                             <div className="article__title">
                                                 <h1>I miss you</h1>
                                                 <span className="gnb">
-                                                    June 27th 2020
+                                                    June 27th 2024
                                                 </span>
                                                 {/* <span>
                                                     <a href="#">
@@ -155,7 +155,7 @@ const Blog5 = () => {
                                             />
                                         </a>
                                         <div className="feature__body boxed boxed--border">
-                                            <span>Oct 15th 2020</span>
+                                            <span>Oct 15th 2024</span>
                                             <h5>Oh Donna</h5>
                                             <a href="/blog7"> Read More </a>
                                         </div>
@@ -170,7 +170,7 @@ const Blog5 = () => {
                                             />
                                         </a>
                                         <div className="feature__body boxed boxed--border">
-                                            <span>May 25th 2020</span>
+                                            <span>May 25th 2024</span>
                                             <h5>The Purpose of U-Greet</h5>
                                             <a href="/blog1"> Read More </a>
                                         </div>
@@ -185,7 +185,7 @@ const Blog5 = () => {
                                             />
                                         </a>
                                         <div className="feature__body boxed boxed--border">
-                                            <span>June 12th 2020</span>
+                                            <span>June 12th 2024</span>
                                             <h5>Why should U-Remember?</h5>
                                             <a href="/blog3"> Read More </a>
                                         </div>

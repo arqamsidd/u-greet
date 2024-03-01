@@ -29,6 +29,7 @@ class StripePaymentController extends Controller
             "currency" => "cad",
             //    "source" => $token->id,
             "source" => $request->stripeToken,
+            
         ];
 
         $chargeObj = Stripe\Charge::create($chargeArr);

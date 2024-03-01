@@ -15,7 +15,7 @@ export const Home = () => {
     }, []);
 
     return (
-        <div className="row justify-content-center">
+        <div className="row justify-content-center hh">
             <div className="col-md-8">
                 <div className="card">
                     <div className="card-header">Laravel React Auth</div>

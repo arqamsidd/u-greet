@@ -71,7 +71,7 @@ const Blog = () => {
                                                     </a>
                                                     <div className="feature__body boxed boxed--border">
                                                         <span className="gnb">
-                                                            May 29th 2020
+                                                            May 29th 2024
                                                         </span>
                                                         <h5>Our Why?</h5>
                                                         <a href="/blog2">
@@ -96,7 +96,7 @@ const Blog = () => {
                                                     </a>
                                                     <div className="feature__body boxed boxed--border">
                                                         <span className="gnb">
-                                                            June 12th 2020
+                                                            June 12th 2024
                                                         </span>
                                                         <h5>
                                                             Why should
@@ -124,7 +124,7 @@ const Blog = () => {
                                                     </a>
                                                     <div className="feature__body boxed boxed--border">
                                                         <span className="gnb">
-                                                            June 19th 2020
+                                                            June 19th 2024
                                                         </span>
                                                         <h5>
                                                             The Adventures of
@@ -152,7 +152,7 @@ const Blog = () => {
                                                     </a>
                                                     <div className="feature__body boxed boxed--border">
                                                         <span className="gnb">
-                                                            June 27th 2020
+                                                            June 27th 2024
                                                         </span>
                                                         <h5>I miss you</h5>
                                                         <a href="/blog5">
@@ -177,7 +177,7 @@ const Blog = () => {
                                                     </a>
                                                     <div className="feature__body boxed boxed--border">
                                                         <span className="gnb">
-                                                            Aug 22th 2020
+                                                            Aug 22th 2024
                                                         </span>
                                                         <h5>
                                                             Truly, madly, deeply
@@ -204,7 +204,7 @@ const Blog = () => {
                                                     </a>
                                                     <div className="feature__body boxed boxed--border">
                                                         <span className="gnb">
-                                                            Oct 15th 2020
+                                                            Oct 15th 2024
                                                         </span>
                                                         <h5>Oh Donna</h5>
                                                         <a href="/blog7">

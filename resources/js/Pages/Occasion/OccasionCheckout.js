@@ -13,6 +13,7 @@ const stripePromise = loadStripe(
     "pk_test_51M4qHZGZ01nKTVKhtwarTKR3XLHZ4DT9ZnicVdLnciRtdiCYBwv1zOpo0GBl7pYuc1M9NRJQ6xICQNYK3Ok4wUNI00JgbmX6Px"
 );
 
+
 const OccasionCheckout = () => {
     const element = document.getElementById("ugreetAppHtml");
     if (element?.classList?.contains("f-style-bundle")) {

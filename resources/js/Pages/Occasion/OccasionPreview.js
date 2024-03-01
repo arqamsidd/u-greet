@@ -11,6 +11,8 @@ const OccasionPreview = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { greetData, finalVideo, isLoading } = useSelector((state) => state);
+    const allData  = useSelector((state)=> state)
+    console.log('!!allData', allData)
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     if (sessionStorage.sortedMediaForMerge) {

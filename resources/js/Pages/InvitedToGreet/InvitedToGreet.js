@@ -95,8 +95,8 @@ const InvitedToGreet = () => {
                         );
                     }
                 } else {
-                files = event.dataTransfer?.files || event.target?.files || [];
-                console.log("d event of beg file 2222 else", event, files);
+                    files = event.dataTransfer?.files || event.target?.files || [];
+                    console.log("d event of beg file 2222 else", event, files);
                 }
                 const promises = [];
                 for (let i = 0; i < files.length; i++) {
@@ -349,18 +349,12 @@ const InvitedToGreet = () => {
                                                             style={{
                                                                 color:
                                                                     fileRejections.length >
-                                                                    0
+                                                                        0
                                                                         ? "red"
                                                                         : "",
                                                             }}
                                                         >
-                                                            [File Requirements:
-                                                            Video must be .MP4
-                                                            or .MOV & Image must
-                                                            be .JPG, .JPEG or
-                                                            .PNG format. Both
-                                                            require dimensions
-                                                            above 500px]
+                                                            Edit and arrange pictures and videos to your liking and customize with music and background.
                                                         </span>
                                                     </div>
                                                     <button
@@ -552,10 +546,15 @@ const InvitedToGreet = () => {
                                             last_name={lastName}
                                             email={email}
 
-                                            // contributedMedia={
-                                            //     greetContributedMedia
-                                            // }
+                                        // contributedMedia={
+                                        //     greetContributedMedia
+                                        // }
                                         />
+                                        <div className="font-12 card text-center">
+                                            File Requirements: Video must be .MP4 or .MOV &
+                                    Image must be .JPG, .JPEG, .PNG or .HEIC format. Both
+                                    require dimensions above 500px
+                                        </div>
                                     </div>
                                 )}
                                 {NextClicked && (
