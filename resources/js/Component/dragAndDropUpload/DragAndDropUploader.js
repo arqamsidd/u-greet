@@ -205,7 +205,7 @@ const DragAndDropUploader = ({ greetData }) => {
                         code: "small-width",
                         message: `Image width must be greater than 800`,
                     };
-                } else if (file?.width < 500 || file?.height < 500) {
+                } else if (file?.width < 5|| file?.height < 5) {
                     console.log('else if', file?.width)
                     console.log('else if', file?.height)
                     return {
@@ -221,22 +221,22 @@ const DragAndDropUploader = ({ greetData }) => {
     // console.log("acceptedFiles", acceptedFiles);
     // console.log("fileRejections", fileRejections);
 
-    // const acceptedFileItems = acceptedFiles.map((file) => (
-    //     <li key={file.path}>
-    //         {file.path} - {file.size} bytes
-    //     </li>
-    // ));
+    const acceptedFileItems = acceptedFiles.map((file) => (
+        <li key={file.path}>
+            {file.path} - {file.size} bytes
+        </li>
+    ));
 
-    // const fileRejectionItems = fileRejections.map(({ file, errors }) => (
-    //     <li key={file.path}>
-    //         {file.path} - {file.size} bytes
-    //         <ul>
-    //             {errors.map((e) => (
-    //                 <li key={e.code}>{e.message}</li>
-    //             ))}
-    //         </ul>
-    //     </li>
-    // ));
+    const fileRejectionItems = fileRejections.map(({ file, errors }) => (
+        <li key={file.path}>
+            {file.path} - {file.size} bytes
+            <ul>
+                {errors.map((e) => (
+                    <li key={e.code}>{e.message}</li>
+                ))}
+            </ul>
+        </li>
+    ));
 
     useEffect(() => {
         if (acceptedFiles.length > 0) {
@@ -296,12 +296,23 @@ const DragAndDropUploader = ({ greetData }) => {
                             <em>(video must be in ".mp4" or ".mov" formate)</em> }
                         </span> */}
                     </div>
-                    {/* <aside>
-                            <h4>Accepted files</h4>
-                            <ul>{acceptedFileItems}</ul>
-                            <h4>Rejected files</h4>
-                            <ul>{fileRejectionItems}</ul>
-                        </aside> */}
+                    {
+                        <aside>
+                        {acceptedFileItems.length > 0 && (
+                            <div>
+                                <h4>Accepted files</h4>
+                                <ul>{acceptedFileItems}</ul>
+                            </div>
+                        )}
+                        {fileRejections.length > 0 && (
+                            <div>
+                                <h4>Rejected files</h4>
+                                <ul>{fileRejectionItems}</ul>
+                            </div>
+                        )}
+                        </aside>
+                    
+                    }
                     <button
                         // {...getRootProps({ className: "dropzone" })}
                         // onClick={openDialog}

@@ -89,10 +89,8 @@ class GenerateRequestedVideo extends Command
                 $isThemeMusic = true;
             }
 
-            if (isset($greetTransition) && !empty($greetTransition) ) {
-                if($greetTransition->name != 'none'){
-                    $isTransition = true;
-                }
+            if (isset($greetTransition) && !empty($greetTransition)) {
+                $isTransition = true;
             }
     
             $vidMerCmd = 'ffmpeg';
@@ -100,11 +98,8 @@ class GenerateRequestedVideo extends Command
             $count = 0;
             $greetMediaCount = sizeof($greetMediaFiles);
             $check_media = array();
-
 			$ffprobe = FFProbe::create();
-
             $ffmpeg = FFMpeg::create();
-            
             foreach($greetMediaFiles as $key=>$greetMediaFile)
             {
                 $check_media[]=$greetMediaFile->media_type;
@@ -287,7 +282,6 @@ class GenerateRequestedVideo extends Command
                         $muteFilter = $muteFilter . "volume=enable='between(t,". $currentLength .",". $currentLength + $duration .")':volume=0, ";
                         $currentLength += $duration;
 
-                        /* 
                         if ($isTransition) {
                             $transition = $greetTransition->name;
                             if ($isTheme) {
@@ -310,14 +304,6 @@ class GenerateRequestedVideo extends Command
                                 exec('ffmpeg -i '. $resizedVideoPath .' -vf "pad=1920:1080:(1920-iw)/2:(1080-ih)/2" -r 25 ' . $transparentVideoPath);
                             }
                         }
-                        */
-                        
-                        if ($isTheme) {
-                            exec('ffmpeg -stream_loop -1 -i '. $backgroundVideoPath .' -i ' . $resizedVideoPath . ' -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1,setsar=1,format=yuva420p" -r 25 ' . $transparentVideoPath);
-                        } else {
-                            exec('ffmpeg -i '. $resizedVideoPath .' -vf "pad=1920:1080:(1920-iw)/2:(1080-ih)/2" -r 25 ' . $transparentVideoPath);
-                        }
-                        
                     }
                 }
 
@@ -429,16 +415,8 @@ class GenerateRequestedVideo extends Command
                     $data['link']=$dbfinalvideopath.$rdname.'preview.mp4';
                     $greet = Greet::with('greetMedia', 'greetCelebrant')->where('id',$greetId)->first();
                     $duration = $time_sec / 60;
-
-                    $video_link_preview=('storage/greetMedia/final/'.$greetId.'/'.$rdname.'preview.mp4');
-                    $data['link'] = $video_link_preview;
-
-
-
                     if ($greet->occasion_name == 'Sweet Greet' && $duration <= 3) {
                         $data['link']=$dbfinalvideopath.$rdname.'trimmed_final.mp4';
-                        $video_link_f=('storage/greetMedia/final/'.$greetId.'/'.$rdname.'trimmed_final.mp4');
-                        $data['link'] = $video_link_f;
                     }
                     Mail::to($userEmail)->send(new SucessMail($data));
                 } else {
@@ -475,7 +453,7 @@ class GenerateRequestedVideo extends Command
                 ];
                 $greetMediaRequest = $requestedGreet->update($greetMediaRequestArr);
             } 
-                else {
+            else {
     
                 $mediaRequestInsertArr = [
                     'comments' => 'There are no media found in greet. Please upload again or contact support!',

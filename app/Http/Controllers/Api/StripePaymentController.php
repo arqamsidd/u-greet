@@ -93,3 +93,4 @@ class StripePaymentController extends Controller
         return $chargeObj;
     }
 }
+

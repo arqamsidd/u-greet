@@ -194,7 +194,7 @@ const InvitedToGreet = () => {
                         code: "small-width",
                         message: `Image width must be greater than 800`,
                     };
-                } else if (file?.width < 500 || file?.height < 500) {
+                } else if (file?.width < 5|| file?.height < 5) {
                     return {
                         code: "small-width",
                         message: `Image width must be greater than 800`,

@@ -15,6 +15,7 @@ const OccasionEdit = () => {
     const location = useLocation();
     const dispatch = useDispatch();
     const { greetData } = useSelector((state) => state);
+    console.log("arqam greetData", greetData);
     const { state } = useContext(AuthContext);
     greetData.id &&
         sessionStorage.setItem(
@@ -23,7 +24,7 @@ const OccasionEdit = () => {
         );
 
     // console.log("HELLO NAMES", names);
-    console.log("dddnnn greetData", greetData);
+    //console.log("greetData", greetData);
     // console.log("location.state?.isInvite", location.state?.isInvite);
     // console.log("location.state?.greetIdForEdit", location.state?.greetIdForEdit);
 
@@ -173,11 +174,11 @@ const OccasionEdit = () => {
                                             >
                                                 <div className="active bg-10" />
                                             </div>
-                                        ) : (
+                                         ) : (
                                             <div
                                                 className="image"
                                                 style={{
-                                                    backgroundImage: `url("resources\js\assets\auth\js\couple-4615557__340.jpg")`,
+                                                    backgroundImage: `url("")`,
                                                     backgroundSize: "cover",
                                                     backgroundPosition:
                                                         "center center",

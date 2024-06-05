@@ -299,7 +299,7 @@ export const Dashboard = (props) => {
                                 </div>
                                 <div className="col-xl-4">
                                     <div
-                                        className="card card-custom bgi-no-repeat bgi-size-cover gutter-b card-stretch"
+                                        className="card card-custom custombgblur bgi-no-repeat bgi-size-cover gutter-b card-stretch"
                                         style={{
                                             backgroundImage:
                                                 "url('assets/media/free.jpg')",

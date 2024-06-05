@@ -46,10 +46,10 @@ const ForgotPassword = () => {
                                     />
                                 </a>
                                 <div className="font-26 bold head">
-                                    Forgotten Password
+                                Find Your Account
                                 </div>
                                 <div className="font-18 color-2 bold">
-                                    Enter your email to reset your password
+                                Please enter your email address to reset your password.
                                 </div>
                             </div>
                             {/* <form

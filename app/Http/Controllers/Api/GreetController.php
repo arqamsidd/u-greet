@@ -300,25 +300,25 @@ class GreetController extends Controller
             if(!empty($value['greet_img_link'])){
                 $value['greet_img_link'] = $value['greet_img_link'];
             } else {
-                if($value['occasion_name'] == 'sweet-greet'){
+                if($value['occasion_name'] == 'Sweet Greet'){
                     $value['greet_img_link'] = url('images/SWEET-GREET.jpg');
                 }
                 if($value['occasion_name'] == 'U-Greet'){
                     $value['greet_img_link'] = url('images/ugreet.jpg');
                 }
-                if($value['occasion_name'] == 'u-age'){
+                if($value['occasion_name'] == 'U-Age'){
                     $value['greet_img_link'] = url('images/uage.jpg');
                 }
-                if($value['occasion_name'] == 'U-baby'){
+                if($value['occasion_name'] == 'U-Baby'){
                     $value['greet_img_link'] = url('images/ubaby.jpg');
                 }
-                if($value['occasion_name'] == 'U-Celebration'){
+                if($value['occasion_name'] == 'U-Celebrate'){
                     $value['greet_img_link'] = url('images/ucelebrate.jpg');
                 }
                 if($value['occasion_name'] == 'U-Grad'){
                     $value['greet_img_link'] = url('images/ugrad.jpg');
                 }
-                if($value['occasion_name'] == 'U-love'){
+                if($value['occasion_name'] == 'U-Love'){
                     $value['greet_img_link'] = url('images/ulove.jpg');
                 }
                   if($value['occasion_name'] == 'U-Miss'){

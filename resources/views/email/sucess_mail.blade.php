@@ -11,7 +11,7 @@
 	</div>
 	@if(isset($data['message']))
 	<p>Your video has been successfully generated. Please click the link given below to check your video.</p>
-	<a style="text-align: center;" href="{{url($data['link'])}}"> click here</a>
+	<a style="text-align: center;" href="{{url($data['link'])}}"> Click here</a>
 	@else
 	<div style="text-align: center;">{{$data}}</div>
 	@endif
