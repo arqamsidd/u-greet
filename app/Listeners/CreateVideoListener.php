@@ -32,6 +32,10 @@ class CreateVideoListener
      */
     public function handle(CreateVideo $event)
     {
+        
+        $ffmpegBinPath = env('FFMPEG_BIN_PATH');
+        $ffprobeBinPath = env('FFPROBE_BIN_PATH');
+        
         $greetId = $event->greetId;
         $greetObj = Greet::find($greetId);
         $isTheme = false;
@@ -148,7 +152,7 @@ class CreateVideoListener
 
             $greetMediaThemeName = $rdname . $greetMediaType . '.mp4';
 
-            $musicCmd = 'ffmpeg -i '.$finalvideopath.$greetMediaMergeName.$musicCmd.' -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest '.$finalvideopath.$greetMediaThemeName;
+            $musicCmd = $ffmpegBinPath . ' -i '.$finalvideopath.$greetMediaMergeName.$musicCmd.' -c:v copy -c:a libfdk_aac -map 0:v:0 -map 1:a:0 -shortest '.$finalvideopath.$greetMediaThemeName;
 
             // print_r($musicCmd);exit;
 

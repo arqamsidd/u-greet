@@ -1,3 +1,9 @@
+### Install
+
+[Download FFmpeg & FFprobe builds](https://github.com/abrar71/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.0-latest-linux64-nonfree-7.0.tar.xz) and update the .env file with proper binary path. This build contains the libfdk_aac which has superior quality audio among support for other formats.
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
 <p align="center">

@@ -129,6 +129,10 @@ class GreetController extends Controller
     /*Upload media*/
     public function storeMedia(Request $request)
     {
+        
+        $ffmpegBinPath = env('FFMPEG_BIN_PATH');
+        $ffprobeBinPath = env('FFPROBE_BIN_PATH');
+
         $validator = Validator::make($request->all(), [
             'user_id'       => 'required',
             'greet_id'      => 'required',
@@ -201,7 +205,12 @@ class GreetController extends Controller
                     $order = $latest->order + 1;
                 }
                 /*custome duration */
-                $ffprobe = FFMpeg\FFProbe::create();
+                $ffprobe = FFMpeg\FFProbe::create(
+                    array(
+                        'ffmpeg.binaries'  => $ffmpegBinPath,
+                        'ffprobe.binaries' => $ffprobeBinPath,
+                    )
+                );
                  $duration = 500;                        //$ffprobe->format($file_path)->get('duration');
                 $totalSec = round($duration);
                 $mint = floor($totalSec/3600).gmdate(":i:s", $totalSec%3600);
@@ -570,6 +579,9 @@ class GreetController extends Controller
     /* Upload Greet Media by Guest User */
     public function uploadGreetMediaByGuest(Request $request) 
     {
+        $ffmpegBinPath = env('FFMPEG_BIN_PATH');
+        $ffprobeBinPath = env('FFPROBE_BIN_PATH');
+
         $validator = Validator::make($request->all(), [
             'first_name' => ['required'],
             'email' => ['required'],
@@ -665,7 +677,12 @@ class GreetController extends Controller
                 /*custome duration */
                 // dd($file_path);
 
-                $ffprobe = FFMpeg\FFProbe::create();
+                $ffprobe = FFMpeg\FFProbe::create(
+                    array(
+                        'ffmpeg.binaries'  => $ffmpegBinPath,
+                        'ffprobe.binaries' => $ffprobeBinPath,
+                    )
+                );
                 $duration = $ffprobe->format($file_path)->get('duration');
                 // dd($duration);
                 // $c=' -i ' .  $file_path;
