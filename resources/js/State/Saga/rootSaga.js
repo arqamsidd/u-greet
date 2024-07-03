@@ -539,12 +539,6 @@ export function* UPDATE_VIDEO({ payload }) {
 export function* POST_FILE({ payload }) {
     console.log("post POST_FILE request param :", payload);
 
-    // yield put({
-    //     type: actionTypes.LOADING,
-    //     payload: {
-    //         isLoading: true,
-    //     },
-    // });
     const id = toast.info("Uploading Please wait...", {
         position: "bottom-right",
         autoClose: false,
@@ -555,14 +549,7 @@ export function* POST_FILE({ payload }) {
         progress: undefined,
         theme: "colored",
     });
-    // const formData = new FormData();
-    // // const convertedFile = getBase64(file);
-    // yield formData.append("media", payload.file);
-    // yield formData.append("greet_id", payload.greet_id);
-    // yield formData.append("user_id", payload.uId);
-    // // yield formData.append("media_thumb", payload.media_thumb);
-    // yield console.log("dd formData", formData);
-    // yield console.log("hey file", file);
+
     const formData = new FormData();
     const filesArray = payload.file; // Replace with your array of files
 
@@ -577,15 +564,35 @@ export function* POST_FILE({ payload }) {
 
     console.log("ABOUT TO UPLOAD");
 
-    yield axios
-        .post("/api/create-greet-media", formData, {
-            headers: {
-                "Content-type": "multipart/form-data",
-            },
-        })
-        .then((response) => {
-            // console.log("uploaded");
-            console.log("Uploaded, Response: ", response)
+
+    try {
+        const response = yield call(
+            axios.post,
+            "/api/create-greet-media",
+            formData,
+            {
+                headers: {
+                    "Content-type": "multipart/form-data",
+                },
+                onUploadProgress: function (progressEvent) {
+                    let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    console.log(`Upload progress: ${percentCompleted}%`);
+                    toast.update(id, {
+                        render: `Upload progress: ${percentCompleted}%`,
+                        type: toast.TYPE.INFO,
+                        autoClose: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        progress: percentCompleted / 100,
+                        position: "bottom-right",
+                        hideProgressBar: false,
+                    });
+                }
+            }
+        );
+
+        if (response) {
+            console.log("Uploaded, Response: ", response);
             toast.update(id, {
                 render: "Media uploaded",
                 type: toast.TYPE.SUCCESS,
@@ -596,30 +603,25 @@ export function* POST_FILE({ payload }) {
                 position: "bottom-right",
                 hideProgressBar: false,
             });
-        })
-        .catch((errors) => {
-            // alert("there is error in uploading");
-            toast.update(id, {
-                render: "Error in uploading",
-                type: toast.TYPE.ERROR,
-                autoClose: 5000,
-                closeOnClick: true,
-                pauseOnHover: true,
-                progress: undefined,
-                position: "bottom-right",
-                hideProgressBar: false,
-            });
-            // toast.error("Error in uploading", {
-            //     position: "bottom-right",
-            //     autoClose: 5000,
-            //     hideProgressBar: false,
-            //     closeOnClick: true,
-            //     pauseOnHover: true,
-            //     draggable: true,
-            //     progress: undefined,
-            //     theme: "colored",
-            // });
+        }
+    } catch (errors) {
+        // Send error details to the server for logging
+        
+        console.log("Error: ", errors);
+        yield call(axios.post, '/api/log-error', { error: errors.toString() });
+
+        toast.update(id, {
+            render: "Error in uploading",
+            type: toast.TYPE.ERROR,
+            autoClose: 5000,
+            closeOnClick: true,
+            pauseOnHover: true,
+            progress: undefined,
+            position: "bottom-right",
+            hideProgressBar: false,
         });
+    }
+
     yield put({
         type: actionTypes.GET_ALL_UPLOADED_MEDIA,
         payload: {

@@ -297,6 +297,7 @@ const DragAndDropUploader = ({ greetData }) => {
                         </span> */}
                     </div>
                     {
+                        /*
                         <aside>
                         {acceptedFileItems.length > 0 && (
                             <div>
@@ -311,7 +312,7 @@ const DragAndDropUploader = ({ greetData }) => {
                             </div>
                         )}
                         </aside>
-                    
+                        */
                     }
                     <button
                         // {...getRootProps({ className: "dropzone" })}

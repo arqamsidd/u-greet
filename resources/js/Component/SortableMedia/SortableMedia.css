@@ -143,5 +143,6 @@
     .lb-canvas .lb-img {
         max-height: 60vh;
         height: 100vw;
+        object-fit: contain;
     }
 }

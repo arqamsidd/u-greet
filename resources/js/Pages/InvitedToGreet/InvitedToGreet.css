@@ -3550,7 +3550,7 @@
     .invite-pages .site .description-section .border {
       border-bottom: 1px solid #4a90e2;
       width: 100px; } }
-@media screen and (max-width: 426px) {
+@media screen and (max-width: 480px) {
   .invite-pages .font-60 {
     font-size: 40px; }
   .invite-pages .double-container {

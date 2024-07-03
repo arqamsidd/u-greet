@@ -10818,3 +10818,12 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+
+.lb-canvas .lb-img {
+  object-fit: contain;
+}
+
+.Toastify__toast-container{
+  left: unset !important;
+  right: 0 !important;
+}

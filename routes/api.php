@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ErrorLogController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -117,3 +118,4 @@ Route::group([], function () {
     /*Strip Payment*/
     Route::post('stripe', [\App\Http\Controllers\Api\StripePaymentController::class, 'stripe']);
    
+    Route::post('/log-error', [ErrorLogController::class, 'logError']);
