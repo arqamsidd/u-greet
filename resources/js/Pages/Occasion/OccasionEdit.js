@@ -1,8 +1,6 @@
-import React, { useContext } from "react";
-import { useEffect } from "react";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState, useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "../../Component/Footer/Footer";
 import OccasionInvite1 from "../../Component/occasionEdit/OccasionInvite1";
@@ -15,7 +13,8 @@ const OccasionEdit = () => {
     const location = useLocation();
     const dispatch = useDispatch();
     const { greetData } = useSelector((state) => state);
-    console.log("arqam greetData", greetData);
+    const [loading, setLoading] = useState(true);
+    console.log("this greetData", greetData);
     const { state } = useContext(AuthContext);
     greetData.id &&
         sessionStorage.setItem(
@@ -40,18 +39,21 @@ const OccasionEdit = () => {
     //         : "";
     // }, [greetData?.id]);
     useEffect(() => {
-        let reloading = JSON.parse(sessionStorage?.greetData_onReloading);
-        // console.log("reloading 2", reloading);
-        if (reloading.id) {
-            console.log("reloading 2 setiing state", reloading);
-            // sessionStorage.removeItem("greetData_onReloading");
-            dispatch({
-                type: actionTypes.SET_STATE,
-                payload: {
-                    greetData: reloading,
-                },
-            });
+        console.log("Session object: ", sessionStorage.greetData_onReloading );
+        try {
+            const storedData = sessionStorage.getItem("greetData_onReloading");
+            if (storedData) {
+                const parsedData = JSON.parse(storedData);
+                setReloading(parsedData);
+                dispatch({
+                    type: actionTypes.SET_STATE,
+                    payload: { greetData: parsedData },
+                });
+            }
+        } catch (error) {
+            console.error("Failed to parse session storage data:", error);
         }
+       
     }, []);
     useEffect(() => {
         setOccName(greetData?.occasion_name);
@@ -224,7 +226,7 @@ const OccasionEdit = () => {
                                     <div className="timestamp">
                                         <div>Contribution Date:</div>
                                         <div className="color-2">
-                                            {greetData?.created_at.split('T')[0]}
+                                            {greetData?.created_at?.split('T')[0]}
                                         </div>
                                     </div>
                                     <div className="description">
@@ -286,11 +288,13 @@ const OccasionEdit = () => {
                                     <OccasionInvite1
                                         setEditInvite2={setEditInvite2}
                                         setEditInvite1={setEditInvite1}
+                                        greetDataa = {greetData}
                                     />
                                 ) : (
                                     <OccasionInvite2
                                         setEditInvite2={setEditInvite2}
                                         setEditInvite1={setEditInvite1}
+                                        greetDataa = {greetData}
                                     />
                                 )
                             ) : (

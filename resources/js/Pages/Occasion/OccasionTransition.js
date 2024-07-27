@@ -13,7 +13,8 @@ const OccasionTransitions = () => {
     const dispatch = useDispatch();
     const [listItem, setListItem] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [greetData, setGreetData] = useState(null);
+    const [ setGreetData] = useState(null);
+    const { greetData } = useSelector((state) => state);
     const [selectedTransitionId, setSelectedTransitionId] = useState(false)
     const navigate = useNavigate();
 
@@ -30,10 +31,13 @@ const OccasionTransitions = () => {
     const handleSelectTransition = async(id) => {
         console.log({id})
         try {
-            const data = await axios.post("/api/store-greet-transitions", {"transition_id" : id, "greet_id" : greetData.id});
+            const data = await axios.post("/api/store-greet-transitions", 
+                {"transition_id" : id, 
+                "greet_id" : greetData.id}
+            );
             console.log({data})
             setSelectedTransitionId(id);
-            const greet_data = JSON.parse(sessionStorage?.greetData_onReloading);
+            const greet_data = JSON.parse(greet_data || sessionStorage?.greetData_onReloading);
             greet_data['transition_id'] = id;
 
             sessionStorage.setItem(

@@ -10821,9 +10821,46 @@ textarea.form-control-lg {
 
 .lb-canvas .lb-img {
   object-fit: contain;
+  width: 100%;  
 }
 
 .Toastify__toast-container{
   left: unset !important;
   right: 0 !important;
+}
+
+.fine-uploader-dropzone-container{
+  width: 100%;
+}
+.uppy-Container{
+  width: 100%;
+}
+.video-crt-pages .uppy-Root [type="button"]{
+  border-radius: 0px;
+  padding: 2px 5px !important;
+  word-wrap: unset;
+  display: inline-block;
+  width: max-content;
+  height: max-content;
+}
+
+
+.video-crt-pages .uppy-Root [type="button"].uppy-StatusBar-actionBtn--retry{
+  width: max-content;
+  display: flex;
+  height: 24px;
+  padding-left: 20px !important;
+}
+
+.video-crt-pages .uppy-Root [type="button"].uppy-StatusBar-actionBtn--retry svg{  
+  top: 7.5px;
+}
+
+
+.video-crt-pages .uppy-Root [type="button"].uppy-c-btn-primary{
+  padding: 15px !important;
+}
+
+.video-crt-pages .uppy-Dashboard-inner{
+  width: 100% !important;
 }

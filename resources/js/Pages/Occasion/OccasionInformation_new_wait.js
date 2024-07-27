@@ -48,14 +48,7 @@ const OccasionInformation = () => {
         }
     }, [greetData?.id, dispatch]);
 
-    // Clear the session storage when component unmounts
-    useEffect(() => {
-        return () => {
-            sessionStorage.removeItem("greetData_onReloading");
-        };
-    }, []);
-
-    if (loading || !greetData?.id) {
+    if (loading) {
         return <div>Loading...</div>;
     }
 
@@ -119,7 +112,6 @@ const OccasionInformation = () => {
                                     <div className="font-17 card text-center">
                                         Customize Your Video
                                     </div>
-                                   
                                     <DragAndDropUploader greetData={greetData} />
                                     <SortableMedia />
                                     <div className="font-17 card text-center">

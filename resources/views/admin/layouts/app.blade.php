@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>App Name - @yield('title')</title>
 
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
+
   <!-- Font Awesome -->
   <link rel="stylesheet" href="{{url('assets/admin/css/all.min.css')}}" media="all">
   <!-- Theme style -->

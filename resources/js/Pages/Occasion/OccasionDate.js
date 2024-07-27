@@ -1,9 +1,6 @@
-import React from "react";
-import { useContext } from "react";
-import { useEffect } from "react";
-import { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import NavBarInApp from "../../Component/Auth/NavBar/NavBarInApp";
 import AuthContext from "../../context/authContext";
@@ -27,6 +24,7 @@ const OccasionDate = () => {
             navigate("/startOccasion");
         }
     }, []);
+
     useEffect(() => {
         if (occasionLastDate) {
             setLastDate(occasionLastDate);
@@ -55,6 +53,7 @@ const OccasionDate = () => {
         const formattedDateLast = dateObjectLast.toISOString().split("T")[0];
         console.log("i am dhruv", formattedDate, formattedDateLast);
         if (state.user.id) {
+            //return dispatch({
             dispatch({
                 type: actionTypes.ADD_OCCASION_TO_API,
                 payload: {
@@ -76,6 +75,7 @@ const OccasionDate = () => {
                 progress: undefined,
                 theme: "colored",
             });
+            //return Promise.reject("User Not Found");
         }
     };
 
@@ -123,27 +123,9 @@ const OccasionDate = () => {
                         </div>
                         <div>
                             <div className="react-date-picker react-date-picker--closed react-date-picker--enabled">
-                                {/* <input
-                                    type="date"
-                                    name="event_date"
-                                    required
-                                    className="bg-2 bg-2-fx txt-input2 rounded mb-3 "
-                                    style={{
-                                        width: "100%",
-                                        textTransform: "uppercase",
-                                        fontWeight: "bold",
-                                        color: "gray",
-                                        border: "transparent",
-                                        minWidth: "99%",
-                                    }}
-                                    value={date}
-                                    min={new Date().toISOString().split("T")[0]}
-                                    onChange={(e) => setDate(e.target.value)}
-                                /> */}
                                 <DatePicker
                                     selected={date}
                                     minDate={new Date()}
-                                    // maxDate={addDays(date, 5)}
                                     dateFormat="dd/MM/yyyy"
                                     placeholderText="DD-MM-YYYY"
                                     className="bg-2 bg-2-fx txt-input2 mb-3 rounded border-0 w-100 font-weight-bold"
@@ -156,48 +138,9 @@ const OccasionDate = () => {
                         </div>
                         <div>
                             <div className="react-date-picker react-date-picker--closed react-date-picker--enabled">
-                                {/* <input
-                                    type="date"
-                                    name="event_date"
-                                    required
-                                    className="bg-2 bg-2-fx txt-input2 rounded "
-                                    style={{
-                                        width: "100%",
-                                        textTransform: "uppercase",
-                                        fontWeight: "bold",
-                                        color: "gray",
-                                        border: "transparent",
-                                    }}
-                                    value={lastDate}
-                                    min={new Date().toISOString().split("T")[0]}
-                                    // max={date}
-                                    onChange={(e) => {
-                                        if (e.target.value < date) {
-                                            setLastDate(e.target.value);
-                                        } else {
-                                            // alert(
-                                            //     "last date should be smaller then Greet Date"
-                                            // );
-                                            toast.error(
-                                                "last date should be smaller then Greet Date",
-                                                {
-                                                    position: "bottom-right",
-                                                    autoClose: 5000,
-                                                    hideProgressBar: false,
-                                                    closeOnClick: true,
-                                                    pauseOnHover: true,
-                                                    draggable: true,
-                                                    progress: undefined,
-                                                    theme: "colored",
-                                                }
-                                            );
-                                        }
-                                    }}
-                                /> */}
                                 <DatePicker
                                     selected={lastDate}
                                     minDate={new Date()}
-                                    // maxDate={addDays(date, 5)}
                                     dateFormat="dd/MM/yyyy"
                                     placeholderText="DD-MM-YYYY"
                                     className="bg-2 bg-2-fx txt-input2 rounded border-0 w-100 font-weight-bold"
@@ -205,9 +148,6 @@ const OccasionDate = () => {
                                         if (value < date) {
                                             setLastDate(value);
                                         } else {
-                                            // alert(
-                                            //     "last date should be smaller then Greet Date"
-                                            // );
                                             toast.error(
                                                 "last date should be smaller then Greet Date",
                                                 {
@@ -241,13 +181,19 @@ const OccasionDate = () => {
                                 </button>
                             </div>
                             <button
+                                // onClick={async () => {
                                 onClick={() => {
                                     if (date && lastDate) {
-                                        submitOccasionDate(),
-                                            submitOccasionToAPI(),
+                                        submitOccasionDate();
+                                        try {
+                                            //await submitOccasionToAPI();
+                                            submitOccasionToAPI();
                                             navigate("/occasionInformation");
+                                            //window.location.reload();
+                                        } catch (error) {
+                                            console.error("Error submitting occasion:", error);
+                                        }
                                     } else {
-                                        // alert("please fill dates");
                                         toast.error("please fill dates", {
                                             position: "bottom-right",
                                             autoClose: 5000,
