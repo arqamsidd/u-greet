@@ -596,8 +596,8 @@ export function* POST_FILE({ payload }) {
             toast.update(id, {
                 render: "Media uploaded",
                 type: toast.TYPE.SUCCESS,
-                autoClose: 5000,
-                closeOnClick: true,
+                autoClose: false,
+                closeOnClick: false,
                 pauseOnHover: true,
                 progress: undefined,
                 position: "bottom-right",
@@ -613,8 +613,8 @@ export function* POST_FILE({ payload }) {
         toast.update(id, {
             render: "Error in uploading",
             type: toast.TYPE.ERROR,
-            autoClose: 5000,
-            closeOnClick: true,
+            autoClose: false,
+            closeOnClick: false,
             pauseOnHover: true,
             progress: undefined,
             position: "bottom-right",
