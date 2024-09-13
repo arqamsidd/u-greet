@@ -15,13 +15,27 @@ const OccasionEdit = () => {
     const location = useLocation();
     const dispatch = useDispatch();
     const { greetData } = useSelector((state) => state);
-    console.log("arqam greetData", greetData);
+    console.log("greetData", greetData);
     const { state } = useContext(AuthContext);
     greetData.id &&
         sessionStorage.setItem(
             "greetData_onReloading",
             JSON.stringify(greetData)
         );
+    useEffect(() => {
+        greetData?.id
+            ? dispatch({
+                    type: actionTypes.GET_GREET_DATA,
+                    payload: { id: greetData?.id },
+                })
+            : "";
+        greetData.id
+            ? dispatch({
+                    type: actionTypes.GET_ALL_UPLOADED_MEDIA,
+                    payload: { greet_id: greetData?.id },
+                })
+            : "";
+    }, [greetData?.id]);
 
     // console.log("HELLO NAMES", names);
     //console.log("greetData", greetData);
@@ -40,7 +54,10 @@ const OccasionEdit = () => {
     //         : "";
     // }, [greetData?.id]);
     useEffect(() => {
-        let reloading = JSON.parse(sessionStorage?.greetData_onReloading);
+        if (sessionStorage.greetData_onReloading) {
+            var reloading = JSON.parse(sessionStorage?.greetData_onReloading);
+        }
+        
         // console.log("reloading 2", reloading);
         if (reloading.id) {
             console.log("reloading 2 setiing state", reloading);
@@ -52,6 +69,9 @@ const OccasionEdit = () => {
                 },
             });
         }
+        
+
+
     }, []);
     useEffect(() => {
         setOccName(greetData?.occasion_name);
@@ -174,7 +194,7 @@ const OccasionEdit = () => {
                                             >
                                                 <div className="active bg-10" />
                                             </div>
-                                         ) : (
+                                        ) : (
                                             <div
                                                 className="image"
                                                 style={{
@@ -196,29 +216,7 @@ const OccasionEdit = () => {
                                             <div className="color-2">
                                                 {greetData?.occasion_name} Event
                                             </div>
-
-                                            {/* {editInvite1 || editInvite2 ? (
-                                                <button
-                                                    onClick={() => {
-                                                        setEditInvite2(false),
-                                                            setEditInvite1(
-                                                                false
-                                                            );
-                                                    }}
-                                                    className="bg-3 bold btn2"
-                                                >
-                                                    <div>Edit Event</div>
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    onClick={() =>
-                                                        setEditInvite2(true)
-                                                    }
-                                                    className="bg-10 bold color-white btn2"
-                                                >
-                                                    <div>Invite Others</div>
-                                                </button>
-                                            )} */}
+                       
                                         </div>
                                     </div>
                                     <div className="timestamp">
@@ -251,19 +249,19 @@ const OccasionEdit = () => {
                                                 Recipient:{" "}
                                                 {greetData.greet_celebrant
                                                     ?.length > 0 && (
-                                                    <>
-                                                        {
-                                                            greetData
-                                                                ?.greet_celebrant[0]
-                                                                ?.first_name
-                                                        }{" "}
-                                                        {
-                                                            greetData
-                                                                ?.greet_celebrant[0]
-                                                                ?.last_name
-                                                        }
-                                                    </>
-                                                )}
+                                                        <>
+                                                            {
+                                                                greetData
+                                                                    ?.greet_celebrant[0]
+                                                                    ?.first_name
+                                                            }{" "}
+                                                            {
+                                                                greetData
+                                                                    ?.greet_celebrant[0]
+                                                                    ?.last_name
+                                                            }
+                                                        </>
+                                                    )}
                                             </div>
                                         </div>
                                         <div className="item bg-2 color-5">
@@ -403,58 +401,14 @@ const OccasionEdit = () => {
                                                     className="bg-2 bg-2-fx txt-input2"
                                                     value={Mess || ""}
                                                     // defaultValue={""}
-                              z                      onChange={(e) =>
+                                                    z onChange={(e) =>
                                                         setMess(e.target.value)
                                                     }
                                                 />
                                             </div>
                                         </div>
                                         <div>
-                                            {/* // niormal */}
-                                            {/* <div className="each-person item">
-                                            <div className="double-container">
-                                                <div className="text-input full-input">
-                                                    
-                                                    <label>First Name</label>
-                                                    <input
-                                                        type="name"
-                                                        placeholder="ex. Ms. Jane"
-                                                        name="fName"
-                                                        required
-                                                        className="bg-2 bg-2-fx txt-input2"
-                                                        id={0}
-                                                        defaultValue="ad"
-                                                    />
-                                                    <div />
-                                                </div>
-                                                <div className="text-input full-input">
-                                                  
-                                                    <label>Last Name</label>
-                                                    <input
-                                                        type="name"
-                                                        name="lName"
-                                                        required
-                                                        className="bg-2 bg-2-fx txt-input2"
-                                                        id={0}
-                                                        defaultValue="afsd"
-                                                    />
-                                                    <div />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <button
-                                                    type="button"
-                                                    className="bg-4 bg-4-fx bold btn2"
-                                                >
-                                                    <div>
-                                                        <img
-                                                            src="assets/images/delete.d650400d.svg"
-                                                            alt="button"
-                                                        />
-                                                    </div>
-                                                </button>
-                                            </div>
-                                        </div> */}
+                                           
                                             {/* // dynamic */}
                                             {formValues.map(
                                                 (element, index) => (
