@@ -76,7 +76,7 @@ const DragAndDropUploader = ({ greetData }) => {
         filetype: file.type,
       },
       uploadSize: file.size, // The size of the file
-      chunkSize: 52428800, // Set chunk size to 50MB
+      chunkSize: 10485760, // Set chunk size to 50MB
 
       // Retry logic in case of errors
       retryDelays: [0, 1000, 3000, 5000],
