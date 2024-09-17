@@ -65,7 +65,7 @@ const DragAndDropUploader = ({ greetData }) => {
 
     // Create a new tus upload
     const tusUpload = new Upload(file, {
-      endpoint: 'http://127.0.0.1:8000/api/tus', // The Tus server endpoint
+      endpoint: '/api/tus', // The Tus server endpoint
       headers: {
         'X-CSRF-TOKEN': csrfToken, // Add CSRF token for Laravel
       },
