@@ -182,6 +182,9 @@ return [
         Laravel\Socialite\SocialiteServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Pawlox\VideoThumbnail\VideoThumbnailServiceProvider::class,
+        
+        // Register your custom TusServiceProvider here
+        App\Providers\TusServiceProvider::class,
 
     ],
 

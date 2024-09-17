@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 use App\Events\CreateVideo;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use App\Models\GenerateVideoRequest;
 use App\Models\Greet;
 use App\Models\GreetCelebrant;
@@ -24,6 +25,7 @@ use File;
 use Carbon\Carbon;
 use Image;
 use VideoThumbnail;
+use TusPhp\Events\TusEvent;
 
 class GreetController extends Controller
 {
@@ -1267,4 +1269,99 @@ class GreetController extends Controller
             ], 400);
         }
     }
+
+    public function handleTusUploadComplete(TusEvent $event)
+    {
+        // The same logic as before...
+        $fileMeta = $event->getFile()->details();
+        Log::info('File Meta is', [$fileMeta]);
+
+        // Extract metadata from the event
+        $greetId = $fileMeta['metadata']['greet_id'] ?? 'default';
+        $userId = $fileMeta['metadata']['user_id'] ?? 'default';
+        $originalFileName = $fileMeta['metadata']['filename'] ?? 'unknown';
+        $extension = pathinfo($originalFileName, PATHINFO_EXTENSION);
+        $MediaName = Str::random(10);
+
+        $timestamp = time();
+        $generatedMediaName = $MediaName . '.' . $extension;
+        $path = $greetId . '/' . $generatedMediaName;
+
+        Log::info('Tus upload complete for file: ' . $originalFileName . ' in folder: ' . $greetId);
+
+        // Define the upload directory
+        $uploadDir = Storage::disk('greet_media_uploads')->path($greetId);
+        $filePath = $uploadDir . '/' . $generatedMediaName;
+
+        // Rename the file to match the timestamp-based naming convention
+        rename($fileMeta['file_path'], $filePath);
+
+        // Process video files to generate a thumbnail using FFmpeg
+        if (in_array($extension, ['mp4', 'mov', 'avi', 'mkv'])) {
+            $thumbnailDir = storage_path('app/public/greetMedia/uploads/' . $greetId);
+            $thumbnailName = $MediaName . '.jpg';
+
+            Log::info('Attempting to create thumbnail for video: ', ['file' => $filePath]);
+
+            // Ensure FFmpeg and FFProbe paths are set correctly
+            $ffmpegPath = env('FFMPEG_BIN_PATH');
+            $ffprobePath = env('FFPROBE_BIN_PATH');
+
+            // Create the thumbnail using FFmpeg directly
+            $command = "$ffmpegPath -i $filePath -ss 00:00:02 -vframes 1 $thumbnailDir/$thumbnailName";
+
+            // Execute the FFmpeg command
+            exec($command, $output, $returnVar);
+
+            // VideoThumbnail::createThumbnail(
+            //     $filePath, 
+            //     $thumbnailDir, 
+            //     $thumbnailName, 
+            //     2
+            // );
+
+            if ($returnVar === 0) {
+                Log::info('Thumbnail created successfully at: ' . $thumbnailDir . '/' . $thumbnailName);
+            } else {
+                Log::error('Failed to create thumbnail. FFmpeg output: ' . implode("\n", $output));
+            }
+        }
+
+        // Determine media type (image or video)
+        $allowedImageMimeTypes = ['image/jpeg', 'image/gif', 'image/png'];
+        $contentType = $fileMeta['metadata']['filetype'] ?? '';
+        $mediaType = in_array($contentType, $allowedImageMimeTypes) ? 'image' : 'video';
+
+        // Determine the duration for video files (default to 500 seconds if unavailable)
+        $duration = 500; // Default duration for videos
+        if ($mediaType === 'video') {
+            // Use a default duration for now
+        }
+        $totalSec = round($duration);
+        $mint = floor($totalSec / 3600) . gmdate(":i:s", $totalSec % 3600);
+
+        // Define the media path
+        $mediaPath = '/storage/greetMedia/uploads/' . $greetId . '/' . $generatedMediaName;
+
+        // Get the latest order number for this greet_id
+        $latest = GreetMedia::where('greet_id', $greetId)->latest('order')->first();
+        $order = $latest ? $latest->order + 1 : 1;
+
+        // Insert into the database (GreetMedia model)
+        GreetMedia::create([
+            'greet_id'         => $greetId,
+            'media_name'       => $generatedMediaName,
+            'media_type'       => $mediaType,
+            'media_path'       => $mediaPath,
+            'greet_media_type' => 'uploads', // Hardcoded as 'uploads', similar to old function
+            'user_id'          => $userId,
+            'order'            => $order,
+            'media_sec'        => $totalSec,
+            'media_min'        => $mint,
+            'status'           => 1, // Status is set to 1 (active)
+        ]);
+
+        Log::info('File successfully processed and database entry created.');
+    }
+
 }

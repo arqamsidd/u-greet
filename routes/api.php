@@ -3,6 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ErrorLogController;
+use App\Models\GreetMedia;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use TusPhp\Tus\Server as TusServer;
+use App\Http\Controllers\Api\TusController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,11 +24,14 @@ use App\Http\Controllers\ErrorLogController;
 })->where('path', '^(?!api).*?');*/
 
 
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 Route::group([], function () {
+
+    Route::any('/tus/{any?}', [TusController::class, 'tusGreetUpload'])->where('any', '.*');
     Route::post('/login', [\App\Http\Controllers\Api\LoginController::class, 'login']);
     Route::post('/signin', [\App\Http\Controllers\Api\LoginController::class, 'signin']);
     Route::post('/register', [\App\Http\Controllers\Api\RegisterController::class, 'register']);
@@ -71,6 +79,8 @@ Route::group([], function () {
     
     /*Upload Media*/
     Route::post('create-greet-media', [\App\Http\Controllers\Api\GreetController::class, 'storeMedia']);
+
+    
 
     /*Edit profile Update*/
     Route::post('user-update', [\App\Http\Controllers\Api\RegisterController::class, 'userUpdate']);
