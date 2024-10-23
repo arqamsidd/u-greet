@@ -679,18 +679,19 @@ class GreetController extends Controller
                 /*custome duration */
                 // dd($file_path);
 
-                $ffprobe = FFMpeg\FFProbe::create(
-                    array(
-                        'ffmpeg.binaries'  => $ffmpegBinPath,
-                        'ffprobe.binaries' => $ffprobeBinPath,
-                    )
-                );
-                $duration = $ffprobe->format($file_path)->get('duration');
+                // $ffprobe = FFMpeg\FFProbe::create(
+                //     array(
+                //         'ffmpeg.binaries'  => $ffmpegBinPath,
+                //         'ffprobe.binaries' => $ffprobeBinPath,
+                //     )
+                // );
+                // $duration = $ffprobe->format($file_path)->get('duration');
                 // dd($duration);
                 // $c=' -i ' .  $file_path;
                 // // dd('ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1'.$c);
                 // $videoDuration=exec('ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1'.$c,$output);
                 // dd($videoDuration);
+                $duration = 3600;
 
                 $totalSec = round($duration);
                 // dd($totalSec);

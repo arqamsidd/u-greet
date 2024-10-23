@@ -18,12 +18,14 @@ const DragAndDropUploader = ({ greetData }) => {
 
   const fileInputRef = useRef(null); // Ref for the file input element
 
+  console.log('greetData', greetData)
   // Supported file types
   const validFileTypes = ['video/mp4', 'video/mov', 'video/mkv', 'image/jpeg', 'image/png', 'image/gif', 'video/quicktime', 'image/heic'];
 
   // Automatically resume uploads if they were interrupted
   useEffect(() => {
     if (fileQueue.length > 0 && (!uploading || currentFileIndex > 0) && currentFileIndex < fileQueue.length) {
+      console.log('fileQueue', fileQueue)
       uploadNextFile(); // Start uploading the next file when fileQueue changes
     } else {
       setUploading(false);
@@ -46,6 +48,84 @@ const DragAndDropUploader = ({ greetData }) => {
   };
 
   // Function to handle file upload using tus-js-client with resumable uploads
+  // const handleFileUpload = (file, storedUploadUrl = null) => {
+  //   if (!file || !validFileTypes.includes(file.type)) {
+  //     setErrorMessage('Invalid file type. Only image and video files are allowed.');
+  //     console.log('Invalid file type:', file.type);
+  //     setUploading(false);
+  //     return;
+  //   }
+
+  //   if (file.size < 500 * 1024) {
+  //     setErrorMessage('File size must be greater than 500KB.');
+  //     console.log('File too small:', file.size);
+  //     setUploading(false);
+  //     return;
+  //   }
+
+  //   setErrorMessage('');
+
+  //   // Create a new tus upload
+  //   const tusUpload = new Upload(file, {
+  //     endpoint: '/api/tus', // The Tus server endpoint
+  //     headers: {
+  //       'X-CSRF-TOKEN': csrfToken, // Add CSRF token for Laravel
+  //     },
+  //     metadata: {
+  //       greet_id: greetData?.id,  // Base64 encode the greet_id
+  //       user_id: state?.user?.id, // Base64 encode the user_id
+  //       filename: file.name,
+  //       filetype: file.type,
+  //     },
+  //     uploadSize: file.size, // The size of the file
+  //     chunkSize: 10485760, // Set chunk size to 10MB
+
+  //     // Retry logic in case of errors
+  //     retryDelays: [0, 1000, 3000, 5000],
+
+  //     onError: (error) => {
+  //       console.error('Upload failed for file:', file.name, error);
+  //       setErrorMessage(`Upload failed for file: ${file.name}. Please try again.`);
+  //       setUploadProgress(0);
+  //       setUploading(false);
+  //       // Move to the next file in the queue even if an error occurs
+  //       setCurrentFileIndex((prevIndex) => prevIndex + 1);
+  //     },
+  //     onProgress: (bytesUploaded, bytesTotal) => {
+  //       const percentage = (bytesUploaded / bytesTotal) * 100;
+  //       setUploadProgress(percentage); // Update the progress state
+  //       console.log(`Uploading ${file.name}: ${bytesUploaded} of ${bytesTotal} bytes (${percentage.toFixed(2)}%)`);
+  //     },
+  //     onSuccess: () => {
+  //       console.log('Upload succeeded for file:', file.name);
+  //       setUploadProgress(0); // Reset progress bar for the next file
+  //       setErrorMessage(''); // Clear any error messages
+
+  //       // Dispatch action to retrieve uploaded media after successful upload
+  //       dispatch({
+  //         type: actionTypes.GET_ALL_UPLOADED_MEDIA,
+  //         payload: {
+  //           greet_id: greetData?.id,
+  //         },
+  //       });
+
+  //       // Move to the next file in the queue after successful upload
+  //       setCurrentFileIndex((prevIndex) => prevIndex + 1);
+  //     },
+  //     onAfterResponse: (req, res) => {
+  //       if (tusUpload.url) {
+  //         // Store the upload URL for resumable uploads
+  //         console.log('Upload URL for file:', file.name, tusUpload.url);
+  //         localStorage.setItem(`tus-upload-url-${file.name}`, tusUpload.url);
+  //       }
+  //     },
+  //   });
+
+  //   // Start the upload
+  //   console.log('Starting upload for file:', file.name);
+  //   tusUpload.start();
+  // };
+
   const handleFileUpload = (file, storedUploadUrl = null) => {
     if (!file || !validFileTypes.includes(file.type)) {
       setErrorMessage('Invalid file type. Only image and video files are allowed.');
@@ -53,34 +133,45 @@ const DragAndDropUploader = ({ greetData }) => {
       setUploading(false);
       return;
     }
-
+  
     if (file.size < 500 * 1024) {
       setErrorMessage('File size must be greater than 500KB.');
       console.log('File too small:', file.size);
       setUploading(false);
       return;
     }
-
+  
     setErrorMessage('');
-
+  
+    // Conditional logic based on isInvitedToGreet
+    const endpoint = greetData?.isInvitedToGreet ? '' : '/api/tus';
+    const metadata = greetData?.isInvitedToGreet
+      ? {
+          email: greetData?.email, 
+          firstName: greetData?.firstName,
+          lastName: greetData?.lastName,  
+          token: greetData?.token,
+        }
+      : {
+          greet_id: greetData?.id,  // Base64 encode the greet_id
+          user_id: state?.user?.id, // Base64 encode the user_id
+          filename: file.name,
+          filetype: file.type,
+        };
+  
     // Create a new tus upload
     const tusUpload = new Upload(file, {
-      endpoint: '/api/tus', // The Tus server endpoint
+      endpoint: endpoint, // The Tus server endpoint based on the condition
       headers: {
         'X-CSRF-TOKEN': csrfToken, // Add CSRF token for Laravel
       },
-      metadata: {
-        greet_id: greetData?.id,  // Base64 encode the greet_id
-        user_id: state?.user?.id, // Base64 encode the user_id
-        filename: file.name,
-        filetype: file.type,
-      },
+      metadata: metadata,
       uploadSize: file.size, // The size of the file
       chunkSize: 10485760, // Set chunk size to 10MB
-
+  
       // Retry logic in case of errors
       retryDelays: [0, 1000, 3000, 5000],
-
+  
       onError: (error) => {
         console.error('Upload failed for file:', file.name, error);
         setErrorMessage(`Upload failed for file: ${file.name}. Please try again.`);
@@ -98,7 +189,7 @@ const DragAndDropUploader = ({ greetData }) => {
         console.log('Upload succeeded for file:', file.name);
         setUploadProgress(0); // Reset progress bar for the next file
         setErrorMessage(''); // Clear any error messages
-
+  
         // Dispatch action to retrieve uploaded media after successful upload
         dispatch({
           type: actionTypes.GET_ALL_UPLOADED_MEDIA,
@@ -106,7 +197,7 @@ const DragAndDropUploader = ({ greetData }) => {
             greet_id: greetData?.id,
           },
         });
-
+  
         // Move to the next file in the queue after successful upload
         setCurrentFileIndex((prevIndex) => prevIndex + 1);
       },
@@ -118,15 +209,16 @@ const DragAndDropUploader = ({ greetData }) => {
         }
       },
     });
-
+  
     // Start the upload
     console.log('Starting upload for file:', file.name);
     tusUpload.start();
   };
-
+  
   // Handle file input change event (multiple files)
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
+    console.log('files', files)
     setFileQueue(files); // Queue the selected files
     setCurrentFileIndex(0); // Reset index when new files are added
   };

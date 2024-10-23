@@ -18,35 +18,12 @@ import heic2any from "heic2any";
 const InvitedToGreet = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { greetData, greetContributedMedia } = useSelector((state) => state);
     const { token } = useParams();
 
     const [NextClicked, setNextClicked] = useState(false);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
-
-    greetData.id &&
-        sessionStorage.setItem(
-            "greetData_onReloading",
-            JSON.stringify(greetData)
-        );
-    useEffect(() => {
-        if (sessionStorage.greetData_onReloading) {
-            var reloading = JSON.parse(sessionStorage?.greetData_onReloading);
-        }
-        // console.log("reloading", reloading);
-        if (reloading?.id) {
-            console.log("reloading setiing state", reloading);
-            // sessionStorage.removeItem("greetData_onReloading");
-            dispatch({
-                type: actionTypes.SET_STATE,
-                payload: {
-                    greetData: reloading,
-                },
-            });
-        }
-    }, []);
 
     // dnduploaader
     const { state } = useContext(AuthContext);
@@ -221,14 +198,10 @@ const InvitedToGreet = () => {
     //     </li>
     // ));
 
-    useEffect(() => {
-        if (acceptedFiles.length > 0) {
-            // acceptedFiles.map((file) =>
-            uploadAcceptedFile(acceptedFiles);
-            // );
-        }
-    }, [acceptedFiles]);
+    const pyloadData = { token, firstName, lastName, email, isInvitedToGreet: true }
     const uploadAcceptedFile = (acceptedFiles) => {
+        console.log("Dispatching files: ", acceptedFiles);
+        console.log("Form details: ", { token, firstName, lastName, email });
         if (token && firstName && lastName && email) {
             dispatch({
                 type: actionTypes.POST_FILE_INVITED_USER,
@@ -272,6 +245,17 @@ const InvitedToGreet = () => {
                                     className="background mb-0"
                                     alt="background"
                                 />
+                                {/* <div className="text-text">
+                                    <div className="card-head color-white">
+                                        <div className="font-20 bold">
+                                            {greetData?.occasion_name}
+                                        </div>
+                                        <div>
+                                            Sweet Greets on{" "}
+                                            {greetData?.occasion_date}
+                                        </div>
+                                    </div>
+                                </div> */}
                                 <div className="text-text">
                                     <div className="card-head color-white">
                                         <div className="font-20 bold">
@@ -292,14 +276,86 @@ const InvitedToGreet = () => {
                                 </div>
                             </div>
                             <div>
+                                {/* <div className="double-container"> */}
                                 {NextClicked ? (
                                     <div className="upload bg-white">
+                                        {/* <div
+                                            style={{
+                                                border:
+                                                    fileRejections.length > 0
+                                                        ? "2px solid red"
+                                                        : "",
+                                                height: "100%",
+                                            }}
+                                            className="text-center align-items-center justify-content-center"
+                                        >
+                                            <div
+                                                className="card text-center align-items-center justify-content-center"
+                                                style={{ height: "100%" }}
+                                            >
+                                                <div
+                                                    {...getRootProps({
+                                                        className: "dropzone",
+                                                    })}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            marginBottom:
+                                                                "10px",
+                                                        }}
+                                                    >
+                                                        <input
+                                                            {...getInputProps()}
+                                                        />
+                                                        <img
+                                                            src={dnd}
+                                                            alt="drag and drop"
+                                                            width={200}
+                                                        />
+                                                        <p>
+                                                            Drag n’ Drop or
+                                                            Select Files
+                                                        </p>
+                                                        <span
+                                                            style={{
+                                                                color:
+                                                                    fileRejections.length >
+                                                                        0
+                                                                        ? "red"
+                                                                        : "",
+                                                            }}
+                                                        >
+                                                            Edit and arrange pictures and videos to your liking and customize with music and background.
+                                                        </span>
+                                                    </div>
+                                                    <button
+                                                        // {...getRootProps({ className: "dropzone" })}
+                                                        // onClick={openDialog}
+                                                        style={{
+                                                            width: "fit-content",
+                                                        }}
+                                                        className="bg-10 bold color-white disableOnSubmit"
+                                                    >
+                                                        <div>Select Files</div>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div> */}
                                         <DragAndDropUploader
-                                            greetData={greetData}
-                                        />
+                                        greetData={pyloadData}
+                                    />
+
+                                        {/* </section> */}
                                     </div>
                                 ) : (
                                     <div className="upload bg-white">
+                                        {/* <div className="font-17 bold card text-center">
+                        Uploaded Media
+                    </div> */}
+                                        {/* <SortableMedia /> */}
+                                        {/* <div className="left">
+                        <div className="container">
+                            <div className="content"> */}
                                         <div className="card justify-content-center p-4 ">
                                             <div className="head">
                                                 <div className="font-26 bold head">
@@ -315,6 +371,7 @@ const InvitedToGreet = () => {
                                                     uploadAcceptedFile("");
                                                 }}
                                             >
+                                                {/* First Name Input Field */}
                                                 <div className="item">
                                                     <div className="text-input full-input">
                                                         <div className="label bold">
@@ -351,9 +408,13 @@ const InvitedToGreet = () => {
                                                                 color: "red",
                                                             }}
                                                         ></div>
+                                                        {/* {renderFieldError(
+                                                "first_name"
+                                            )} */}
                                                     </div>
                                                 </div>
 
+                                                {/* Last Name Input Field */}
                                                 <div className="item">
                                                     <div className="text-input full-input">
                                                         <div className="label bold">
@@ -426,14 +487,21 @@ const InvitedToGreet = () => {
                                                                 color: "red",
                                                             }}
                                                         ></div>
+                                                        {/* {renderFieldError(
+                                                "email"
+                                            )} */}
                                                     </div>
                                                 </div>
+
+                                                {/* Signup Button */}
                                                 <div className="item">
                                                     <button
                                                         type="submit"
                                                         className="bg-3 bold disableOnSubmit button-item w-auto"
                                                     >
+                                                        {/* <Link to="/dashboard"> */}
                                                         Next
+                                                        {/* </Link> */}
                                                     </button>
                                                 </div>
                                             </form>
@@ -444,6 +512,7 @@ const InvitedToGreet = () => {
                                 )}
                                 {NextClicked && (
                                     <div className="upload bg-white">
+                                        {/* hi */}
                                         <SortableMedia
                                             isContribution={true}
                                             greet_token={token}
@@ -451,15 +520,14 @@ const InvitedToGreet = () => {
                                             last_name={lastName}
                                             email={email}
 
-                                            // contributedMedia={
-                                            //     greetContributedMedia
-                                            // }
+                                        // contributedMedia={
+                                        //     greetContributedMedia
+                                        // }
                                         />
                                         <div className="font-12 card text-center">
-                                            File Requirements: Video must be
-                                            .MP4 or .MOV & Image must be .JPG,
-                                            .JPEG, .PNG or .HEIC format. Both
-                                            require dimensions above 500px
+                                            File Requirements: Video must be .MP4 or .MOV &
+                                    Image must be .JPG, .JPEG, .PNG or .HEIC format. Both
+                                    require dimensions above 500px
                                         </div>
                                     </div>
                                 )}
@@ -476,6 +544,7 @@ const InvitedToGreet = () => {
                                         </button>
                                     </div>
                                 )}
+                                {/* </div> */}
                             </div>
                         </section>
                     </div>
@@ -487,3 +556,4 @@ const InvitedToGreet = () => {
 };
 
 export default InvitedToGreet;
+
