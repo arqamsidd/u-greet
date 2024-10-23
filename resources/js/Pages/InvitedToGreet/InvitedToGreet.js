@@ -1,81 +1,235 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
-import DragAndDropUploader from "../../Component/dragAndDropUpload/DragAndDropUploader"; 
+import React from "react";
+import { useDispatch } from "react-redux";
+import DragAndDropUploader from "../../Component/dragAndDropUpload/DragAndDropUploader";
 import SortableMedia from "../../Component/SortableMedia/SortableMedia";
-import actionTypes from "../../State/actions/actionTypes";
-import bg from "../../../../public/images/background.17641159.svg";
-import Footer from "../../Component/Footer/Footer";
-import AuthContext from "../../context/authContext";
 import "./InvitedToGreet.css";
+import bg from "../../../../public/images/background.17641159.svg";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import actionTypes from "../../State/actions/actionTypes";
+import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useContext } from "react";
+import AuthContext from "../../context/authContext";
+import { useDropzone } from "react-dropzone";
+import Footer from "../../Component/Footer/Footer";
+import heic2any from "heic2any";
 
 const InvitedToGreet = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    // const { greetData } = useSelector((state) => state);
     const { greetData, greetContributedMedia } = useSelector((state) => state);
     const { token } = useParams();
+
     const [NextClicked, setNextClicked] = useState(false);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
-    const { state } = useContext(AuthContext);
 
-    // Handle session storage for greetData
-
-
-    // useEffect(() => {
-    //     console.log('greetData', greetData)
-    //     if (greetData?.id) {
-    //         sessionStorage.setItem(
-    //             "greetData_onReloading",
-    //             JSON.stringify(greetData)
-    //         );
-    //     }
-    // }, [greetData]);
     greetData.id &&
         sessionStorage.setItem(
             "greetData_onReloading",
             JSON.stringify(greetData)
         );
     useEffect(() => {
-        greetData?.id
-            ? dispatch({
-                  type: actionTypes.GET_GREET_DATA,
-                  payload: { id: greetData?.id },
-              })
-            : "";
-        greetData.id
-            ? dispatch({
-                  type: actionTypes.GET_ALL_UPLOADED_MEDIA,
-                  payload: { greet_id: greetData?.id },
-              })
-            : "";
-    }, [greetData?.id]);
-
-    useEffect(() => {
         if (sessionStorage.greetData_onReloading) {
-            const reloading = JSON.parse(sessionStorage.greetData_onReloading);
-            if (reloading?.id) {
-                dispatch({
-                    type: actionTypes.SET_STATE,
-                    payload: { greetData: reloading },
-                });
-            }
+            var reloading = JSON.parse(sessionStorage?.greetData_onReloading);
+        }
+        // console.log("reloading", reloading);
+        if (reloading?.id) {
+            console.log("reloading setiing state", reloading);
+            // sessionStorage.removeItem("greetData_onReloading");
+            dispatch({
+                type: actionTypes.SET_STATE,
+                payload: {
+                    greetData: reloading,
+                },
+            });
         }
     }, []);
 
-    // Trigger the API dispatch for file upload
+    // dnduploaader
+    const { state } = useContext(AuthContext);
+    const { acceptedFiles, fileRejections, getRootProps, getInputProps } =
+        useDropzone({
+            accept: {
+                "video/mp4": [],
+                "video/mov": [".mov"],
+                "image/jpg": [],
+                "image/jpeg": [],
+                "image/png": [],
+                "image/heic": [".heic"],
+            },
+            getFilesFromEvent: async (event) => {
+                let files = [];
+                if (typeof FileSystemFileHandle !== "undefined") {
+                    console.log(
+                        "d event of beg file",
+                        event,
+                        event[0] instanceof FileSystemFileHandle
+                    );
+                    if (event[0] instanceof FileSystemFileHandle) {
+                        for (const eve of event) {
+                            console.log("dhruvin eve getfile", eve);
+                            const file = await eve.getFile();
+                            //   console.log("d event inside if", files)
+                            files.push(file);
+                            console.log(
+                                "d event of beg file 2222 if",
+                                event,
+                                files
+                            );
+                        }
+                    } else {
+                        files =
+                            event.dataTransfer?.files ||
+                            event.target?.files ||
+                            [];
+                        console.log(
+                            "d event of beg file 2222 else",
+                            event,
+                            files
+                        );
+                    }
+                } else {
+                    files =
+                        event.dataTransfer?.files || event.target?.files || [];
+                    console.log("d event of beg file 2222 else", event, files);
+                }
+                const promises = [];
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const regImage = /image/;
+                    if (
+                        (file.type != "image/heif" &&
+                            file.type != "image/heic" &&
+                            file.type != "") ||
+                        file.name.includes(".mov")
+                    ) {
+                        console.log("dhruvin is not heif");
+                        if (regImage.test(file.type)) {
+                            const promise = new Promise((resolve, reject) => {
+                                const image = new Image();
+                                let url;
+                                image.onload = function () {
+                                    file.width = image.width;
+                                    file.height = image.height;
+                                    resolve(file);
+                                };
+                                url = URL.createObjectURL(file);
+                                image.src = url;
+                            });
+                            promises.push(promise);
+                        } else {
+                            if (
+                                file.type != "video/mp4" &&
+                                file.type != "video/mov"
+                            ) {
+                                const promise = new Promise(
+                                    (resolve, reject) => {
+                                        resolve(file);
+                                    }
+                                );
+                                promises.push(promise);
+                            } else {
+                                const promise = new Promise(
+                                    (resolve, reject) => {
+                                        const video =
+                                            document.createElement("video");
+                                        let url;
+                                        video.onloadedmetadata = function () {
+                                            file["width"] = video.videoWidth;
+                                            file["height"] = video.videoHeight;
+                                            resolve(file);
+                                        };
+                                        console.log("d event in video", video);
+                                        url = URL.createObjectURL(file);
+                                        video.src = url;
+                                    }
+                                );
+                                promises.push(promise);
+                            }
+                        }
+                    } else {
+                        console.log("dhruvin is heif");
+                        const promise = new Promise((resolve, reject) => {
+                            heic2any({
+                                blob: file,
+                                toType: "image/jpeg", // Convert to JPEG format
+                                quality: 1, // Set quality value as per your requirements
+                            }).then((convertedBlob) => {
+                                const image2 = new Image();
+                                let url;
+                                image2.onload = function () {
+                                    convertedBlob["width"] = image2.width;
+                                    convertedBlob["height"] = image2.height;
+                                    convertedBlob["name"] =
+                                        image2.height + image2.size + ".jpeg";
+                                    resolve(convertedBlob);
+                                };
+                                url = URL.createObjectURL(convertedBlob);
+                                image2.src = url;
+                            });
+                        });
+                        promises.push(promise);
+                    }
+                }
+
+                return await Promise.all(promises);
+            },
+            validator: (file) => {
+                if (
+                    file.type != "video/mp4" &&
+                    file.type != "video/mov" &&
+                    file.type != "image/jpg" &&
+                    file.type != "image/jpeg" &&
+                    file.type != "image/png" &&
+                    file.type != "image/heic" &&
+                    file.type != "video/quicktime" &&
+                    file.type != ""
+                ) {
+                    return {
+                        code: "small-width",
+                        message: `Image width must be greater than 800`,
+                    };
+                } else if (file?.width < 5 || file?.height < 5) {
+                    return {
+                        code: "small-width",
+                        message: `Image width must be greater than 800`,
+                    };
+                }
+                return null;
+            },
+        });
+    // console.log("acceptedFiles", acceptedFiles);
+    // console.log("fileRejections", fileRejections);
+
+    // const acceptedFileItems = acceptedFiles.map((file) => (
+    //     <li key={file.path}>
+    //         {file.path} - {file.size} bytes
+    //     </li>
+    // ));
+
+    // const fileRejectionItems = fileRejections.map(({ file, errors }) => (
+    //     <li key={file.path}>
+    //         {file.path} - {file.size} bytes
+    //         <ul>
+    //             {errors.map((e) => (
+    //                 <li key={e.code}>{e.message}</li>
+    //             ))}
+    //         </ul>
+    //     </li>
+    // ));
+
+    useEffect(() => {
+        if (acceptedFiles.length > 0) {
+            // acceptedFiles.map((file) =>
+            uploadAcceptedFile(acceptedFiles);
+            // );
+        }
+    }, [acceptedFiles]);
     const uploadAcceptedFile = (acceptedFiles) => {
-        console.log('acceptedFiles', acceptedFiles)
-        if (token && firstName && lastName && email && acceptedFiles.length > 0) {
-            console.log("uploadAcceptedFile",{
-                media: acceptedFiles,
-                greet_token: token,
-                first_name: firstName,
-                last_name: lastName,
-                email: email,
-            })
+        if (token && firstName && lastName && email) {
             dispatch({
                 type: actionTypes.POST_FILE_INVITED_USER,
                 payload: {
@@ -88,219 +242,248 @@ const InvitedToGreet = () => {
             });
         }
     };
+    // dnduploaader ended
+    // form start
 
-    const handleNextClick = (e) => {
-        e.preventDefault();
-        if (firstName && lastName && email) {
-            setNextClicked(true);
-        }
-    };
-
+    // const makeRequest = (e) => {
+    //     e.preventDefault();
+    //     if (greetData?.id) {
+    //         dispatch({
+    //             type: actionTypes.POST_FILE_INVITED_USER,
+    //             payload: {
+    //                 media: file,
+    //                 greet_token: token,
+    //                 first_name: first_name,
+    //                 last_name: last_name,
+    //                 email: email,
+    //             },
+    //         });
+    //     }
+    // };
     return (
         <div className="invite-pages">
-            <div className="page dashboard pt-4">
-                <div className="media-actions media-section">
-                    <div className="card-round bg-11">
-                        <img
-                            src={bg}
-                            className="background mb-0"
-                            alt="background"
-                        />
-                        <div className="text-text">
-                            <div className="card-head color-white">
-                                <div className="font-20 bold">Welcome to U-Greet</div>
-                                <div>Where Stories Matter</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <section className="media-section bg-2">
-                    <div className="section-head">
-                        <div className="font-17 bold">Media Gallery</div>
-                        <div className="font-12">
-                            Upload pictures and/or personalized videos
-                        </div>
-                    </div>
-                    <div>
-                        {NextClicked ? (
-                            <div className="upload bg-white">
-                                {/* Reuse DragAndDropUploader and pass necessary props */}
-                                <DragAndDropUploader
-                                    greetData={greetData}
-                                    // onUpload={uploadAcceptedFile}
+            <div>
+                <div>
+                    <div className="page dashboard pt-4">
+                        <div className="media-actions media-section">
+                            <div className="card-round bg-11">
+                                <img
+                                    src={bg}
+                                    className="background mb-0"
+                                    alt="background"
                                 />
-                                <SortableMedia
-                                    isContribution={true}
-                                    greet_token={token}
-                                    first_name={firstName}
-                                    last_name={lastName}
-                                    email={email}
-                                />
-                                <div className="font-12 card text-center">
-                                    File Requirements: Video must be .MP4 or .MOV & Image must be .JPG, .JPEG, .PNG or .HEIC format. Both require dimensions above 500px.
-                                </div>
-                                <div style={{ textAlign: "end" }}>
-                                    <button
-                                        onClick={() => navigate("/")}
-                                        style={{
-                                            width: "fit-content",
-                                        }}
-                                        className="bg-10 bold color-white disableOnSubmit"
-                                    >
-                                        Done
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="upload bg-white">
-                                <div className="card justify-content-center p-4">
-                                    <div className="head">
-                                        <div className="font-26 bold head">
-                                            Your Details
+                                <div className="text-text">
+                                    <div className="card-head color-white">
+                                        <div className="font-20 bold">
+                                            Welcome to U-Greet
                                         </div>
-                                        <br />
+                                        <div>Where Stories Matter</div>
                                     </div>
-                                    <form
-                                        method="POST"
-                                        action="#"
-                                        onSubmit={(e) => handleNextClick(e)}
-                                    >
-                                        {/* First Name Input Field */}
-                                        <div className="item">
-                                            <div className="text-input full-input">
-                                                <div className="label bold">
-                                                    <div>
-                                                        First Name
-                                                    </div>
-                                                    <a
-                                                        className="link"
-                                                        href=""
-                                                    >
-                                                        <div></div>
-                                                    </a>
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    name="first_name"
-                                                    id="first_name"
-                                                    required
-                                                    className="bg-2 bg-2-fx"
-                                                    autoComplete="first_name"
-                                                    autoFocus
-                                                    value={firstName}
-                                                    onChange={(e) =>
-                                                        setFirstName(
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="First Name"
-                                                    tabIndex="1"
-                                                />
-                                                <div
-                                                    style={{
-                                                        color: "red",
-                                                    }}
-                                                ></div>
-                                            </div>
-                                        </div>
-
-                                        {/* Last Name Input Field */}
-                                        <div className="item">
-                                            <div className="text-input full-input">
-                                                <div className="label bold">
-                                                    <div>Last Name</div>
-                                                    <a
-                                                        className="link"
-                                                        href=""
-                                                    >
-                                                        <div></div>
-                                                    </a>
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    name="last_name"
-                                                    id="last_name"
-                                                    required
-                                                    className="bg-2 bg-2-fx"
-                                                    autoComplete="last_name"
-                                                    value={lastName}
-                                                    placeholder="Last Name"
-                                                    tabIndex="2"
-                                                    onChange={(e) =>
-                                                        setLastName(
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                />
-                                                <div
-                                                    style={{
-                                                        color: "red",
-                                                    }}
-                                                ></div>
-                                            </div>
-                                        </div>
-
-                                        {/* Email Input Field */}
-                                        <div className="item">
-                                            <div className="text-input full-input">
-                                                <div className="label bold">
-                                                    <div>
-                                                        Your Email
-                                                    </div>
-                                                    <a
-                                                        className="link"
-                                                        href=""
-                                                    >
-                                                        <div></div>
-                                                    </a>
-                                                </div>
-                                                <input
-                                                    type="email"
-                                                    name="email"
-                                                    id="email"
-                                                    required
-                                                    className="bg-2 bg-2-fx"
-                                                    autoComplete="email"
-                                                    placeholder="Email"
-                                                    value={email}
-                                                    onChange={(e) =>
-                                                        setEmail(
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    tabIndex="3"
-                                                />
-                                                <div
-                                                    style={{
-                                                        color: "red",
-                                                    }}
-                                                ></div>
-                                            </div>
-                                        </div>
-
-                                        {/* Signup Button */}
-                                        <div className="item">
-                                            <button
-                                                type="submit"
-                                                className="bg-3 bold disableOnSubmit button-item w-auto"
-                                            >
-                                                Next
-                                            </button>
-                                        </div>
-                                    </form>
                                 </div>
                             </div>
-                        )}
+                        </div>
+                        <section className="media-section bg-2">
+                            <div className="section-head">
+                                <div className="font-17 bold">
+                                    Media Gallery
+                                </div>
+                                <div className="font-12">
+                                    Upload pictures and/or personalized videos
+                                </div>
+                            </div>
+                            <div>
+                                {NextClicked ? (
+                                    <div className="upload bg-white">
+                                        <DragAndDropUploader
+                                            greetData={greetData}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="upload bg-white">
+                                        <div className="card justify-content-center p-4 ">
+                                            <div className="head">
+                                                <div className="font-26 bold head">
+                                                    Your Details
+                                                </div>
+                                                <br />
+                                            </div>
+                                            <form
+                                                method="POST"
+                                                action="#"
+                                                onSubmit={() => {
+                                                    setNextClicked(true);
+                                                    uploadAcceptedFile("");
+                                                }}
+                                            >
+                                                <div className="item">
+                                                    <div className="text-input full-input">
+                                                        <div className="label bold">
+                                                            <div>
+                                                                First Name
+                                                            </div>
+                                                            <a
+                                                                className="link"
+                                                                href=""
+                                                            >
+                                                                <div></div>
+                                                            </a>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            name="first_name"
+                                                            id="first_name"
+                                                            required
+                                                            className="bg-2 bg-2-fx"
+                                                            autoComplete="first_name"
+                                                            autoFocus
+                                                            value={firstName}
+                                                            onChange={(e) =>
+                                                                setFirstName(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            placeholder="First Name"
+                                                            tabIndex="1"
+                                                        />
+                                                        <div
+                                                            style={{
+                                                                color: "red",
+                                                            }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="item">
+                                                    <div className="text-input full-input">
+                                                        <div className="label bold">
+                                                            <div>Last Name</div>
+                                                            <a
+                                                                className="link"
+                                                                href=""
+                                                            >
+                                                                <div></div>
+                                                            </a>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            name="last_name"
+                                                            id="last_name"
+                                                            required
+                                                            className="bg-2 bg-2-fx"
+                                                            autoComplete="last_name"
+                                                            value={lastName}
+                                                            placeholder="Last Name"
+                                                            tabIndex="2"
+                                                            onChange={(e) =>
+                                                                setLastName(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                        />
+                                                        <div
+                                                            style={{
+                                                                color: "red",
+                                                            }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Email Input Field */}
+                                                <div className="item">
+                                                    <div className="text-input full-input">
+                                                        <div className="label bold">
+                                                            <div>
+                                                                Your Email
+                                                            </div>
+                                                            <a
+                                                                className="link"
+                                                                href=""
+                                                            >
+                                                                <div></div>
+                                                            </a>
+                                                        </div>
+                                                        <input
+                                                            type="email"
+                                                            name="email"
+                                                            id="email"
+                                                            required
+                                                            className="bg-2 bg-2-fx"
+                                                            autoComplete="email"
+                                                            placeholder="Email"
+                                                            value={email}
+                                                            onChange={(e) =>
+                                                                setEmail(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            tabIndex="3"
+                                                        />
+                                                        <div
+                                                            style={{
+                                                                color: "red",
+                                                            }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
+                                                <div className="item">
+                                                    <button
+                                                        type="submit"
+                                                        className="bg-3 bold disableOnSubmit button-item w-auto"
+                                                    >
+                                                        Next
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        {/* </div>
+                    </div> */}
+                                    </div>
+                                )}
+                                {NextClicked && (
+                                    <div className="upload bg-white">
+                                        <SortableMedia
+                                            isContribution={true}
+                                            greet_token={token}
+                                            first_name={firstName}
+                                            last_name={lastName}
+                                            email={email}
+
+                                            // contributedMedia={
+                                            //     greetContributedMedia
+                                            // }
+                                        />
+                                        <div className="font-12 card text-center">
+                                            File Requirements: Video must be
+                                            .MP4 or .MOV & Image must be .JPG,
+                                            .JPEG, .PNG or .HEIC format. Both
+                                            require dimensions above 500px
+                                        </div>
+                                    </div>
+                                )}
+                                {NextClicked && (
+                                    <div style={{ textAlign: "end" }}>
+                                        <button
+                                            onClick={() => navigate("/")}
+                                            style={{
+                                                width: "fit-content",
+                                            }}
+                                            className="bg-10 bold color-white disableOnSubmit"
+                                        >
+                                            <div>Done</div>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </section>
                     </div>
-                </section>
-                <Footer />
+                    <Footer />
+                </div>
             </div>
         </div>
     );
 };
 
 export default InvitedToGreet;
-
-
-
-
