@@ -726,9 +726,9 @@ class GreetController extends Controller
                 $dataSend['occasions_name'] = $greetData['occasion_name'];
                 $toEmail = $usermail['email'];
                 //echo "<pre>";print_r($toEmail);exit;
-                Mail::send('email.uploadgreet', $dataSend, function ($message) use ($toEmail) {
-                     $message->to($toEmail, 'Sucessfuly Upload Greet Media')->subject('Your Guest has Contributed to your U-Greet!');
-                });
+                // Mail::send('email.uploadgreet', $dataSend, function ($message) use ($toEmail) {
+                //      $message->to($toEmail, 'Sucessfuly Upload Greet Media')->subject('Your Guest has Contributed to your U-Greet!');
+                // });
             }
             /*End*/
             return response()->json([

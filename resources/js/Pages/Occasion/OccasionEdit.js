@@ -222,7 +222,7 @@ const OccasionEdit = () => {
                                     <div className="timestamp">
                                         <div>Contribution Date:</div>
                                         <div className="color-2">
-                                            {greetData?.created_at.split('T')[0]}
+                                            {greetData?.created_at?.split('T')[0]}
                                         </div>
                                     </div>
                                     <div className="description">
