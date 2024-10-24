@@ -679,19 +679,19 @@ class GreetController extends Controller
                 /*custome duration */
                 // dd($file_path);
 
-                // $ffprobe = FFMpeg\FFProbe::create(
-                //     array(
-                //         'ffmpeg.binaries'  => $ffmpegBinPath,
-                //         'ffprobe.binaries' => $ffprobeBinPath,
-                //     )
-                // );
-                // $duration = $ffprobe->format($file_path)->get('duration');
+                $ffprobe = FFMpeg\FFProbe::create(
+                    array(
+                        'ffmpeg.binaries'  => $ffmpegBinPath,
+                        'ffprobe.binaries' => $ffprobeBinPath,
+                    )
+                );
+                $duration = $ffprobe->format($file_path)->get('duration');
                 // dd($duration);
                 // $c=' -i ' .  $file_path;
                 // // dd('ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1'.$c);
                 // $videoDuration=exec('ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1'.$c,$output);
                 // dd($videoDuration);
-                $duration = 3600;
+                // $duration = 3600;
 
                 $totalSec = round($duration);
                 // dd($totalSec);
@@ -1278,11 +1278,38 @@ class GreetController extends Controller
         Log::info('File Meta is', [$fileMeta]);
 
         // Extract metadata from the event
+
         $greetId = $fileMeta['metadata']['greet_id'] ?? 'default';
+        // if greetid is not there but greettoken is available.
+        if (!is_numeric($greetId) && isset($fileMeta['metadata']['greet_token'])) {
+            $greetId = base64_decode($fileMeta['metadata']['greet_token']);
+        }
+
         $userId = $fileMeta['metadata']['user_id'] ?? 'default';
+        // if user is not found and email is found
+        if (!is_numeric($userId) && isset($fileMeta['metadata']['email'])) {
+            $userInput = [
+                'first_name' => $fileMeta['metadata']['firstName'],
+                'last_name'  => $fileMeta['metadata']['lastName'],
+                'email'      => $fileMeta['metadata']['email'],
+                'type'       => 'guest',
+                'greet_id'    => $greetId,
+            ];
+            $greetmedia = '';
+            $userFind = User::where('email',$fileMeta['metadata']['email'])->first();
+            if(empty($userFind)){
+                $userObj = User::create($userInput);
+            } else {
+                $greetmedia = GreetMedia::with('user')->where('greet_id',$greetId)->where('user_id',$userFind->id)->get();
+                $userObj = $userFind;
+            }
+            $userId = $userObj->id;
+        }
+
         $originalFileName = $fileMeta['metadata']['filename'] ?? 'unknown';
         $extension = pathinfo($originalFileName, PATHINFO_EXTENSION);
         $MediaName = Str::random(10);
+        
 
         $timestamp = time();
         $generatedMediaName = $MediaName . '.' . $extension;
@@ -1361,8 +1388,18 @@ class GreetController extends Controller
             'media_min'        => $mint,
             'status'           => 1, // Status is set to 1 (active)
         ]);
-
-        Log::info('File successfully processed and database entry created.');
+        if (isset($userObj)){
+            $greetmedia = GreetMedia::with('user')->where('greet_id',$greetId)->where('user_id',$userObj->id)->get();
+            return response()->json([
+                'status' => 201,
+                'message' => 'Greet Media Created Successfully.',
+                'greetmedia' => $greetmedia,
+            ], 201
+            );
+        }
+       
+        
+         
     }
 
 }

@@ -32,10 +32,18 @@ class TusController extends Controller
                 }
             }
 
+            Log::info('Map Meta is', [$metadataMap]);
+
             // Use the metadata to set the dynamic upload directory
             $greetId = $metadataMap['greet_id'] ?? 'default';
+
+            // if greetid is not there but greettoken is available.
+            if (!is_numeric($greetId) && isset($metadataMap['greet_token'])) {
+                $greetId = base64_decode($metadataMap['greet_token']);
+            }
             $uploadDir = Storage::disk('greet_media_uploads')->path($greetId);
 
+            Log::info('Upload direcotry path', [$uploadDir]);
             // Ensure the directory exists
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true);

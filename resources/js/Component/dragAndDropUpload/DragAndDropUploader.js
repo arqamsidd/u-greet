@@ -144,13 +144,16 @@ const DragAndDropUploader = ({ greetData }) => {
     setErrorMessage('');
   
     // Conditional logic based on isInvitedToGreet
-    const endpoint = greetData?.isInvitedToGreet ? '' : '/api/tus';
+    // const endpoint = greetData?.isInvitedToGreet ? '' : '/api/tus';
+    const endpoint = '/api/tus';
     const metadata = greetData?.isInvitedToGreet
       ? {
           email: greetData?.email, 
           firstName: greetData?.firstName,
           lastName: greetData?.lastName,  
-          token: greetData?.token,
+          greet_token: greetData?.token,
+          filename: file.name,
+          filetype: file.type,
         }
       : {
           greet_id: greetData?.id,  // Base64 encode the greet_id
