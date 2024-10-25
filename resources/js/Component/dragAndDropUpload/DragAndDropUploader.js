@@ -192,15 +192,26 @@ const DragAndDropUploader = ({ greetData }) => {
         console.log('Upload succeeded for file:', file.name);
         setUploadProgress(0); // Reset progress bar for the next file
         setErrorMessage(''); // Clear any error messages
-  
-        // Dispatch action to retrieve uploaded media after successful upload
-        dispatch({
-          type: actionTypes.GET_ALL_UPLOADED_MEDIA,
-          payload: {
-            greet_id: greetData?.id,
-          },
-        });
-  
+        if (greetData?.isInvitedToGreet) {
+          // Dispatch action to get contributer media
+          dispatch({
+              type: actionTypes.GET_CONTRIBUTER_MEDIA,
+              payload: {
+                  greet_token: greetData?.token,
+                  first_name: greetData?.firstName,
+                  last_name: greetData?.lastName,
+                  email: greetData?.email,
+              },
+          });
+      } else {
+          // Dispatch action to retrieve uploaded media after successful upload
+          dispatch({
+              type: actionTypes.GET_ALL_UPLOADED_MEDIA,
+              payload: {
+                  greet_id: greetData?.id,
+              },
+          });
+      }
         // Move to the next file in the queue after successful upload
         setCurrentFileIndex((prevIndex) => prevIndex + 1);
       },
@@ -210,6 +221,7 @@ const DragAndDropUploader = ({ greetData }) => {
           console.log('Upload URL for file:', file.name, tusUpload.url);
           localStorage.setItem(`tus-upload-url-${file.name}`, tusUpload.url);
         }
+        
       },
     });
   

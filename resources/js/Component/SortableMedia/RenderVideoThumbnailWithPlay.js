@@ -22,7 +22,7 @@ const RenderVideoThumbnailWithPlay = ({ url, ifThumbPresent }) => {
 
             return () => {
                 // Clean up event listener when the component unmounts
-                videoRef.current.removeEventListener(
+                videoRef.current?.removeEventListener(
                     "loadedmetadata",
                     captureFrame
                 );

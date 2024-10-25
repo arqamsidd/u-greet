@@ -668,6 +668,8 @@ export function* POST_FILE_INVITED_USER({ payload }) {
     yield formData.append("first_name", payload.first_name);
     yield formData.append("last_name", payload.last_name);
     yield formData.append("email", payload.email);
+    yield formData.append("email_sent", payload?.email_sent);
+
     // yield axios
     //     .post("/api/upload-greet-media", formData, {
     //         headers: {

@@ -199,22 +199,26 @@ const InvitedToGreet = () => {
     // ));
 
     const pyloadData = { token, firstName, lastName, email, isInvitedToGreet: true }
-    const uploadAcceptedFile = (acceptedFiles) => {
-        console.log("Dispatching files: ", acceptedFiles);
-        console.log("Form details: ", { token, firstName, lastName, email });
-        if (token && firstName && lastName && email) {
-            dispatch({
-                type: actionTypes.POST_FILE_INVITED_USER,
-                payload: {
-                    media: acceptedFiles,
-                    greet_token: token,
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: email,
-                },
-            });
+    const uploadAcceptedFile = (acceptedFiles, emailSent = false) => {
+    
+        const payload = {
+            media: acceptedFiles,
+            greet_token: token,
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+        };
+    
+        if (emailSent) {
+            payload.email_sent = true;
         }
+    
+        dispatch({
+            type: actionTypes.POST_FILE_INVITED_USER,
+            payload,
+        });
     };
+    
     // dnduploaader ended
     // form start
 
@@ -368,7 +372,7 @@ const InvitedToGreet = () => {
                                                 action="#"
                                                 onSubmit={() => {
                                                     setNextClicked(true);
-                                                    uploadAcceptedFile("");
+                                                    uploadAcceptedFile("", false);
                                                 }}
                                             >
                                                 {/* First Name Input Field */}
@@ -534,7 +538,11 @@ const InvitedToGreet = () => {
                                 {NextClicked && (
                                     <div style={{ textAlign: "end" }}>
                                         <button
-                                            onClick={() => navigate("/")}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                uploadAcceptedFile("", true);
+                                                navigate("/");
+                                            }}
                                             style={{
                                                 width: "fit-content",
                                             }}
