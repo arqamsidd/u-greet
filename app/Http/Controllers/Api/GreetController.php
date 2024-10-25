@@ -717,7 +717,7 @@ class GreetController extends Controller
             
 
             $greetmedia = GreetMedia::with('user')->where('greet_id',$greetId)->where('user_id',$userObj->id)->get();
-         
+            
             /*Mail send */
             $greetData = Greet::find($greetId);
             //echo "<pre>";print_r($greetmedia);exit;
@@ -727,9 +727,12 @@ class GreetController extends Controller
                 $dataSend['occasions_name'] = $greetData['occasion_name'];
                 $toEmail = $usermail['email'];
                 //echo "<pre>";print_r($toEmail);exit;
-                // Mail::send('email.uploadgreet', $dataSend, function ($message) use ($toEmail) {
-                //      $message->to($toEmail, 'Sucessfuly Upload Greet Media')->subject('Your Guest has Contributed to your U-Greet!');
-                // });
+                if(isset($request->email_sent) && $request->email_sent == "true"){
+                    Mail::send('email.uploadgreet', $dataSend, function ($message) use ($toEmail) {
+                     $message->to($toEmail, 'Sucessfuly Upload Greet Media')->subject('Your Guest has Contributed to your U-Greet!');
+                    });
+                }
+                
             }
             /*End*/
             return response()->json([
@@ -1277,6 +1280,10 @@ class GreetController extends Controller
         $fileMeta = $event->getFile()->details();
         Log::info('File Meta is', [$fileMeta]);
 
+         // Ensure FFmpeg and FFProbe paths are set correctly
+        $ffmpegPath = env('FFMPEG_BIN_PATH');
+        $ffprobePath = env('FFPROBE_BIN_PATH');
+
         // Extract metadata from the event
 
         $greetId = $fileMeta['metadata']['greet_id'] ?? 'default';
@@ -1331,9 +1338,7 @@ class GreetController extends Controller
 
             Log::info('Attempting to create thumbnail for video: ', ['file' => $filePath]);
 
-            // Ensure FFmpeg and FFProbe paths are set correctly
-            $ffmpegPath = env('FFMPEG_BIN_PATH');
-            $ffprobePath = env('FFPROBE_BIN_PATH');
+           
 
             // Create the thumbnail using FFmpeg directly
             $command = "$ffmpegPath -i $filePath -ss 00:00:02 -vframes 1 $thumbnailDir/$thumbnailName";
@@ -1360,16 +1365,28 @@ class GreetController extends Controller
         $contentType = $fileMeta['metadata']['filetype'] ?? '';
         $mediaType = in_array($contentType, $allowedImageMimeTypes) ? 'image' : 'video';
 
+        // Define the media path
+        $mediaPath = '/storage/greetMedia/uploads/' . $greetId . '/' . $generatedMediaName;
+        $file_path = storage_path('app/public/greetMedia/uploads/'.$greetId.'/'.$generatedMediaName);
+
         // Determine the duration for video files (default to 500 seconds if unavailable)
         $duration = 500; // Default duration for videos
         if ($mediaType === 'video') {
             // Use a default duration for now
+            $ffprobe = FFMpeg\FFProbe::create(
+                array(
+                    'ffmpeg.binaries'  => $ffmpegPath,
+                    'ffprobe.binaries' => $ffprobePath,
+                )
+            );
+            $duration = $ffprobe->format($file_path)->get('duration');
+        }else{
+            $duration = 0;
         }
         $totalSec = round($duration);
         $mint = floor($totalSec / 3600) . gmdate(":i:s", $totalSec % 3600);
 
-        // Define the media path
-        $mediaPath = '/storage/greetMedia/uploads/' . $greetId . '/' . $generatedMediaName;
+        
 
         // Get the latest order number for this greet_id
         $latest = GreetMedia::where('greet_id', $greetId)->latest('order')->first();
@@ -1388,18 +1405,9 @@ class GreetController extends Controller
             'media_min'        => $mint,
             'status'           => 1, // Status is set to 1 (active)
         ]);
-        if (isset($userObj)){
-            $greetmedia = GreetMedia::with('user')->where('greet_id',$greetId)->where('user_id',$userObj->id)->get();
-            return response()->json([
-                'status' => 201,
-                'message' => 'Greet Media Created Successfully.',
-                'greetmedia' => $greetmedia,
-            ], 201
-            );
-        }
-       
+
         
-         
+        Log::info('File successfully processed and database entry created.');
     }
 
 }

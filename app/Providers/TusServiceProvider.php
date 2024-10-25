@@ -34,8 +34,7 @@ class TusServiceProvider extends ServiceProvider
             // Add an event listener for 'upload.complete' to handle after the file is uploaded
             $server->event()->addListener('tus-server.upload.complete', function (TusEvent $event) {
                 // Call the GreetController method and pass the event
-                $response = app(\App\Http\Controllers\Api\GreetController::class)->handleTusUploadComplete($event);
-                return $response;
+                app(\App\Http\Controllers\Api\GreetController::class)->handleTusUploadComplete($event);
             });
 
             return $server;
