@@ -541,7 +541,7 @@ const InvitedToGreet = () => {
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 uploadAcceptedFile("", true);
-                                                navigate("/");
+                                                navigate("/dashboard");
                                             }}
                                             style={{
                                                 width: "fit-content",

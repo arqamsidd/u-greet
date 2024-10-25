@@ -737,6 +737,19 @@ export function* POST_FILE_INVITED_USER({ payload }) {
                 position: "bottom-right",
                 hideProgressBar: false,
             });
+
+            if (payload?.email_sent && response?.data?.greetmedia?.length) {
+                toast.success("Invite sent successfully!", {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                });
+            }
     } catch (errors) {
         payload.media &&
             toast.update(id, {
